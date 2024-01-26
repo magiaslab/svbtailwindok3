@@ -1,5 +1,5 @@
 ---
-
+import BreadCrumbs from "../components/BreadCrumbs.astro";
 
 import BaseLayout from "./Layout.astro";
 const { frontmatter } = Astro.props;
@@ -12,6 +12,7 @@ const { frontmatter } = Astro.props;
 
   <BaseLayout title={frontmatter.title}>
     <div class="text-white mb-5 p-7 w-full bg-gray-900 rounded-lg">
+      <BreadCrumbs title="Here" parent="Something" parentLink="/contact" />
    
 </div>
   <section class="bg-gray-900 mb-10 rounded-lg">
