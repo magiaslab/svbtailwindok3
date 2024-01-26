@@ -1,0 +1,26 @@
+[
+
+ {
+    "Nome":"Samuele ",
+    "Cognome":"Bussotti",
+    "Ruolo":"Allenatore",
+    "Immagine":"",
+    "Email":""
+ },
+ {
+    "Nome":"Rosssano ",
+    "Cognome":"Bussotti",
+    "Ruolo":"Dirigente Accompagnatore",
+    "Immagine":"",
+    "Email":""
+ },
+ {
+    "Nome":"Fabrizio ",
+    "Cognome":"Fedi",
+    "Ruolo":"Direttore Sportivo",
+    "Immagine":"",
+    "Email":"mailto:m.camarda@basketsanvincenzo.it",
+    "Instagram":""
+ }
+ 
+]

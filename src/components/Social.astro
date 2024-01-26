@@ -1,14 +1,21 @@
 ---
 import data from "../data/site.json";
 import Heading from "../components/Heading.astro";
+import Loghi from "../components/Logofooter.astro"
 
-const heading = "Find me online!"
+const heading = "A.S.D. Basket San Vincenzo"
 ---
 
-<div class="w-full text-center py-12 bg-white dark:bg-slate-700 rounded-t-lg">
+<div class="text-center py-12 bg-gray-800 dark:bg-slate-700 rounded-t-lg">
+  
+  <Loghi />
+  
   <Heading heading={heading} />
+
+ 
+
   <ul
-    class="flex flex-wrap items-center justify-center text-gray-900 dark:text-white"
+    class="flex flex-wrap items-center justify-center text-gray-100 dark:text-white"
   >
     {
       data.social.map((item) => {

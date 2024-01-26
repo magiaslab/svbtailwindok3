@@ -1,0 +1,26 @@
+[
+    {
+        "girone": "A",
+        "fase": "Andata",
+        "data": "2023-09-29T22:00:00.000Z",
+        "ora": "18:15",
+        "luogo": "Palacosmeli V. Pensieri 11 Livorno",
+        "home": false,
+        "teamhome": "US Livorno",
+        "teamout": "SVB San Vincenzo",
+        "imgteamhome": "s",
+        "imgteamout": "s"
+    },
+    {
+        "girone": "A",
+        "fase": "Andata",
+        "data": "2023-10-06T22:00:00.000Z",
+        "ora": "21:15",
+        "luogo": "Pala Lauro Giovani",
+        "home": true,
+        "teamhome": "SVB San Vincenzo",
+        "teamout": "NBA Altopascio",
+        "imgteamhome": "s",
+        "imgteamout": "s"
+    }
+]

@@ -1,0 +1,36 @@
+---
+import ButtonAlt from "./ButtonAlt.astro";
+const title = "Il futuro basket dalla Costa degli Etruschi";
+const body = "Un nuova collaborazione per il futuro del basket giovanile sulla Costa degli Etruschi, Basket Cecina, Basket Donoratico, Sei Rose Rosignano e Baskte San Vincenzo";
+const buttonText = "Scopri tutto";
+const buttonLink = "/Ebp";
+
+---
+
+<section class="bg-slate-800 rounded-lg p-5 mb-20">
+  <div
+    class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12"
+  >
+    <div class="mr-auto place-self-center lg:col-span-7">
+      <h1
+        class="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl text-white"
+      >
+        {title}
+      </h1>
+      <p
+        class="max-w-2xl mb-6 font-light text-gray-100 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-400"
+      >
+        {body}
+      </p>
+      <ButtonAlt text={buttonText} href={buttonLink} />
+      <span class="mr-4"></span>
+     
+    </div>
+    <div class="lg:mt-0 lg:col-span-5 lg:flex">
+      <img
+        src="/img/Logo_EBP_Vectorial.png"
+        alt="logo EBP"
+      />
+    </div>
+  </div>
+</section>

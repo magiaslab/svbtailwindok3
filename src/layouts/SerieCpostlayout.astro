@@ -1,0 +1,67 @@
+---
+import BreadCrumbs from "../components/BreadCrumbs.astro";
+
+import BaseLayout from "./Layout.astro";
+const { frontmatter } = Astro.props;
+
+
+---
+
+
+  <BaseLayout title={frontmatter.title}>
+    <div class="text-white mb-5 p-7 w-full bg-gray-900 rounded-lg">
+      <BreadCrumbs title="Here" parent="Something" parentLink="/contact" />
+</div>
+  <section class="bg-gray-900 mb-10 rounded-lg">
+    <div class="gap-6 items-center py-8 px-4 mx-auto max-w-screen-xl lg:grid lg:grid-cols-2 lg:py-16 lg:px-6">
+        <div class="font-light text-gray-500 sm:text-lg dark:text-gray-400">
+          <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-white">{frontmatter.nomeatleta}</h2>
+          <div class="flex flex-row items-center dark:bg-gray-800 bg-white p-2 border-solid border-gray-400 rounded-md"> 
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 256 256"><path fill="red" d="M128 24a104 104 0 1 0 104 104A104.11 104.11 0 0 0 128 24ZM60 72.17A87.2 87.2 0 0 1 79.63 120H40.37A87.54 87.54 0 0 1 60 72.17ZM136 120V40.37a87.59 87.59 0 0 1 48.68 20.37A103.06 103.06 0 0 0 160.3 120Zm-16 0H95.7a103.06 103.06 0 0 0-24.38-59.26A87.59 87.59 0 0 1 120 40.37Zm-40.37 16A87.2 87.2 0 0 1 60 183.83A87.54 87.54 0 0 1 40.37 136Zm16.07 0H120v79.63a87.59 87.59 0 0 1-48.68-20.37A103.09 103.09 0 0 0 95.7 136Zm40.3 0h24.3a103.09 103.09 0 0 0 24.38 59.26A87.59 87.59 0 0 1 136 215.63Zm40.37 0h39.26A87.54 87.54 0 0 1 196 183.83A87.2 87.2 0 0 1 176.37 136Zm0-16A87.2 87.2 0 0 1 196 72.17A87.54 87.54 0 0 1 215.63 120Z"/></svg>
+            <p class="ml-5 font-semibold text-gray-900 dark:text-white">Ruolo: {frontmatter.ruolo}</p>
+          </div>
+          <div class="flex flex-row items-center mt-5  dark:bg-gray-800 p-2 border-solid border-gray-400 rounded-md bg-white"> 
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24"><path fill="none" stroke="red" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 17V7l7 10V7m4 10h5m-5-7a2.5 3 0 1 0 5 0a2.5 3 0 1 0-5 0"/></svg>
+             <p class="ml-5 font-semibold text-gray-900 dark:text-white">Numero di maglia: {frontmatter.numero}</p>
+            </div>
+          
+<div class="mt-5 border-solid max-w-lm w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
+  <div class="flex justify-between">
+    <div>
+      <h5 class="leading-none text-3xl font-bold text-gray-900 dark:text-white pb-2">{frontmatter.puntitotali}</h5>
+      <p class="text-base font-normal text-gray-500 dark:text-gray-400">Punti totali in campionato</p>
+    </div>
+    <div
+      class="flex items-center px-2.5 py-0.5 text-base font-semibold text-green-500 dark:text-green-500 text-center">
+      {frontmatter.media} media
+      <svg class="w-3 h-3 ml-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
+        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13V1m0 0L1 5m4-4 4 4"/>
+      </svg>
+    </div>
+  </div>
+  
+  <div id="area-chart"></div>
+  <div class="grid grid-cols-1 items-center border-gray-200 border-t dark:border-gray-700 justify-between">
+    <div class="flex justify-between items-center pt-5">
+		
+      <a
+        href={frontmatter.stats}
+        class="uppercase text-sm font-semibold inline-flex items-center rounded-lg text-red-700 hover:text-blue-700 dark:hover:text-red-500  hover:bg-gray-100 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700 px-3 py-2">
+        Stats by PlayBasket
+        <svg class="w-2.5 h-2.5 ml-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+</div>
+
+
+
+        </div>
+        <img class="w-full rounded-lg mt-5" src={frontmatter.immagine.url} alt={frontmatter.immagine.alt}>
+        
+    </div>
+</section>
+
+

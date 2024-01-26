@@ -3,19 +3,34 @@ import Layout from "../layouts/Layout.astro";
 
 import HeaderSmall from "../components/HeaderSmall.astro";
 import Form from "../components/Form.astro";
-const title = "Contact";
-const subtitle = "Contact me using the form below. Or find me online!";
+const title = "Contatti";
+const subtitle = "Se vuoi inviarci un messaggio utilizza il form qui sotto, se vuoi cercarci hai tutti i riferimenti";
 ---
 
-<Layout title="Contact">
+<Layout title="Contatti">
   <div>
     <HeaderSmall title={title} subtitle={subtitle} />
   </div>
   <main>
-    <div class="max-w-md m-auto my-8">
-      <Form />
+    <div class="grid lg:grid-cols-2 sm:grid-cols-1 grid-rows-1 gap-8 mb-20 mt-10">
+      <div >
+        <h5 class="mb-10 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Compila tutti i campi del form ti risponderemo velocemente!</h5>
+        <Form />
+      </div>
+      <div>
+        
+          <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white order-first sm:order-last">A.S.D. Basket San Vincenzo</h5>
+          <p class="font-normal text-gray-700 dark:text-gray-400">P.zza Giovanni XXIII San Vincenzo (Li)</p>
+          <a class="font-normal text-gray-700 dark:text-gray-400 dark:hover:text-red-700 hover:text-red-700" href="mailto:info@basketsanvincenzo.it">✉️ info@basketsanvincenzo.it</a>
+          <iframe class="rounded-lg mt-5 w-full w-sm:justify-center dark:hidden" src="https://snazzymaps.com/embed/540982" width="100%" height="450px" style="border:none;"></iframe>
+          <iframe class="hidden dark:block rounded-lg mt-5 w-full w-sm:justify-center" src="https://snazzymaps.com/embed/540980" width="100%" height="450px" style="border:none;"></iframe>      
+      </div>
     </div>
+  
   </main>
 </Layout>
 
-<style></style>
+
+
+
+  

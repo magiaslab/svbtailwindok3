@@ -1,21 +1,27 @@
 ---
 // import the Image component and the image
 import { Image } from 'astro:assets';
-import darkImage from "../assets/cta-dashboard-mockup-dark.svg"; 
-import lightImage from "../assets/cta-dashboard-mockup.svg"; 
-const title = "I'm a developer that enjoys building things"
-const body = "I have over 6 years professional experience. I have collaborated with a diverse range of clients, from start-ups to larger companies. My areas of expertise include building sites with visually appealing styles, constructing layouts and components based on designs, and utilizing the latest web development technologies. If you believe I can assist your business, please feel free to contact me. I am based in Upstate NY."
+import darkImage from "../assets/markus-spiske-BfphcCvhl6E-unsplash.jpg"; 
+import lightImage from "../assets/markus-spiske-BfphcCvhl6E-unsplash.jpg"; 
+const title = "Una passione unica per il Basket"
+const body = "Il Basket San Vincenzo è una realtà sportiva e sociale che opera da oltre 30 anni nella Costa degli Etruschi impegnando oltre 100 atleti in vari campionati ed attività collaterali. I nostri atleti hanno un'età compresa tra 5, 6 anni fino a giungere alla prima squadra dove si impegnano fino ai 30 e più, coinvolgendo il più possibile proprio i giovani da noi formati."
 ---
 <section class="mb-12 bg-stone-100 dark:bg-slate-800">
     <div class="gap-8 items-center py-8 px-4 mx-auto max-w-screen-xl xl:gap-16 md:grid md:grid-cols-2 sm:py-16 lg:px-6">
-        <Image src={darkImage} class="w-full hidden dark:block" alt="A description of my image." />
-        <Image src={lightImage} class="w-full dark:hidden border-solid border-2" alt="A description of my image." />
-        <!-- <img class="w-full dark:hidden border-solid border-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/cta/cta-dashboard-mockup.svg" alt="dashboard image">
+        <Image src={darkImage} class="w-full hidden dark:block rounded-lg" alt="A description of my image." />
+        <Image src={lightImage} class="w-full dark:hidden border-solid border-2 rounded-lg" alt="A description of my image." />
+        <!-- <img class="w-full dark:hidden border-solid border-2" src="https://picsum.photos/200/300?random=1" alt="dashboard image">
         <img class="w-full hidden dark:block" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/cta/cta-dashboard-mockup-dark.svg" alt="dashboard image"> -->
         <div class="mt-4 md:mt-0">
             <h2 class="mb-4 text-4xl tracking-tight font-extrabold text-gray-900 dark:text-white">{title}</h2>
-            <p class="mb-8 mt-2 text-lg text-gray-700 dark:text-gray-400">{body}</p>
+            <p class="mb-8 mt-2 text-lg text-gray-700 dark:text-gray-400">Il Basket San Vincenzo è una realtà sportiva e sociale che nasce a San Carlo nel 1949 in piazza Solvay e opera nella Costa degli Etruschi impegnando, oggi,  oltre 150 atleti in vari campionati ed attività collaterali.
+
+ 
+               <br><br> Accogliamo i nostri atleti fin dall’età di 3 anni per poterli formare adeguatamente , esaltare e nutrire inclinazioni individuali , spirito di squadra , voglia di giocare e competenze tecniche .</p>
 
         </div>
     </div>
 </section>
+
+
+

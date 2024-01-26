@@ -3,23 +3,31 @@ interface Props {
   text1: string;
   href1: string;
   text2: string;
+  text3: string;
   href2: string;
+  href3: string;
   external?: boolean;
 }
 
-const { text1, href1, text2, href2, external } = Astro.props;
+const { text1, href1, text2, href2, text3, href3, external } = Astro.props;
 ---
 
 <div class="inline-flex rounded-md shadow-sm" role="group">
   <a
     href={href1}
-    class="bg-primary inline-flex items-center px-4 py-2 text-sm font-medium text-white border border-gray-200 rounded-l-lg focus:z-10 focus:ring-2 focus:ring-secondary dark:bg-primary dark:border-gray-600 dark:text-white dark:focus:ring-secondary dark:focus:text-white"
+    class="bg-primary inline-flex items-center px-4 py-2 text-sm font-medium text-black border border-gray-200 rounded-l-lg focus:z-10 focus:ring-2 focus:ring-secondary dark:bg-primary dark:border-gray-600 dark:text-white dark:focus:ring-secondary dark:focus:text-white"
   >
     {text1}
   </a>
   <a
+  href={href3}
+  class="bg-primary inline-flex items-center px-4 py-2 text-sm font-medium text-black border border-gray-200  focus:z-10 focus:ring-2 focus:ring-secondary dark:bg-primary dark:border-gray-600 dark:text-white dark:focus:ring-secondary dark:focus:text-white"
+>
+  {text3}
+</a>
+  <a
     href={href2}
-    class="bg-primary cursor: pointer inline-flex items-center px-4 py-2 text-sm font-medium text-white border border-gray-200 rounded-r-lg focus:z-10 focus:ring-2 focus:ring-secondary dark:bg-primary dark:border-gray-600 dark:text-white dark:focus:ring-secondary dark:focus:text-white"
+    class="bg-primary cursor: pointer inline-flex items-center px-4 py-2 text-sm font-medium text-black border border-gray-200 rounded-r-lg focus:z-10 focus:ring-2 focus:ring-secondary dark:bg-primary dark:border-gray-600 dark:text-white dark:focus:ring-secondary dark:focus:text-white"
   >
     {text2}
     {
@@ -39,4 +47,5 @@ const { text1, href1, text2, href2, external } = Astro.props;
       )
     }
   </a>
+ 
 </div>

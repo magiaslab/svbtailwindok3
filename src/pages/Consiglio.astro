@@ -1,0 +1,53 @@
+---
+import data from "../data/consiglio.json";
+import Layout from "../layouts/Layout.astro";
+import HeaderSmall from "../components/HeaderSmall.astro";
+const title = "Composizione Societaria";
+const subtitle = "Organigramma Basket San Vincenzo A.S.D.";
+
+type Props = {
+  Nome?: string;
+  Cognome?: string;
+  Ruolo?: string;
+  Immagine?: string;
+  Email?: string;
+  Instagram?: string;
+};
+---
+
+<Layout title="Società">
+    <HeaderSmall title={title} subtitle={subtitle} />
+    <section class="grid lg:grid-cols-3 md:grid-cols-2">
+      
+      {
+        data.map((consiglio) => (
+        
+    <div class="mt-10 mb-5 block max-w-sm p-6 bg-gray-200 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700"
+    >
+    <div class="relative top-1 left-0">
+    <img class="w-10 h-10 rounded-full mb-5" src="/img/logo svb.png" alt="" />
+   
+  </div>
+    <h5 class="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{consiglio.Nome} {consiglio.Cognome}</h5>
+    <p class="font-normal text-gray-700 dark:text-gray-400">{consiglio.Ruolo}</p>
+    <div class="mt-3 grid grid-cols-2 gap-1 lg:grid-cols-8 lg:gap-1">
+      <div class="rounded-lg"><a href={consiglio.Email}><svg xmlns="http://www.w3.org/2000/svg" class="stroke-black dark:stroke-white w-6 h-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="white">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+  </svg></a>
+  </div>
+  <div class="rounded-lg"><a href={consiglio.Instagram}><svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" viewBox="0 0 48 48" class="w-6 h-6">
+  <radialGradient id="yOrnnhliCrdS2gy~4tD8ma_Xy10Jcu1L2Su_gr1" cx="19.38" cy="42.035" r="44.899" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fd5"></stop><stop offset=".328" stop-color="#ff543f"></stop><stop offset=".348" stop-color="#fc5245"></stop><stop offset=".504" stop-color="#e64771"></stop><stop offset=".643" stop-color="#d53e91"></stop><stop offset=".761" stop-color="#cc39a4"></stop><stop offset=".841" stop-color="#c837ab"></stop></radialGradient><path fill="url(#yOrnnhliCrdS2gy~4tD8ma_Xy10Jcu1L2Su_gr1)" d="M34.017,41.99l-20,0.019c-4.4,0.004-8.003-3.592-8.008-7.992l-0.019-20	c-0.004-4.4,3.592-8.003,7.992-8.008l20-0.019c4.4-0.004,8.003,3.592,8.008,7.992l0.019,20	C42.014,38.383,38.417,41.986,34.017,41.99z"></path><radialGradient id="yOrnnhliCrdS2gy~4tD8mb_Xy10Jcu1L2Su_gr2" cx="11.786" cy="5.54" r="29.813" gradientTransform="matrix(1 0 0 .6663 0 1.849)" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#4168c9"></stop><stop offset=".999" stop-color="#4168c9" stop-opacity="0"></stop></radialGradient><path fill="url(#yOrnnhliCrdS2gy~4tD8mb_Xy10Jcu1L2Su_gr2)" d="M34.017,41.99l-20,0.019c-4.4,0.004-8.003-3.592-8.008-7.992l-0.019-20	c-0.004-4.4,3.592-8.003,7.992-8.008l20-0.019c4.4-0.004,8.003,3.592,8.008,7.992l0.019,20	C42.014,38.383,38.417,41.986,34.017,41.99z"></path><path fill="#fff" d="M24,31c-3.859,0-7-3.14-7-7s3.141-7,7-7s7,3.14,7,7S27.859,31,24,31z M24,19c-2.757,0-5,2.243-5,5	s2.243,5,5,5s5-2.243,5-5S26.757,19,24,19z"></path><circle cx="31.5" cy="16.5" r="1.5" fill="#fff"></circle><path fill="#fff" d="M30,37H18c-3.859,0-7-3.14-7-7V18c0-3.86,3.141-7,7-7h12c3.859,0,7,3.14,7,7v12	C37,33.86,33.859,37,30,37z M18,13c-2.757,0-5,2.243-5,5v12c0,2.757,2.243,5,5,5h12c2.757,0,5-2.243,5-5V18c0-2.757-2.243-5-5-5H18z"></path>
+  </svg></a>
+  </div>
+    </div>
+    
+  </div>
+  
+  
+  )
+  )}
+  
+  </section>
+    </Layout>
+    
+    

@@ -1,0 +1,26 @@
+[
+
+ {
+    "Nome":"Pablo ",
+    "Cognome":"Crudeli",
+    "Ruolo":"Allenatore",
+    "Immagine":"",
+    "Email":"mailto:p.crudeli@basketsanvincenzo.it"
+ },
+ {
+    "Nome":"Marco ",
+    "Cognome":"Prescendi",
+    "Ruolo":"1° Assistente",
+    "Immagine":"",
+    "Email":""
+ },
+ {
+    "Nome":"Fabrizio ",
+    "Cognome":"Fedi",
+    "Ruolo":"Direttore Sportivo Accompagnatore",
+    "Immagine":"",
+    "Email":"mailto:m.camarda@basketsanvincenzo.it",
+    "Instagram":""
+ }
+ 
+]

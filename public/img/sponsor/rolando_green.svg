@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 1657 551" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-474.641,-634.426)">
+        <g>
+            <g transform="matrix(0.374147,0,0,0.374147,194.031,634.426)">
+                <path d="M1565.03,981.058C1565.03,1161.98 1418.84,1308.61 1238.64,1308.61C1058.44,1308.61 912.241,1161.98 912.241,981.058C912.241,800.138 1058.43,653.4 1238.64,653.4C1418.86,653.4 1565.03,800.153 1565.03,981.058" style="fill:rgb(0,174,157);fill-rule:nonzero;"/>
+            </g>
+            <g transform="matrix(0.374147,0,0,0.374147,194.031,634.426)">
+                <path d="M1520.76,490.655L1301.1,108.518L1740.51,108.518L1520.76,490.655ZM1238.64,1362.94C1028.52,1362.94 858.202,1191.97 858.202,981.042C858.202,910.54 877.288,844.468 910.45,787.586L1238.64,217.161L1566.8,787.586C1601.14,846.266 1619.21,913.055 1619.15,981.042C1619.16,1191.97 1448.72,1362.94 1238.64,1362.94M1583.17,599.078L1927.78,0L1238.64,0L817.657,732.039C773.243,807.495 749.875,893.502 749.998,981.058C749.998,1251.87 968.762,1471.52 1238.63,1471.52C1508.51,1471.52 1727.22,1251.88 1727.22,981.058C1727.22,890.15 1702.67,804.992 1659.64,732.039L1583.17,599.078Z" style="fill:rgb(0,174,157);fill-rule:nonzero;"/>
+            </g>
+        </g>
+        <g transform="matrix(4.16667,0,0,4.16667,-1307.95,-7899.23)">
+            <text x="548.886px" y="2097.75px" style="font-family:'Arial-Black', 'Arial Black', sans-serif;font-size:30.269px;fill:rgb(0,174,157);">A<tspan x="573.443px 600.704px 623.575px 650.837px 673.073px 695.309px 709.135px 734.726px 748.552px 775.518px " y="2097.75px 2097.75px 2097.75px 2097.75px 2097.75px 2097.75px 2097.75px 2097.75px 2097.75px 2097.75px ">UTOFFICINA</tspan></text>
+            <g transform="matrix(30.2689,0,0,30.2689,826.814,2139.89)">
+            </g>
+            <text x="524.947px" y="2139.89px" style="font-family:'Arial-Black', 'Arial Black', sans-serif;font-size:30.269px;fill:rgb(0,174,157);">G<tspan x="552.144px 565.906px 593.103px 623.654px 637.417px 648.971px 673.981px 701.178px 723.349px 748.876px 776.073px 801.6px " y="2139.89px 2139.89px 2139.89px 2139.89px 2139.89px 2139.89px 2139.89px 2139.89px 2139.89px 2139.89px 2139.89px 2139.89px ">IOMI ROLANDO</tspan></text>
+        </g>
+    </g>
+</svg>

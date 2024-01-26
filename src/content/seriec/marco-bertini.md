@@ -1,0 +1,17 @@
+---
+title: Marco Bertini
+pubDate: 2023-11-08T07:55:16.918Z
+type: seriec
+nomeatleta: Marco Bertini
+ruolo: Play Guardia
+numero: "12"
+puntitotali: "36"
+immagine:
+    url: "/img/seriec/bertini.jpg"
+    alt: " Marco Bertini"
+stats: https://www.playbasket.it/toscana
+avversari:
+    - Bottegone
+media: 12%
+slug: marco-bertini
+---

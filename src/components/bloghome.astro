@@ -1,0 +1,16 @@
+---
+import BlogPost from "../components/BlogPost.astro";
+const allPosts = await getCollection("posts");
+import { getCollection } from "astro:content";
+---
+
+
+
+<div class="grid gap-8 lg:grid-cols-3 mt-10 mb-20">
+  {
+    allPosts.map((post) => (
+     
+      <BlogPost url={`/posts/${post.slug}/`} title={post.data.title} image={post.data.image.url} description={post.data.description} author={post.data.author} tags={post.data.tags} date={post.data.pubDate}/>
+    ))
+  }
+  </div>  

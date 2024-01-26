@@ -1,0 +1,32 @@
+[
+    {
+        "campionato": "Serie C",
+        "nomesquadrahome": "Costone Siena",
+        "nomesquadrahomeover": "SVB",
+        "squadrahome": "img/costonesiena.png",
+        "squadraover": "img/logo svb.png",
+        "luogo": "Costone Siena",
+        "data": "11 Novembre ore 18:00",
+        "icona" : "Iconout"
+    },
+    {
+        "campionato": "Under 17",
+        "nomesquadrahome": "SVB",
+        "nomesquadrahomeover": "Argentario",
+        "squadrahome": "img/logo svb.png",
+        "squadraover": "img/argentario.jpg",
+        "luogo": "Pala Lauro Giovani",
+        "data": "11 Novembre ore 17:30",
+        "icona" : "Iconhome"
+    },
+    {
+        "campionato": "Under 13",
+        "nomesquadrahome": "SVB",
+        "nomesquadrahomeover": "Costa D'argento",
+        "squadrahome": "img/logo svb.png",
+        "squadraover": "img/fip_logo_reg_toscana.png",
+        "luogo": "Pala Lauro Giovani",
+        "data": "12 Novembre ore 11:00",
+        "icona" : "Iconhome"
+    }
+]

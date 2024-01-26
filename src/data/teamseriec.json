@@ -1,0 +1,64 @@
+[
+{
+    "Nome":"Francesco ",
+    "Cognome":"Baroni",
+    "Ruolo":"Allenatore",
+    "Immagine":"",
+    "Email":"mailto:f.baroni@basketsanvincenzo.it"
+    
+ },
+ {
+    "Nome":"Pablo ",
+    "Cognome":"Crudeli",
+    "Ruolo":"1° Assistente",
+    "Immagine":"",
+    "Email":"mailto:p.crudeli@basketsanvincenzo.it"
+ },
+ {
+    "Nome":"Matteo ",
+    "Cognome":"Camarda",
+    "Ruolo":"2° Assistente Preparatore Atletico",
+    "Immagine":"",
+    "Email":"mailto:m.camarda@basketsanvincenzo.it"
+ },
+ {
+    "Nome":"Fabrizio ",
+    "Cognome":"Fedi",
+    "Ruolo":"Direttore Sportivo",
+    "Immagine":"",
+    "Email":"mailto:m.camarda@basketsanvincenzo.it",
+    "Instagram":""
+ },
+ {
+    "Nome":"Alessandro ",
+    "Cognome":"Cipriani",
+    "Ruolo":"Team Manager",
+    "Immagine":"",
+    "Email":"mailto:a.cipriani@basketsanvincenzo.it",
+    "Instagram":""
+ },
+ {
+    "Nome":"Mauro ",
+    "Cognome":"Cirenei",
+    "Ruolo":"Addetto Arbitri",
+    "Immagine":"",
+    "Email":"",
+    "Instagram":""
+ },
+ {
+    "Nome":"Giacomo ",
+    "Cognome":"Giannelli",
+    "Ruolo":"Fisioterapista",
+    "Immagine":"",
+    "Email":"",
+    "Instagram":""
+ },
+ {
+    "Nome":"Gianluca ",
+    "Cognome":"Frolli",
+    "Ruolo":"Fisioterapista",
+    "Immagine":"",
+    "Email":"",
+    "Instagram":""
+ }
+]

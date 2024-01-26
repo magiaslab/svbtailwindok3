@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 2164 574" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1.33333,0,0,1.33333,-527.686,-2449.37)">
+        <g transform="matrix(0.489447,0,0,0.489447,32.3004,1629.4)">
+            <g transform="matrix(4.16667,0,0,4.16667,1118.86,593.8)">
+                <path d="M0,170.358L0,87.578C0,87.578 -1.049,68.586 -12.21,61.185C-26.294,51.843 -90.301,14.997 -90.301,14.997L-62.161,0L-5.58,32.992C-5.58,32.992 27,47.989 27,85.18L27,155.962L0,170.358Z" style="fill:rgb(43,77,161);"/>
+            </g>
+            <g transform="matrix(4.16667,0,0,4.16667,1360.52,593.8)">
+                <path d="M0,170.358L0,87.578C0,87.578 1.543,67.741 11.805,61.185C26.047,52.082 89.694,14.997 89.694,14.997L61.45,0L6.732,32.992C6.732,32.992 -24,47.989 -24,85.18L-24,155.962L0,170.358Z" style="fill:rgb(99,188,76);"/>
+            </g>
+            <g transform="matrix(4.16667,0,0,4.16667,1623.02,783.402)">
+                <path d="M0,-86.208L-74.202,-40.821C-74.202,-40.821 -90.032,-32.846 -102.383,-39.032C-117.494,-46.6 -179,-86.208 -179,-86.208L-179,-54.275L-125.148,-20.766C-125.148,-20.766 -96.676,0 -63.834,-17.45C-34.177,-33.219 0,-54.275 0,-54.275L0,-86.208Z" style="fill:rgb(57,108,179);"/>
+            </g>
+            <g transform="matrix(0,-4.16667,-4.16667,0,1010.13,847.544)">
+                <path d="M-19.797,-19.799C-30.728,-19.799 -39.594,-10.933 -39.594,-0.002C-39.594,10.93 -30.728,19.797 -19.797,19.797C-8.862,19.797 -0.002,10.93 -0.002,-0.002C-0.002,-10.933 -8.862,-19.799 -19.797,-19.799" style="fill:rgb(43,77,161);"/>
+            </g>
+            <g transform="matrix(0,-4.16667,-4.16667,0,1469.62,847.548)">
+                <path d="M-19.796,-19.798C-30.727,-19.798 -39.593,-10.934 -39.593,0C-39.593,10.929 -30.727,19.796 -19.796,19.796C-8.861,19.796 -0.001,10.929 -0.001,0C-0.001,-10.934 -8.861,-19.798 -19.796,-19.798" style="fill:rgb(99,188,76);"/>
+            </g>
+            <g transform="matrix(0,-4.16667,-4.16667,0,1250.09,444.358)">
+                <path d="M-19.798,-19.798C-30.729,-19.798 -39.593,-10.932 -39.593,-0.001C-39.593,10.931 -30.729,19.798 -19.798,19.798C-8.864,19.798 -0.003,10.931 -0.003,-0.001C-0.003,-10.932 -8.864,-19.798 -19.798,-19.798" style="fill:rgb(57,108,179);"/>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,0,821.623)">
+            <g transform="matrix(2.52217,0,0,2.52217,-657.794,-3098.67)">
+                <text x="619.095px" y="1690px" style="font-family:'BebasNeue-Regular', 'Bebas Neue', sans-serif;font-size:50px;fill:rgb(102,102,102);">S<tspan x="637.545px " y="1690px ">A</tspan>LSICAMB S.R<tspan x="845.695px 855.095px 872.795px " y="1690px 1690px 1690px ">.L.</tspan></text>
+                <g transform="matrix(50,0,0,50,1062.2,1740)">
+                </g>
+                <text x="619.095px" y="1740px" style="font-family:'BebasNeue-Regular', 'Bebas Neue', sans-serif;font-size:50px;fill:rgb(102,102,102);">S<tspan x="637.545px " y="1740px ">A</tspan>LUTE SICURE<tspan x="845.095px 863.445px " y="1740px 1740px ">ZZ</tspan>A AMBIENTE</text>
+            </g>
+            <g transform="matrix(1.59589,0,0,1.59589,-82.7583,-1310.9)">
+                <g transform="matrix(50,0,0,50,918.695,1690)">
+                </g>
+                <text x="619.095px" y="1690px" style="font-family:'BebasNeue-Regular', 'Bebas Neue', sans-serif;font-size:50px;fill:rgb(102,102,102);">W<tspan x="647.195px 675.295px 701.895px 711.295px 729.745px " y="1690px 1690px 1690px 1690px 1690px ">WW.SA</tspan>LSICAMB.IT</text>
+            </g>
+        </g>
+    </g>
+</svg>

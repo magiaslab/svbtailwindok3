@@ -1,0 +1,33 @@
+[
+
+ {
+    "Nome":"Marco ",
+    "Cognome":"Prescendi",
+    "Ruolo":"Allenatore",
+    "Immagine":"",
+    "Email":""
+ },
+ {
+   "Nome":"Rolando ",
+   "Cognome":"Giomi",
+   "Ruolo":"Dirigente Accompagnatore",
+   "Immagine":"",
+   "Email":""
+},
+{
+   "Nome":"Leonardo ",
+   "Cognome":"Muti",
+   "Ruolo":"Dirigente Accompagnatore",
+   "Immagine":"",
+   "Email":""
+},
+ {
+    "Nome":"Fabrizio ",
+    "Cognome":"Fedi",
+    "Ruolo":"Direttore Sportivo",
+    "Immagine":"",
+    "Email":"mailto:m.camarda@basketsanvincenzo.it",
+    "Instagram":""
+ }
+ 
+]

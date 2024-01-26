@@ -1,0 +1,78 @@
+[
+   {
+      "Nome":"Giovanni ",
+      "Cognome":"Catino",
+      "Ruolo":"Presidente",
+      "Immagine":"",
+      "Email":"mailto:g.catino@basketsanvincenzo.it",
+      "Instagram":"https://www.instagram.com/g.catino/"
+   },
+   {
+      "Nome":"Rolando ",
+      "Cognome":"Giomi",
+      "Ruolo":"Vice Presidente",
+      "Immagine":"",
+      "Email":"mailto:r.giomi@basketsanvincenzo.it"
+   },
+   {
+      "Nome":"Ostilio ",
+      "Cognome":"Innocenti",
+      "Ruolo":"Vice Presidente Onorario"
+   },
+   {
+      "Nome":"Leonardo ",
+      "Cognome":"Muti",
+      "Ruolo":"Segretario",
+      "Immagine":"",
+      "Email":"mailto:l.muti@basketsanvincenzo.it"
+   },
+   {
+      "Nome":"Fabrizio ",
+      "Cognome":"Fedi",
+      "Ruolo":"Direttore Sportivo",
+      "Immagine":"",
+      "Email":"mailto:f.fedi@basketsanvincenzo.it",
+      "Instagram":"https://www.instagram.com/fabryfedy67/"
+   },
+   {
+      "Nome":"Alessandro ",
+      "Cognome":"Cipriani",
+      "Ruolo":"Team Manager",
+      "Immagine":"https://drive.google.com/file/d/0B8udmjnkWVDgM05HU3JSSlVRSDA/view?usp=sharing&resourcekey=0-39UKXWWajP_y7DSpaKnHUw",
+      "Email":"mailto:a.cipriani@basketsanvincenzo.it",
+      "Instagram":"https://www.instagram.com/acipriani/"
+   },
+   {
+      "Nome":"Andrea ",
+      "Cognome":"Caporali",
+      "Ruolo":"Consigliere",
+      "Immagine":"",
+      "Email":"",
+      "Instagram":"https://www.instagram.com/andrea_caporali/"
+   },
+   {
+      "Nome":"Stefano ",
+      "Cognome":"Alberti",
+      "Ruolo":"Consigliere"
+   },
+   {
+      "Nome":"Andrea ",
+      "Cognome":"Donsignore",
+      "Ruolo":"Consigliere"
+   },
+   {
+      "Nome":"Stefano ",
+      "Cognome":"Giannini",
+      "Ruolo":"Consigliere"
+   },
+   {
+      "Nome":"Claudio ",
+      "Cognome":"Bezzini",
+      "Ruolo":"Consigliere"
+   },
+   {
+      "Nome":"Francesco  ",
+      "Cognome":"Raiano",
+      "Ruolo":"Consigliere"
+   }
+]

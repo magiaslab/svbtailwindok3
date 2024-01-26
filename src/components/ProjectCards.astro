@@ -6,22 +6,24 @@ interface Props {
   body: string;
   href: string;
   type?: string;
-  repo?: string;
+  repo: string;
+  statspb: string;
+  image?: string;
   external?: boolean;
 }
 
-const { href, projectTitle, body, type, repo } = Astro.props;
+const { href, projectTitle, body, type, repo, image, statspb } = Astro.props;
 ---
 
 <div
   class="bg-gray-50 dark:bg-gray-900 border border-gray-200 shadow-lg dark:border-gray-700 rounded-lg"
 >
-<img class="w-full dark:hidden border-solid border-2" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/cta/cta-dashboard-mockup.svg" alt="dashboard image">
-<img class="w-full hidden dark:block" src="https://flowbite.s3.amazonaws.com/blocks/marketing-ui/cta/cta-dashboard-mockup-dark.svg" alt="dashboard image">
+<img class="w-full dark:hidden border-solid border-2" src={image} alt="dashboard image">
+<img class="w-full hidden dark:block" src={image} alt="dashboard image">
   <div class="px-8 py-8">
   {
     type && (
-      <span class="bg-primary text-white text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-blue-100 mb-2">
+      <span class="bg-red-700 text-white text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded-md dark:bg-gray-700 dark:text-blue-100 mb-2">
         {type}
       </span>
     )
@@ -32,5 +34,5 @@ const { href, projectTitle, body, type, repo } = Astro.props;
   <p class="text-lg font-normal text-gray-700 dark:text-gray-400 mb-4">
     {body}
   </p>
-  <ButtonGroup text1="More Info" href1={href} text2="Code Repo" href2={repo}  />
+  <ButtonGroup text1="Vedi la squadra" href1={href} text2="Stats" href2={repo} text3="Stats PlayBasket" href3={statspb}  />
 </div>

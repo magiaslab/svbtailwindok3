@@ -1,20 +1,32 @@
 ---
 import Layout from "../layouts/Layout.astro";
-
-import Header from "../components/Header.astro";
+import Blog from "../components/bloghome.astro"
+import Hero from "../components/Herohome.astro";
 import CTA from "../components/CTA.astro";
-import FeatureList from "../components/FeatureList.astro";
-
-import Timeline from "../components/Timeline.astro";
-
+import Classifica from "../components/classifica.astro"
+import Logos from "../components/CustomerLogos.astro";
 import data from "../data/site.json";
+import Nextmatch from "../components/nextmatch.astro";
+import Charts from "../components/Charts.astro";
+import Collab from "../components/Collaborazioni.astro"
+
+
 ---
 
 <Layout title={data.siteName}>
-  <main>
-    <Header />
+<Hero/>
+    <Logos />
+    <Nextmatch/>
     <CTA />
-    <FeatureList />
-    <Timeline />
-  </main>
+    <Blog/>
+<Classifica />
+<Charts />
+<Collab/>
+    
+  
 </Layout>
+<style>
+#navhome{
+    background: transparent;
+}
+    </style>
