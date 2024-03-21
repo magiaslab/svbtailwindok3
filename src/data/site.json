@@ -57,7 +57,7 @@
   "teams": [
     {
       "projectTitle": "Serie C Unica",
-      "href": "seriec",
+      "href": "/seriec",
       "about": "Roster Serie C Unica Girone B Regione Toscana!",
       "type": "Serie C Unica - girone B",
       "repo": "/stats",
@@ -66,7 +66,7 @@
     },
     {
       "projectTitle": "Under 17",
-      "href": "under17",
+      "href": "/under17",
       "about": "Roster Under 17 campionato Gold Girone A Regione Toscana",
       "repo": "/stats",
       "type": "Under 17 Gold Toscana",
@@ -76,7 +76,7 @@
     },
     {
       "projectTitle": "Under 13",
-      "href": "under13",
+      "href": "/under13",
       "about": "Roster Under 13 Regione Toscana girone",
       "type": "Under 13 Gold Toscana",
       "repo": "/stats",
@@ -85,7 +85,7 @@
     },
     {
       "projectTitle": "Mini Basket",
-      "href": "minibasket",
+      "href": "/minibasket",
       "about": "Le nostre piccole promesse",
       "type": "Mini e micro basket",
       "repo": "https://github.com",
@@ -94,7 +94,7 @@
     },
     {
       "projectTitle": "1° Divisione",
-      "href": "onedivisione",
+      "href": "/onedivisione",
       "about": "1° Divisione",
       "type": "1° Divisione",
       "repo": "https://github.com",
