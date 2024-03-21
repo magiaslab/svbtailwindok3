@@ -1,12 +1,14 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Classifica from "../components/classifica.astro"
+import Classifica2 from "../components/classifica2.astro"
 import Charts from "../components/Charts.astro";
 import data from "../data/site.json";
 ---
 
 <Layout title={data.siteName}>
    
+    <Classifica2 />
     <Classifica />
      <Charts/>
     </Layout>

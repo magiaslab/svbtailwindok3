@@ -5,13 +5,13 @@ type: seriec
 nomeatleta: Marco Bertini
 ruolo: Play Guardia
 numero: "12"
-puntitotali: "36"
+puntitotali: "100"
 immagine:
     url: "/img/seriec/bertini.jpg"
     alt: " Marco Bertini"
 stats: https://www.playbasket.it/toscana
 avversari:
     - Bottegone
-media: 12%
+media: 4,5
 slug: marco-bertini
 ---
