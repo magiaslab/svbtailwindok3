@@ -1,6 +1,6 @@
 ---
 title: "Giovanni Mezzzacapo"
-pubDate: 2024-04-2604
+pubDate: 2024-04-04
 nomeatleta: "Giovanni Mezzacapo"
 ruolo: "Ala Piccola"
 numero: "21"
