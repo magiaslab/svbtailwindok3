@@ -2,7 +2,7 @@
 title: "Dario Battaglini"
 pubDate: 2024-04-04
 nomeatleta: "Dario Battaglini"
-ruolo: "Ala Forte"
+ruolo: "Ala Piccola"
 numero: "23"
 immagine:
     url: "/img/seriec/battaglini.jpg"
