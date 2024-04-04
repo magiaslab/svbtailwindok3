@@ -7,7 +7,7 @@ ruolo: Play Guardia
 numero: "12"
 puntitotali: "100"
 immagine:
-    url: "/img/seriec/bertini.jpg"
+    url: "/img/seriec/bertini2.jpg"
     alt: " Marco Bertini"
 stats: https://www.playbasket.it/toscana
 avversari:
