@@ -11,14 +11,18 @@
   },
   "dependencies": {
     "@astrojs/rss": "^4.0.5",
+    "@astrojs/sitemap": "^3.1.4",
     "@astrojs/tailwind": "^5.1.0",
     "apexcharts": "^3.45.2",
     "astro": "^4.5.8",
     "astro-breadcrumbs": "^1.8.1",
+    "astro-robots-txt": "^1.0.0",
+    "astro-seo": "^0.8.3",
     "flowbite": "^1.8.1",
     "tailwindcss": "^3.3.3"
   },
   "devDependencies": {
+    "@tailwindcss/typography": "^0.5.13",
     "prettier": "^3.0.3",
     "prettier-plugin-astro": "^0.12.0"
   }
