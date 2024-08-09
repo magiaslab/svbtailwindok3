@@ -10,15 +10,11 @@
     "astro": "astro"
   },
   "dependencies": {
-<<<<<<< HEAD
-    "@astrojs/rss": "^4.0.6",
-=======
-    "@astrojs/rss": "^4.0.5",
-    "@astrojs/sitemap": "^3.1.4",
->>>>>>> 66dc62623e7f89ea9e36b4c33e8fca221adc66e6
+    "@astrojs/rss": "^4.0.7",
+    "@astrojs/sitemap": "^3.1.6",
     "@astrojs/tailwind": "^5.1.0",
     "apexcharts": "^3.45.2",
-    "astro": "^4.9.0",
+    "astro": "^4.13.2",
     "astro-breadcrumbs": "^1.8.1",
     "astro-robots-txt": "^1.0.0",
     "astro-seo": "^0.8.3",
