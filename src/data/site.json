@@ -56,20 +56,20 @@
   ],
   "teams": [
     {
-      "projectTitle": "Serie C Unica",
+      "projectTitle": "Serie C Interegionale",
       "href": "/seriec",
-      "about": "Roster Serie C Unica 2024 Regione Toscana",
-      "type": "Serie C Unica - Poule Promozione - PlayOff 2024",
+      "about": "Roster Serie C Interregionale Girone B Conference Nord Ovest",
+      "type": "Roster 2024/2025",
       "repo": "/stats",
       "image": "/img/seric3.jpg",
       "stastpb": "https://www.playbasket.it/toscana/club.php?lt=2&lr=TO&lp=FI&lc=C%2FM&lf=M&lg=1&season=2024&obj=3638&action=view&eid=4"
     },
     {
-      "projectTitle": "Under 17",
+      "projectTitle": "Under 19",
       "href": "/under17",
-      "about": "Roster Under 17 campionato Gold Girone A Regione Toscana",
+      "about": "Roster Under 19 campionato Gold Girone A Regione Toscana",
       "repo": "/stats",
-      "type": "Under 17 Gold Toscana",
+      "type": "Under 19 Gold Toscana",
       "image": "/img/under17svb2024.jpeg",
       "stastpb": "https://www.playbasket.it/toscana/club.php?lt=2&lr=TO&lp=FI&lc=C%2FM&lf=M&lg=1&season=2024&obj=3638&action=view&eid=4",
       "featured": true
