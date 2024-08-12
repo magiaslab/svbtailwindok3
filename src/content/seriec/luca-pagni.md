@@ -1,7 +1,7 @@
 ---
-title: Camillo Bianchi
+title: Luca Pagni
 pubDate: 2023-10-26
-nomeatleta: Camillo Bianchi
+nomeatleta: Luca Pagni
 ruolo: Ala Piccola
 numero: "24"
 immagine:
