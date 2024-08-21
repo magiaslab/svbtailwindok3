@@ -5,8 +5,8 @@ nomeatleta: Luca Pagni
 ruolo: Ala Piccola
 numero: "24"
 immagine:
-  url: /img/seriec/camillobianchi.jpg
-  alt: Foto di Camillo Bianchi
+  url: /img/seriec/lucapagni.jpg
+  alt: Foto di Luca Pagni
 stats: https://www.playbasket.it/toscana/profile.php?exteid=4&extobj=3638&subj=1&season=2024&obj=18060&action=view&eid=5
 puntitotali: "404"
 avversari:

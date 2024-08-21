@@ -5,7 +5,7 @@ nomeatleta: Lorenzo Guerrieri
 ruolo: Ala Grande
 numero: "18"
 immagine:
-  url: /img/seriec/camillobianchi.jpg
+  url: /img/seriec/lorenzoguerrieri.jpg
   alt: Foto di Camillo Bianchi
 stats: https://www.playbasket.it/toscana/profile.php?exteid=4&extobj=3638&subj=1&season=2024&obj=18060&action=view&eid=5
 puntitotali: "404"

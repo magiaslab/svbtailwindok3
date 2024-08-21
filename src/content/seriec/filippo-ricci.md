@@ -3,10 +3,10 @@ title: Filippo Ricci
 pubDate: 2023-10-26
 nomeatleta: Filippo Ricci
 ruolo: Ala Piccola
-numero: "24"
+numero: "6"
 immagine:
-  url: /img/seriec/camillobianchi.jpg
-  alt: Foto di Camillo Bianchi
+  url: /img/seriec/filipporicci.jpg
+  alt: Foto di Filippo Ricci
 stats: https://www.playbasket.it/toscana/profile.php?exteid=4&extobj=3638&subj=1&season=2024&obj=18060&action=view&eid=5
 puntitotali: "404"
 avversari:
