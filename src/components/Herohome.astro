@@ -1,10 +1,11 @@
 ---
-
+import Image from "astro/components/Image.astro"
+import img1 from "../img/Sfondo1.1.png"
 ---
 
 
 <!--<section class="h-screen  items-center justify-center text-white py-0 px-3 bg-center bg-no-repeat bg-cover bg-[url('/img/home.jpg')] bg-gray-300 bg-blend-multiply mb-20">-->
-<section class="max-h-screen max-w-screen flex flex-col bg-[url('/img/home2.jpg')] bg-cover items-center justify-center text-white py-0 px-3 mb-20 shadow-2xl rounded-lg">
+<section class="max-h-screen max-w-screen flex flex-col bg-[url('/img/sfondo1.png')] bg-cover items-center justify-center text-white py-0 px-3 mb-20 shadow-2xl rounded-lg">
    
     <!--<div class="video-docker absolute top-0 left-0 w-full h-full overflow-hidden">-->
       <!--<video class=" lg:mt-0 lg:col-span-5 lg:flex min-w-full min-h-full absolute object-cover" src="https://assets.mixkit.co/videos/preview/mixkit-basketball-player-on-a-dark-court-in-3d-33987-large.mp4"  autoplay muted loop></video>-->
@@ -15,11 +16,11 @@
 
 <div class="space-y-3">
    
-    <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
+    <div class="grid place-items-center max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
         
         <div class="mr-auto place-self-center lg:col-span-7">
             <h1 class="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-5xl dark:text-white">Garden Toscana Resort <br>Basket San Vincenzo</h1>
-            <p class="max-w-2xl mb-6 font-bold text-gray-300 lg:mb-8 md:text-lg lg:text-xl dark:text-gray-300">Da oltre 30 anni pura passione per il basket nella Costa degli Etruschi</p>
+            <p class="max-w-2xl mb-6 font-bold text-gray-300 lg:mb-8 md:text-lg lg:text-xl mr-4 dark:text-gray-300">Da oltre 30 anni pura passione per il basket nella Costa degli Etruschi</p>
             <div class="grid grid-cols-5 gap-6 items-center">
             <img class="w-24 mb-6 ml-3" src="/img/FIP_logo_REG_TOSCANA_neg.png" alt="">
             <img class="w-24 mb-6 ml-3" src="/img/logo-bianco.png" alt="">
@@ -31,7 +32,7 @@
             </a>
             
         </div>
-        <div class="hidden lg:mt-0 lg:col-span-5 lg:flex w-72 h-72">
+        <div class=" lg:mt-0 lg:col-span-5 lg:flex w-72 h-72">
             <img src="/img/logo svb.png" alt="logo svb">
         </div>                
     </div>
