@@ -12,7 +12,7 @@ image:
 ---
 
 
-SVB Garden Toscana Resort in rispondenza alle nuove norme che prevedono di realizzare un modello organizzativo con relativo codice di condotta e la nomina di un responsabile, comunica che il responsabile sarà il Direttore Sportivo Fabrizio Fedi e che il consiglio ha deliberato il modello organizzativo ed il codice di condotta scaricabile dai link in basso.
+SVB Garden Toscana Resort in corrispondenza alle nuove norme che prevedono di realizzare un modello organizzativo con relativo codice di condotta e la nomina di un responsabile, comunica che il responsabile sarà il Direttore Sportivo Fabrizio Fedi e che il consiglio ha deliberato il modello organizzativo ed il codice di condotta scaricabile dai link in basso.
 
 [Modello Organizzativo 2024 SVB](https://drive.google.com/file/d/1mlGfJafqNLHI4MWuG5vseEXfy29oaynf/view?usp=drive_link)
 

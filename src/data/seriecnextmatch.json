@@ -1,16 +1,16 @@
 [
     {
-        "campionato": "Serie C",
-        "nomesquadrahome": "Costone Siena",
-        "nomesquadrahomeover": "SVB",
-        "squadrahome": "/img/costonesiena.png",
-        "squadraover": "/img/logo svb.png",
-        "luogo": "Costone Siena",
-        "data": "11 Novembre ore 18:00",
+        "campionato": "Trofeo Piperno",
+        "nomesquadrahome": "SVB",
+        "nomesquadrahomeover": "Folgore Fucecchio",
+        "squadrahome": "/img/logo svb.png",
+        "squadraover": "/img/fucecchio.png",
+        "luogo": "Pala Lauro Giovani",
+        "data": "22 Settembre ore 21:00",
         "icona" : "Iconout"
     },
     {
-        "campionato": "Under 17",
+        "campionato": "Under 19",
         "nomesquadrahome": "SVB",
         "nomesquadrahomeover": "Argentario",
         "squadrahome": "/img/logo svb.png",
