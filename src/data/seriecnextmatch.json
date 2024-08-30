@@ -12,21 +12,21 @@
     {
         "campionato": "Under 19",
         "nomesquadrahome": "SVB",
-        "nomesquadrahomeover": "Argentario",
+        "nomesquadrahomeover": "Next opponents",
         "squadrahome": "/img/logo svb.png",
-        "squadraover": "/img/argentario.jpg",
-        "luogo": "Pala Lauro Giovani",
-        "data": "11 Novembre ore 17:30",
+        "squadraover": "/img/fip_logo_reg_toscana.png",
+        "luogo": "In attesa",
+        "data": "Pubblicazione calendari",
         "icona" : "Iconhome"
     },
     {
-        "campionato": "Under 13",
+        "campionato": "Under 14",
         "nomesquadrahome": "SVB",
-        "nomesquadrahomeover": "Costa D'argento",
+        "nomesquadrahomeover": "Next opponents",
         "squadrahome": "/img/logo svb.png",
         "squadraover": "/img/fip_logo_reg_toscana.png",
-        "luogo": "Pala Lauro Giovani",
-        "data": "12 Novembre ore 11:00",
+        "luogo": "In attesa",
+        "data": "Pubblicazione calendari",
         "icona" : "Iconhome"
     }
 ]
