@@ -3,7 +3,7 @@ title: Nuovo modello organizzativo
 pubDate: 2024-08-30T15:03:13.224Z
 type: posts
 description: SVB nuovo modello organizzativo
-author: Alessandro Cipriani
+author: Ufficio Stampa
 tags:
     - Società
 image:

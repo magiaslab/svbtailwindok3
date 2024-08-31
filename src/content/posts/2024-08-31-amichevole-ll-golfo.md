@@ -3,7 +3,7 @@ title: Amichevole Libertas Livorno - Golfo Piombino
 pubDate: 2024-08-31T15:03:13.224Z
 type: posts
 description: Amichevole al Pala Giovani
-author: Alessandro Cipriani
+author: Ufficio Stampa
 tags:
     - Eventi
 image:
