@@ -1,12 +1,12 @@
 [
     {
-        "campionato": "Trofeo Piperno",
-        "nomesquadrahome": "SVB",
-        "nomesquadrahomeover": "Folgore Fucecchio",
-        "squadrahome": "/img/logo svb.png",
-        "squadraover": "/img/fucecchio.png",
-        "luogo": "Pala Lauro Giovani",
-        "data": "22 Settembre ore 21:00",
+        "campionato": "Serie C Unica",
+        "nomesquadrahome": "Union Prato",
+        "nomesquadrahomeover": "Garden Toscana",
+        "squadrahome": "/img/unionprato.jpg",
+        "squadraover": "/img/logo svb.png",
+        "luogo": "Pala Toscanini",
+        "data": "13 Ottobre 2024 ore 18:00",
         "icona" : "Iconout"
     },
     {
