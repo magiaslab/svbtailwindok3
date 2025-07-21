@@ -1,5 +1,7 @@
 ---
 import CountdownTimer from "./CountdownTimer.astro";
+import LucideIcon from "./LucideIcon.astro";
+import TeamLogo from "./TeamLogo.astro";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
 
@@ -37,18 +39,6 @@ function getCompetitionData(competitionId: string) {
 
 const upcomingMatches = getUpcomingMatches();
 const svbTeamId = "svb";
-
-// Debug temporaneo
-console.log('🔍 Debug SmartNextMatch:');
-console.log('Data corrente:', new Date().toISOString());
-console.log('Partite trovate:', upcomingMatches.length);
-console.log('Prime 3 partite:', upcomingMatches.slice(0, 3).map(m => ({
-  id: m.id,
-  date: m.date,
-  home: m.homeTeam,
-  away: m.awayTeam,
-  isFuture: new Date(m.date) > new Date()
-})));
 ---
 
 <div class="flex flex-col w-full mb-10 border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700 p-2 mt-32">
@@ -69,10 +59,11 @@ console.log('Prime 3 partite:', upcomingMatches.slice(0, 3).map(m => ({
               <div class="grid grid-cols-3 grid-rows-1 gap-4">
                 {/* Squadra Home */}
                 <div class="flex flex-col justify-center items-center">
-                  <img 
-                    class="w-20 h-20 rounded-full mb-2 object-cover" 
-                    src={homeTeam.logo} 
-                    alt={`Logo ${homeTeam.name}`}
+                  <TeamLogo 
+                    teamId={match.homeTeam}
+                    teamName={homeTeam.name}
+                    logoPath={homeTeam.logo}
+                    class="mb-2"
                   />
                   <p class="text-xs text-black dark:text-white font-medium">{homeTeam.shortName}</p>
                 </div>
@@ -80,25 +71,22 @@ console.log('Prime 3 partite:', upcomingMatches.slice(0, 3).map(m => ({
                 {/* Centro con informazioni partita */}
                 <div class="flex justify-center items-center flex-col">
                   {/* Competizione */}
-                  <div class="text-center flex items-center justify-center h-12 rounded border-gray-200 bg-gray-100 dark:bg-gray-700 dark:border-gray-600 text-sm font-bold mb-2">
-                    <span class="dark:text-white text-black">{competition.shortName}</span>
+                  <div class={`text-center flex items-center justify-center gap-2 px-3 py-2 rounded-full ${competition.badgeColor} ${competition.textColor} text-sm font-bold mb-2 shadow-lg`}>
+                    <LucideIcon name={competition.icon} size={16} />
+                    <span>{competition.shortName}</span>
                   </div>
                   
                   {/* Icona Home/Away */}
                   <div class="mb-2">
                     {isHome ? (
-                      <div class="text-green-600 dark:text-green-400">
-                        <svg class="w-8 h-8 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
-                        </svg>
-                        <span class="text-xs">Casa</span>
+                      <div class="text-green-600 dark:text-green-400 flex flex-col items-center">
+                        <LucideIcon name="home" size={24} class="mb-1" />
+                        <span class="text-xs font-medium">Casa</span>
                       </div>
                     ) : (
-                      <div class="text-blue-600 dark:text-blue-400">
-                        <svg class="w-8 h-8 mx-auto" fill="currentColor" viewBox="0 0 20 20">
-                          <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
-                        </svg>
-                        <span class="text-xs">Trasferta</span>
+                      <div class="text-blue-600 dark:text-blue-400 flex flex-col items-center">
+                        <LucideIcon name="mapPin" size={24} class="mb-1" />
+                        <span class="text-xs font-medium">Trasferta</span>
                       </div>
                     )}
                   </div>
@@ -107,18 +95,23 @@ console.log('Prime 3 partite:', upcomingMatches.slice(0, 3).map(m => ({
                   <CountdownTimer targetDate={match.date} matchId={match.id} />
                   
                   {/* Luogo e data */}
-                  <p class="text-gray-500 dark:text-gray-300 text-xs mt-2">{match.venue}</p>
-                  <p class="text-gray-500 dark:text-gray-300 text-xs">
-                    {format(matchDate, "dd MMMM yyyy 'ore' HH:mm", { locale: it })}
-                  </p>
+                  <div class="flex items-center gap-1 text-gray-500 dark:text-gray-300 text-xs mt-2">
+                    <LucideIcon name="building" size={12} />
+                    <span>{match.venue}</span>
+                  </div>
+                  <div class="flex items-center gap-1 text-gray-500 dark:text-gray-300 text-xs">
+                    <LucideIcon name="calendar" size={12} />
+                    <span>{format(matchDate, "dd MMMM yyyy 'ore' HH:mm", { locale: it })}</span>
+                  </div>
                 </div>
                 
                 {/* Squadra Away */}
                 <div class="flex flex-col justify-center items-center">
-                  <img 
-                    class="w-20 h-20 rounded-full mb-2 object-cover" 
-                    src={awayTeam.logo} 
-                    alt={`Logo ${awayTeam.name}`}
+                  <TeamLogo 
+                    teamId={match.awayTeam}
+                    teamName={awayTeam.name}
+                    logoPath={awayTeam.logo}
+                    class="mb-2"
                   />
                   <p class="text-xs text-black dark:text-white font-medium">{awayTeam.shortName}</p>
                 </div>
@@ -143,14 +136,10 @@ console.log('Prime 3 partite:', upcomingMatches.slice(0, 3).map(m => ({
   
   <div class="w-full">
     <a href="/Calendari">
-      <button type="button" class="mt-5 text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
-        Vedi tutti i calendari
-        <svg class="ms-4 rtl:rotate-180 w-6 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-          <path fill="currentColor" d="M6 1a1 1 0 0 0-2 0h2ZM4 4a1 1 0 0 0 2 0H4Zm7-3a1 1 0 1 0-2 0h2ZM9 4a1 1 0 1 0 2 0H9Zm7-3a1 1 0 1 0-2 0h2Zm-2 3a1 1 0 1 0 2 0h-2ZM1 6a1 1 0 0 0 0 2V6Zm18 2a1 1 0 1 0 0-2v2ZM5 11v-1H4v1h1Zm0 .01H4v1h1v-1Zm.01 0v1h1v-1h-1Zm0-.01h1v-1h-1v1ZM10 11v-1H9v1h1Zm0 .01H9v1h1v-1Zm.01 0v1h1v-1h-1Zm0-.01h1v-1h-1v1ZM10 15v-1H9v1h1Zm0 .01H9v1h1v-1Zm.01 0v1h1v-1h-1Zm0-.01h1v-1h-1v1ZM15 15v-1h-1v1h1Zm0 .01h-1v1h1v-1Zm.01 0v1h1v-1h-1Zm0-.01h1v-1h-1v1ZM15 11v-1h-1v1h1Zm0 .01h-1v1h1v-1Zm.01 0v1h1v-1h-1Zm0-.01h1v-1h-1v1ZM5 15v-1H4v1h1Zm0 .01H4v1h1v-1Zm.01 0v1h1v-1h-1Zm0-.01h1v-1h-1v1ZM2 4h16V2H2v2Zm16 0h2a2 2 0 0 0-2-2v2Zm0 0v14h2V4h-2Zm0 14v2a2 2 0 0 0 2-2h-2Zm0 0H2v2h16v-2ZM2 18H0a2 2 0 0 0 2 2v-2Zm0 0V4H0v14h2ZM2 4V2a2 2 0 0 0-2 2h2Zm2-3v3h2V1H4Zm5 0v3h2V1H9Zm5 0v3h2V1h-2ZM1 8h18V6H1v2Zm3 3v.01h2V11H4Zm1 1.01h.01v-2H5v2Zm1.01-1V11h-2v.01h2Zm-1-1.01H5v2h.01v-2ZM9 11v.01h2V11H9Zm1 1.01h.01v-2H10v2Zm1.01-1V11h-2v.01h2Zm-1-1.01H10v2h.01v-2ZM9 15v.01h2V15H9Zm1 1.01h.01v-2H10v2Zm1.01-1V15h-2v.01h2Zm-1-1.01H10v2h.01v-2ZM14 15v.01h2V15h-2Zm1 1.01h.01v-2H15v2Zm1.01-1V15h-2v.01h2Zm-1-1.01H15v2h.01v-2ZM14 11v.01h2V11h-2Zm1 1.01h.01v-2H15v2Zm1.01-1V11h-2v.01h2Zm-1-1.01H15v2h.01v-2ZM4 15v.01h2V15H4Zm1 1.01h.01v-2H5v2Zm1.01-1V15h-2v.01h2Zm-1-1.01H5v2h.01v-2Z"/>
-        </svg>
-        <svg class="rtl:rotate-180 w-3.5 h-3.5 ms-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
-          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
-        </svg>
+      <button type="button" class="mt-5 text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center gap-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+        <LucideIcon name="calendar" size={20} />
+        <span>Vedi tutti i calendari</span>
+        <LucideIcon name="arrowRight" size={16} />
       </button>
     </a>
   </div>

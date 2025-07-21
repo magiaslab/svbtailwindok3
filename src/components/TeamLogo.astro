@@ -1,0 +1,52 @@
+---
+interface Props {
+  teamId: string;
+  teamName: string;
+  logoPath: string;
+  size?: number;
+  class?: string;
+}
+
+const { teamId, teamName, logoPath, size = 80, class: className = "" } = Astro.props;
+
+// Colori di fallback per le squadre
+const fallbackColors: Record<string, { primary: string; secondary: string }> = {
+  "svb": { primary: "#1e40af", secondary: "#fbbf24" },
+  "us-livorno": { primary: "#dc2626", secondary: "#ffffff" },
+  "don-bosco-livorno": { primary: "#059669", secondary: "#ffffff" },
+  "montevarchi": { primary: "#7c3aed", secondary: "#ffffff" },
+  "dukes-sansepolcro": { primary: "#1f2937", secondary: "#f59e0b" },
+  "valdisieve": { primary: "#0891b2", secondary: "#ffffff" },
+  "agliana": { primary: "#059669", secondary: "#ffffff" },
+  "prato-2000": { primary: "#dc2626", secondary: "#ffffff" },
+  "union-prato": { primary: "#1e40af", secondary: "#ffffff" },
+  "bottegone": { primary: "#7c2d12", secondary: "#ffffff" },
+  "pino-firenze": { primary: "#059669", secondary: "#ffffff" },
+  "sancat-firenze": { primary: "#1e40af", secondary: "#ffffff" },
+  "cus-firenze": { primary: "#dc2626", secondary: "#ffffff" },
+  "fucecchio": { primary: "#7c3aed", secondary: "#ffffff" },
+  "castelfiorentino": { primary: "#059669", secondary: "#ffffff" },
+  "sel-rose": { primary: "#be185d", secondary: "#ffffff" },
+  "virtus-certaldo": { primary: "#1f2937", secondary: "#ffffff" }
+};
+
+const colors = fallbackColors[teamId] || { primary: "#6b7280", secondary: "#ffffff" };
+const initials = teamName.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2);
+---
+
+<div class={`relative ${className}`}>
+  <img 
+    class="w-20 h-20 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
+    src={logoPath} 
+    alt={`Logo ${teamName}`}
+    onerror={`this.style.display='none'; this.nextElementSibling.style.display='flex';`}
+  />
+  
+  <!-- Fallback con iniziali e colori della squadra -->
+  <div 
+    class="w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-lg border-2 border-gray-200 dark:border-gray-600 hidden"
+    style={`background: linear-gradient(135deg, ${colors.primary}, ${colors.secondary});`}
+  >
+    {initials}
+  </div>
+</div> 
