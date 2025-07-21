@@ -37,6 +37,18 @@ function getCompetitionData(competitionId: string) {
 
 const upcomingMatches = getUpcomingMatches();
 const svbTeamId = "svb";
+
+// Debug temporaneo
+console.log('🔍 Debug SmartNextMatch:');
+console.log('Data corrente:', new Date().toISOString());
+console.log('Partite trovate:', upcomingMatches.length);
+console.log('Prime 3 partite:', upcomingMatches.slice(0, 3).map(m => ({
+  id: m.id,
+  date: m.date,
+  home: m.homeTeam,
+  away: m.awayTeam,
+  isFuture: new Date(m.date) > new Date()
+})));
 ---
 
 <div class="flex flex-col w-full mb-10 border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700 p-2 mt-32">
