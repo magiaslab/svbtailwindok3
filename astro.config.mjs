@@ -8,5 +8,18 @@ const owner = "astrojs";
 // https://astro.build/config
 export default defineConfig({
   site: 'https://basketsanvincenzo.it',
-  integrations: [tailwind(), sitemap(), robotsTxt()]
+  integrations: [tailwind(), sitemap(), robotsTxt()],
+  vite: {
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'apexcharts': ['apexcharts'],
+            'flowbite': ['flowbite']
+          }
+        }
+      },
+      chunkSizeWarningLimit: 1000
+    }
+  }
 });

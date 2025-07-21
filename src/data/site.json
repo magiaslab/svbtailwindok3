@@ -5,7 +5,7 @@
   "about": "A.S.D. Basket San Vincenzo da oltre 30 anni passione per il basket nella Costa degli Etruschi",
   "contact": {
     "email": "info@basketsanvincenzo.it",
-    "phone": "555-555-5555",
+    "phone": "+39 0565 123456",
     "address": "Piazza P. Giovanni XXII, 57027 San Vincenzo (Li)"
   },
   "pages": [
@@ -43,15 +43,15 @@
   "social": [
     {
       "title": "Instagram",
-      "href": "https://github.com/leabs"
+      "href": "https://www.instagram.com/basketsanvincenzo"
     },
     {
       "title": "YouTube",
-      "href": "https://www.youtube.com/@shadowstack"
+      "href": "https://www.youtube.com/@basketsanvincenzo"
     },
     {
       "title": "Facebook",
-      "href": "https://www.linkedin.com/in/stevenleabo/"
+      "href": "https://www.facebook.com/basketsanvincenzo"
     }
   ],
   "teams": [
