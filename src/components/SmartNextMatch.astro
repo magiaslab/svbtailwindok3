@@ -13,29 +13,11 @@ function getUpcomingMatches() {
   const now = new Date();
   const svbTeamId = "svb";
   
-  console.log('🔍 DEBUG getUpcomingMatches:');
-  console.log('Data corrente (now):', now.toISOString());
-  
-  const filteredMatches = calendarData.matches.filter(match => {
-    const matchDate = new Date(match.date);
-    const isFuture = matchDate > now;
-    const involvesSvb = match.homeTeam === svbTeamId || match.awayTeam === svbTeamId;
-    
-    console.log(`Partita ${match.id}:`, {
-      date: match.date,
-      matchDate: matchDate.toISOString(),
-      isFuture,
-      involvesSvb,
-      home: match.homeTeam,
-      away: match.awayTeam
-    });
-    
-    return isFuture && involvesSvb;
-  });
-  
-  console.log('Partite filtrate:', filteredMatches.length);
-  
-  return filteredMatches
+  return calendarData.matches
+    .filter(match => {
+      const matchDate = new Date(match.date);
+      return matchDate > now && (match.homeTeam === svbTeamId || match.awayTeam === svbTeamId);
+    })
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
     .slice(0, calendarData.settings.maxUpcomingMatches);
 }
@@ -57,23 +39,6 @@ function getCompetitionData(competitionId: string) {
 
 const upcomingMatches = getUpcomingMatches();
 const svbTeamId = "svb";
-
-// Debug temporaneo per troubleshooting
-console.log('🔍 DEBUG SmartNextMatch:');
-console.log('Data corrente:', new Date().toISOString());
-console.log('Tutte le partite:', calendarData.matches.length);
-console.log('Partite con SVB:', calendarData.matches.filter(m => m.homeTeam === 'svb' || m.awayTeam === 'svb').length);
-console.log('Partite future:', calendarData.matches.filter(m => new Date(m.date) > new Date()).length);
-console.log('Prossime partite trovate:', upcomingMatches.length);
-if (upcomingMatches.length > 0) {
-  console.log('Prima partita:', {
-    id: upcomingMatches[0].id,
-    date: upcomingMatches[0].date,
-    home: upcomingMatches[0].homeTeam,
-    away: upcomingMatches[0].awayTeam,
-    competition: upcomingMatches[0].competition
-  });
-}
 ---
 
 <div class="flex flex-col w-full mb-10 border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700 p-2 mt-32">
