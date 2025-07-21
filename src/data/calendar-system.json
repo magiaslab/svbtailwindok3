@@ -255,6 +255,149 @@
       "season": "2024-2025"
     },
     {
+      "id": "serie-c-4",
+      "competition": "serie-c",
+      "homeTeam": "svb",
+      "awayTeam": "us-livorno",
+      "date": "2025-02-16T18:00:00",
+      "venue": "Pala Toscanini",
+      "status": "scheduled",
+      "round": 4,
+      "season": "2024-2025"
+    },
+    {
+      "id": "serie-c-5",
+      "competition": "serie-c",
+      "homeTeam": "don-bosco-livorno",
+      "awayTeam": "svb",
+      "date": "2025-02-23T18:00:00",
+      "venue": "Pala Don Bosco",
+      "status": "scheduled",
+      "round": 5,
+      "season": "2024-2025"
+    },
+    {
+      "id": "serie-c-6",
+      "competition": "serie-c",
+      "homeTeam": "svb",
+      "awayTeam": "dukes-sansepolcro",
+      "date": "2025-03-02T18:00:00",
+      "venue": "Pala Toscanini",
+      "status": "scheduled",
+      "round": 6,
+      "season": "2024-2025"
+    },
+    {
+      "id": "serie-c-7",
+      "competition": "serie-c",
+      "homeTeam": "valdisieve",
+      "awayTeam": "svb",
+      "date": "2025-03-09T18:00:00",
+      "venue": "Pala Valdisieve",
+      "status": "scheduled",
+      "round": 7,
+      "season": "2024-2025"
+    },
+    {
+      "id": "serie-c-8",
+      "competition": "serie-c",
+      "homeTeam": "svb",
+      "awayTeam": "agliana",
+      "date": "2025-03-16T18:00:00",
+      "venue": "Pala Toscanini",
+      "status": "scheduled",
+      "round": 8,
+      "season": "2024-2025"
+    },
+    {
+      "id": "serie-c-9",
+      "competition": "serie-c",
+      "homeTeam": "prato-2000",
+      "awayTeam": "svb",
+      "date": "2025-03-23T18:00:00",
+      "venue": "Pala Prato 2000",
+      "status": "scheduled",
+      "round": 9,
+      "season": "2024-2025"
+    },
+    {
+      "id": "serie-c-10",
+      "competition": "serie-c",
+      "homeTeam": "svb",
+      "awayTeam": "bottegone",
+      "date": "2025-03-30T18:00:00",
+      "venue": "Pala Toscanini",
+      "status": "scheduled",
+      "round": 10,
+      "season": "2024-2025"
+    },
+    {
+      "id": "serie-c-11",
+      "competition": "serie-c",
+      "homeTeam": "pino-firenze",
+      "awayTeam": "svb",
+      "date": "2025-04-06T18:00:00",
+      "venue": "Pala Pino",
+      "status": "scheduled",
+      "round": 11,
+      "season": "2024-2025"
+    },
+    {
+      "id": "serie-c-12",
+      "competition": "serie-c",
+      "homeTeam": "svb",
+      "awayTeam": "sancat-firenze",
+      "date": "2025-04-13T18:00:00",
+      "venue": "Pala Toscanini",
+      "status": "scheduled",
+      "round": 12,
+      "season": "2024-2025"
+    },
+    {
+      "id": "serie-c-13",
+      "competition": "serie-c",
+      "homeTeam": "cus-firenze",
+      "awayTeam": "svb",
+      "date": "2025-04-20T18:00:00",
+      "venue": "Pala Cus",
+      "status": "scheduled",
+      "round": 13,
+      "season": "2024-2025"
+    },
+    {
+      "id": "serie-c-14",
+      "competition": "serie-c",
+      "homeTeam": "svb",
+      "awayTeam": "castelfiorentino",
+      "date": "2025-04-27T18:00:00",
+      "venue": "Pala Toscanini",
+      "status": "scheduled",
+      "round": 14,
+      "season": "2024-2025"
+    },
+    {
+      "id": "serie-c-15",
+      "competition": "serie-c",
+      "homeTeam": "sel-rose",
+      "awayTeam": "svb",
+      "date": "2025-05-04T18:00:00",
+      "venue": "Pala Sel Rose",
+      "status": "scheduled",
+      "round": 15,
+      "season": "2024-2025"
+    },
+    {
+      "id": "serie-c-16",
+      "competition": "serie-c",
+      "homeTeam": "svb",
+      "awayTeam": "virtus-certaldo",
+      "date": "2025-05-11T18:00:00",
+      "venue": "Pala Toscanini",
+      "status": "scheduled",
+      "round": 16,
+      "season": "2024-2025"
+    },
+    {
       "id": "under20-1",
       "competition": "under20",
       "homeTeam": "svb",
@@ -277,6 +420,72 @@
       "season": "2024-2025"
     },
     {
+      "id": "under20-3",
+      "competition": "under20",
+      "homeTeam": "svb",
+      "awayTeam": "montevarchi",
+      "date": "2025-02-08T18:00:00",
+      "venue": "Pala Toscanini",
+      "status": "scheduled",
+      "round": 3,
+      "season": "2024-2025"
+    },
+    {
+      "id": "under20-4",
+      "competition": "under20",
+      "homeTeam": "us-livorno",
+      "awayTeam": "svb",
+      "date": "2025-02-15T18:00:00",
+      "venue": "PalaMacchia",
+      "status": "scheduled",
+      "round": 4,
+      "season": "2024-2025"
+    },
+    {
+      "id": "under20-5",
+      "competition": "under20",
+      "homeTeam": "svb",
+      "awayTeam": "don-bosco-livorno",
+      "date": "2025-02-22T18:00:00",
+      "venue": "Pala Toscanini",
+      "status": "scheduled",
+      "round": 5,
+      "season": "2024-2025"
+    },
+    {
+      "id": "under20-6",
+      "competition": "under20",
+      "homeTeam": "dukes-sansepolcro",
+      "awayTeam": "svb",
+      "date": "2025-03-01T18:00:00",
+      "venue": "Pala Sansepolcro",
+      "status": "scheduled",
+      "round": 6,
+      "season": "2024-2025"
+    },
+    {
+      "id": "under20-7",
+      "competition": "under20",
+      "homeTeam": "svb",
+      "awayTeam": "valdisieve",
+      "date": "2025-03-08T18:00:00",
+      "venue": "Pala Toscanini",
+      "status": "scheduled",
+      "round": 7,
+      "season": "2024-2025"
+    },
+    {
+      "id": "under20-8",
+      "competition": "under20",
+      "homeTeam": "agliana",
+      "awayTeam": "svb",
+      "date": "2025-03-15T18:00:00",
+      "venue": "Pala Agliana",
+      "status": "scheduled",
+      "round": 8,
+      "season": "2024-2025"
+    },
+    {
       "id": "under15-1",
       "competition": "under15",
       "homeTeam": "svb",
@@ -296,6 +505,72 @@
       "venue": "Pala Consiag",
       "status": "scheduled",
       "round": 2,
+      "season": "2024-2025"
+    },
+    {
+      "id": "under15-3",
+      "competition": "under15",
+      "homeTeam": "svb",
+      "awayTeam": "fucecchio",
+      "date": "2025-02-07T18:00:00",
+      "venue": "Pala Toscanini",
+      "status": "scheduled",
+      "round": 3,
+      "season": "2024-2025"
+    },
+    {
+      "id": "under15-4",
+      "competition": "under15",
+      "homeTeam": "us-livorno",
+      "awayTeam": "svb",
+      "date": "2025-02-14T18:00:00",
+      "venue": "PalaMacchia",
+      "status": "scheduled",
+      "round": 4,
+      "season": "2024-2025"
+    },
+    {
+      "id": "under15-5",
+      "competition": "under15",
+      "homeTeam": "svb",
+      "awayTeam": "don-bosco-livorno",
+      "date": "2025-02-21T18:00:00",
+      "venue": "Pala Toscanini",
+      "status": "scheduled",
+      "round": 5,
+      "season": "2024-2025"
+    },
+    {
+      "id": "under15-6",
+      "competition": "under15",
+      "homeTeam": "dukes-sansepolcro",
+      "awayTeam": "svb",
+      "date": "2025-02-28T18:00:00",
+      "venue": "Pala Sansepolcro",
+      "status": "scheduled",
+      "round": 6,
+      "season": "2024-2025"
+    },
+    {
+      "id": "under15-7",
+      "competition": "under15",
+      "homeTeam": "svb",
+      "awayTeam": "valdisieve",
+      "date": "2025-03-07T18:00:00",
+      "venue": "Pala Toscanini",
+      "status": "scheduled",
+      "round": 7,
+      "season": "2024-2025"
+    },
+    {
+      "id": "under15-8",
+      "competition": "under15",
+      "homeTeam": "agliana",
+      "awayTeam": "svb",
+      "date": "2025-03-14T18:00:00",
+      "venue": "Pala Agliana",
+      "status": "scheduled",
+      "round": 8,
       "season": "2024-2025"
     }
   ],
