@@ -1,0 +1,284 @@
+---
+// Componente per gestire il calendario
+---
+
+<div class="calendar-manager bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-4xl mx-auto">
+  <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Gestione Calendario</h2>
+  
+  <!-- Form per aggiungere partite -->
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Aggiungi Nuova Partita</h3>
+    
+    <form id="add-match-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <!-- Competizione -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Competizione
+        </label>
+        <select id="competition" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+          <option value="serie-c">Serie C Unica</option>
+          <option value="under19">Under 19 Gold</option>
+          <option value="under14">Under 14 Gold</option>
+        </select>
+      </div>
+      
+      <!-- Squadra Home -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Squadra Casa
+        </label>
+        <select id="homeTeam" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+          <option value="svb">Garden Toscana (SVB)</option>
+          <option value="union-prato">Union Prato</option>
+          <option value="fucecchio">Folgore Fucecchio</option>
+          <option value="costone-siena">Costone Siena</option>
+          <option value="us-livorno">US Livorno</option>
+        </select>
+      </div>
+      
+      <!-- Squadra Away -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Squadra Ospite
+        </label>
+        <select id="awayTeam" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+          <option value="union-prato">Union Prato</option>
+          <option value="fucecchio">Folgore Fucecchio</option>
+          <option value="costone-siena">Costone Siena</option>
+          <option value="us-livorno">US Livorno</option>
+          <option value="svb">Garden Toscana (SVB)</option>
+        </select>
+      </div>
+      
+      <!-- Data -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Data e Ora
+        </label>
+        <input type="datetime-local" id="matchDate" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+      </div>
+      
+      <!-- Luogo -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Luogo
+        </label>
+        <input type="text" id="venue" placeholder="Pala Toscanini" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+      </div>
+      
+      <!-- Giornata -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          Giornata
+        </label>
+        <input type="number" id="round" min="1" placeholder="1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
+      </div>
+      
+      <!-- Pulsante Aggiungi -->
+      <div class="md:col-span-2 lg:col-span-3">
+        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
+          Aggiungi Partita
+        </button>
+      </div>
+    </form>
+  </div>
+  
+  <!-- Lista partite esistenti -->
+  <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Partite Programmate</h3>
+    <div id="matches-list" class="space-y-2">
+      <!-- Le partite verranno caricate qui -->
+    </div>
+  </div>
+</div>
+
+<script>
+  class CalendarManager {
+    constructor() {
+      this.form = document.getElementById('add-match-form');
+      this.matchesList = document.getElementById('matches-list');
+      this.init();
+    }
+
+    init() {
+      this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+      this.loadMatches();
+      this.setupVenueAutoFill();
+    }
+
+    setupVenueAutoFill() {
+      const homeTeam = document.getElementById('homeTeam');
+      const venue = document.getElementById('venue');
+      
+      const venues = {
+        'svb': 'Pala Toscanini',
+        'union-prato': 'Pala Consiag',
+        'fucecchio': 'Pala Parenti',
+        'costone-siena': 'PalaEstra',
+        'us-livorno': 'PalaMacchia'
+      };
+
+      homeTeam.addEventListener('change', () => {
+        const selectedTeam = homeTeam.value;
+        if (venues[selectedTeam]) {
+          venue.value = venues[selectedTeam];
+        }
+      });
+    }
+
+    async handleSubmit(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this.form);
+      const matchData = {
+        competition: document.getElementById('competition').value,
+        homeTeam: document.getElementById('homeTeam').value,
+        awayTeam: document.getElementById('awayTeam').value,
+        date: document.getElementById('matchDate').value,
+        venue: document.getElementById('venue').value,
+        round: parseInt(document.getElementById('round').value)
+      };
+
+      // Validazione
+      if (!matchData.date || !matchData.venue || !matchData.round) {
+        alert('Compila tutti i campi obbligatori');
+        return;
+      }
+
+      if (matchData.homeTeam === matchData.awayTeam) {
+        alert('Le squadre non possono essere uguali');
+        return;
+      }
+
+      // Genera ID unico
+      const matchId = `${matchData.competition}-${Date.now()}`;
+      
+      const newMatch = {
+        id: matchId,
+        competition: matchData.competition,
+        homeTeam: matchData.homeTeam,
+        awayTeam: matchData.awayTeam,
+        date: new Date(matchData.date).toISOString(),
+        venue: matchData.venue,
+        status: 'scheduled',
+        round: matchData.round,
+        season: '2024-2025'
+      };
+
+      // Aggiungi alla lista locale
+      this.addMatchToList(newMatch);
+      
+      // Reset form
+      this.form.reset();
+      
+      // Mostra conferma
+      this.showNotification('Partita aggiunta con successo!', 'success');
+    }
+
+    addMatchToList(match) {
+      const matchElement = document.createElement('div');
+      matchElement.className = 'bg-white dark:bg-gray-600 rounded-lg p-3 border border-gray-200 dark:border-gray-500';
+      
+      const matchDate = new Date(match.date);
+      const formattedDate = matchDate.toLocaleDateString('it-IT', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      matchElement.innerHTML = `
+        <div class="flex justify-between items-center">
+          <div>
+            <div class="font-medium text-gray-900 dark:text-white">
+              ${this.getTeamName(match.homeTeam)} vs ${this.getTeamName(match.awayTeam)}
+            </div>
+            <div class="text-sm text-gray-600 dark:text-gray-300">
+              ${formattedDate} - ${match.venue}
+            </div>
+            <div class="text-xs text-gray-500 dark:text-gray-400">
+              ${this.getCompetitionName(match.competition)} - Giornata ${match.round}
+            </div>
+          </div>
+          <div class="flex space-x-2">
+            <button onclick="calendarManager.editMatch('${match.id}')" class="text-blue-600 hover:text-blue-800 text-sm">
+              Modifica
+            </button>
+            <button onclick="calendarManager.deleteMatch('${match.id}')" class="text-red-600 hover:text-red-800 text-sm">
+              Elimina
+            </button>
+          </div>
+        </div>
+      `;
+
+      this.matchesList.appendChild(matchElement);
+    }
+
+    getTeamName(teamId) {
+      const teams = {
+        'svb': 'Garden Toscana',
+        'union-prato': 'Union Prato',
+        'fucecchio': 'Folgore Fucecchio',
+        'costone-siena': 'Costone Siena',
+        'us-livorno': 'US Livorno'
+      };
+      return teams[teamId] || teamId;
+    }
+
+    getCompetitionName(competitionId) {
+      const competitions = {
+        'serie-c': 'Serie C Unica',
+        'under19': 'Under 19 Gold',
+        'under14': 'Under 14 Gold'
+      };
+      return competitions[competitionId] || competitionId;
+    }
+
+    async loadMatches() {
+      try {
+        const response = await fetch('/api/calendar?limit=10');
+        const data = await response.json();
+        
+        if (data.success) {
+          this.matchesList.innerHTML = '';
+          data.data.forEach(match => this.addMatchToList(match));
+        }
+      } catch (error) {
+        console.error('Errore nel caricamento partite:', error);
+      }
+    }
+
+    editMatch(matchId) {
+      // Implementazione futura per modifica
+      alert('Funzionalità di modifica in sviluppo');
+    }
+
+    deleteMatch(matchId) {
+      if (confirm('Sei sicuro di voler eliminare questa partita?')) {
+        // Implementazione futura per eliminazione
+        alert('Funzionalità di eliminazione in sviluppo');
+      }
+    }
+
+    showNotification(message, type = 'info') {
+      const notification = document.createElement('div');
+      notification.className = `fixed top-4 right-4 p-4 rounded-lg text-white ${
+        type === 'success' ? 'bg-green-600' : 'bg-blue-600'
+      } z-50`;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+  }
+
+  // Inizializza il manager quando il DOM è pronto
+  document.addEventListener('DOMContentLoaded', () => {
+    window.calendarManager = new CalendarManager();
+  });
+</script> 

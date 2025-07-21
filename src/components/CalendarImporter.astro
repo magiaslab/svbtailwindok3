@@ -1,0 +1,241 @@
+---
+// Componente per importare partite da file CSV
+---
+
+<div class="calendar-importer bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 mb-6">
+  <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">📁 Importa Partite da File</h3>
+  
+  <div class="grid md:grid-cols-2 gap-6">
+    <!-- Import CSV -->
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+      <h4 class="font-medium text-gray-900 dark:text-white mb-3">Importa da CSV</h4>
+      <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+        Carica un file CSV con le partite. Il formato deve essere:
+      </p>
+      <div class="bg-gray-100 dark:bg-gray-600 rounded p-3 mb-4">
+        <code class="text-xs text-gray-800 dark:text-gray-200">
+          competizione,homeTeam,awayTeam,data,venue,round<br>
+          serie-c,svb,union-prato,2024-11-10T18:00:00,Pala Toscanini,5
+        </code>
+      </div>
+      
+      <input type="file" id="csvFile" accept=".csv" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 dark:file:bg-red-900/20 dark:file:text-red-300">
+      <button id="importCsv" class="mt-3 w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
+        Importa CSV
+      </button>
+    </div>
+    
+    <!-- Template Download -->
+    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+      <h4 class="font-medium text-gray-900 dark:text-white mb-3">📥 Scarica Template</h4>
+      <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">
+        Scarica il template CSV per inserire le partite:
+      </p>
+      
+      <button id="downloadTemplate" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
+        Scarica Template CSV
+      </button>
+      
+      <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+        <h5 class="font-medium text-yellow-800 dark:text-yellow-200 mb-2">📋 Squadre Disponibili:</h5>
+        <div class="text-xs text-yellow-700 dark:text-yellow-300">
+          <div class="grid grid-cols-2 gap-2">
+            <div>• svb (Garden Toscana)</div>
+            <div>• union-prato (Union Prato)</div>
+            <div>• fucecchio (Folgore Fucecchio)</div>
+            <div>• costone-siena (Costone Siena)</div>
+            <div>• us-livorno (US Livorno)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Preview Import -->
+  <div id="importPreview" class="mt-6 hidden">
+    <h4 class="font-medium text-gray-900 dark:text-white mb-3">👀 Anteprima Import</h4>
+    <div id="previewContent" class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 max-h-60 overflow-y-auto">
+      <!-- Contenuto preview -->
+    </div>
+    <div class="mt-3 flex space-x-3">
+      <button id="confirmImport" class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
+        Conferma Import
+      </button>
+      <button id="cancelImport" class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
+        Annulla
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  class CalendarImporter {
+    constructor() {
+      this.csvFile = document.getElementById('csvFile');
+      this.importCsv = document.getElementById('importCsv');
+      this.downloadTemplate = document.getElementById('downloadTemplate');
+      this.importPreview = document.getElementById('importPreview');
+      this.previewContent = document.getElementById('previewContent');
+      this.confirmImport = document.getElementById('confirmImport');
+      this.cancelImport = document.getElementById('cancelImport');
+      
+      this.init();
+    }
+
+    init() {
+      this.importCsv.addEventListener('click', () => this.handleCsvImport());
+      this.downloadTemplate.addEventListener('click', () => this.downloadTemplateCsv());
+      this.confirmImport.addEventListener('click', () => this.confirmImportData());
+      this.cancelImport.addEventListener('click', () => this.cancelImportData());
+    }
+
+    downloadTemplateCsv() {
+      const template = `competizione,homeTeam,awayTeam,data,venue,round
+serie-c,svb,union-prato,2024-11-10T18:00:00,Pala Toscanini,5
+under19,svb,fucecchio,2024-11-17T18:00:00,Pala Toscanini,3
+under14,costone-siena,svb,2024-11-24T18:00:00,PalaEstra,2`;
+
+      const blob = new Blob([template], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'template-partite.csv';
+      a.click();
+      window.URL.revokeObjectURL(url);
+    }
+
+    async handleCsvImport() {
+      const file = this.csvFile.files[0];
+      if (!file) {
+        alert('Seleziona un file CSV');
+        return;
+      }
+
+      try {
+        const text = await file.text();
+        const matches = this.parseCsv(text);
+        
+        if (matches.length === 0) {
+          alert('Nessuna partita valida trovata nel file');
+          return;
+        }
+
+        this.showPreview(matches);
+      } catch (error) {
+        console.error('Errore nella lettura del file:', error);
+        alert('Errore nella lettura del file CSV');
+      }
+    }
+
+    parseCsv(csvText) {
+      const lines = csvText.trim().split('\n');
+      const headers = lines[0].split(',');
+      const matches = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',');
+        if (values.length === headers.length) {
+          const match = {
+            competition: values[0],
+            homeTeam: values[1],
+            awayTeam: values[2],
+            date: values[3],
+            venue: values[4],
+            round: parseInt(values[5])
+          };
+
+          // Validazione
+          if (this.validateMatch(match)) {
+            matches.push(match);
+          }
+        }
+      }
+
+      return matches;
+    }
+
+    validateMatch(match) {
+      const validCompetitions = ['serie-c', 'under19', 'under14'];
+      const validTeams = ['svb', 'union-prato', 'fucecchio', 'costone-siena', 'us-livorno'];
+
+      return (
+        validCompetitions.includes(match.competition) &&
+        validTeams.includes(match.homeTeam) &&
+        validTeams.includes(match.awayTeam) &&
+        match.homeTeam !== match.awayTeam &&
+        !isNaN(match.round) &&
+        match.round > 0 &&
+        new Date(match.date).toString() !== 'Invalid Date'
+      );
+    }
+
+    showPreview(matches) {
+      this.previewContent.innerHTML = matches.map((match, index) => `
+        <div class="border-b border-gray-200 dark:border-gray-600 pb-2 mb-2">
+          <div class="font-medium text-gray-900 dark:text-white">
+            ${index + 1}. ${this.getTeamName(match.homeTeam)} vs ${this.getTeamName(match.awayTeam)}
+          </div>
+          <div class="text-sm text-gray-600 dark:text-gray-300">
+            ${this.getCompetitionName(match.competition)} - ${new Date(match.date).toLocaleDateString('it-IT')} - ${match.venue}
+          </div>
+        </div>
+      `).join('');
+
+      this.importPreview.classList.remove('hidden');
+      this.importedMatches = matches;
+    }
+
+    async confirmImportData() {
+      if (!this.importedMatches) return;
+
+      try {
+        // Qui potresti inviare i dati all'API per salvarli
+        console.log('Partite da importare:', this.importedMatches);
+        
+        // Per ora mostriamo solo un messaggio di successo
+        alert(`Importate ${this.importedMatches.length} partite con successo!`);
+        
+        this.cancelImportData();
+        
+        // Ricarica la lista partite se esiste
+        if (window.calendarManager) {
+          window.calendarManager.loadMatches();
+        }
+      } catch (error) {
+        console.error('Errore nell\'import:', error);
+        alert('Errore durante l\'import delle partite');
+      }
+    }
+
+    cancelImportData() {
+      this.importPreview.classList.add('hidden');
+      this.csvFile.value = '';
+      this.importedMatches = null;
+    }
+
+    getTeamName(teamId) {
+      const teams = {
+        'svb': 'Garden Toscana',
+        'union-prato': 'Union Prato',
+        'fucecchio': 'Folgore Fucecchio',
+        'costone-siena': 'Costone Siena',
+        'us-livorno': 'US Livorno'
+      };
+      return teams[teamId] || teamId;
+    }
+
+    getCompetitionName(competitionId) {
+      const competitions = {
+        'serie-c': 'Serie C Unica',
+        'under19': 'Under 19 Gold',
+        'under14': 'Under 14 Gold'
+      };
+      return competitions[competitionId] || competitionId;
+    }
+  }
+
+  // Inizializza l'importer quando il DOM è pronto
+  document.addEventListener('DOMContentLoaded', () => {
+    new CalendarImporter();
+  });
+</script> 

@@ -1,0 +1,50 @@
+---
+import Layout from "../layouts/Layout.astro";
+import CalendarManager from "../components/CalendarManager.astro";
+import CalendarImporter from "../components/CalendarImporter.astro";
+---
+
+<Layout title="Gestione Calendario - Basket San Vincenzo">
+  <div class="container mx-auto px-4 py-8">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+        Gestione Calendario
+      </h1>
+      <p class="text-gray-600 dark:text-gray-400">
+        Aggiungi e gestisci le partite del calendario in modo semplice e intuitivo
+      </p>
+    </div>
+    
+    <CalendarImporter />
+    <CalendarManager />
+    
+    <!-- Istruzioni -->
+    <div class="mt-8 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6">
+      <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-4">
+        📋 Come Usare il Gestore Calendario
+      </h3>
+      <div class="grid md:grid-cols-2 gap-6">
+        <div>
+          <h4 class="font-medium text-blue-800 dark:text-blue-200 mb-2">➕ Aggiungere Partite</h4>
+          <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+            <li>• Seleziona la competizione (Serie C, Under 19, etc.)</li>
+            <li>• Scegli squadra casa e ospite</li>
+            <li>• Inserisci data, ora e luogo</li>
+            <li>• Specifica la giornata del campionato</li>
+            <li>• Clicca "Aggiungi Partita"</li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="font-medium text-blue-800 dark:text-blue-200 mb-2">⚙️ Funzionalità</h4>
+          <ul class="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+            <li>• Auto-compilazione del luogo in base alla squadra casa</li>
+            <li>• Validazione automatica dei dati</li>
+            <li>• Visualizzazione partite esistenti</li>
+            <li>• Countdown automatico per ogni partita</li>
+            <li>• Icone casa/trasferta automatiche</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout> 
