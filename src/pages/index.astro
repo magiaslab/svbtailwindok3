@@ -6,7 +6,8 @@ import CTA from "../components/CTA.astro";
 import Classifica from "../components/classifica.astro"
 import Logos from "../components/CustomerLogos.astro";
 import data from "../data/site.json";
-import Nextmatch from "../components/nextmatch.astro";
+import SmartNextMatch from "../components/SmartNextMatch.astro";
+import CalendarUpdater from "../components/CalendarUpdater.astro";
 import Charts from "../components/Charts.astro";
 import Collab from "../components/Collaborazioni.astro"
 import Classifica2 from"../components/classifica2.astro"
@@ -17,13 +18,14 @@ import Classifica2 from"../components/classifica2.astro"
 <Layout title={data.siteName}>
 <Hero/>
     <Logos />
-    <Nextmatch/>
+    <SmartNextMatch/>
     <CTA />
     <Blog/>
 <Classifica2 />
 <Classifica />
 <Charts />
 <Collab/>
+<CalendarUpdater />
     
   
 </Layout>

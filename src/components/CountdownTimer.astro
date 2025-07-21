@@ -1,0 +1,96 @@
+---
+interface Props {
+  targetDate: string;
+  matchId: string;
+}
+
+const { targetDate, matchId } = Astro.props;
+const target = new Date(targetDate);
+---
+
+<div class="countdown-container text-center" data-target-date={targetDate} data-match-id={matchId}>
+  <div class="countdown-text text-sm text-gray-600 dark:text-gray-400 mb-1">
+    Caricamento...
+  </div>
+  <div class="countdown-timer flex justify-center space-x-2">
+    <div class="bg-red-600 text-white rounded-lg px-2 py-1 text-xs font-bold">00h</div>
+    <div class="bg-red-600 text-white rounded-lg px-2 py-1 text-xs font-bold">00m</div>
+    <div class="bg-red-600 text-white rounded-lg px-2 py-1 text-xs font-bold">00s</div>
+  </div>
+</div>
+
+<script>
+  class CountdownTimer {
+    private container: HTMLElement;
+    private targetDate: Date;
+    private matchId: string;
+    private textElement: HTMLElement;
+    private timerElement: HTMLElement;
+
+    constructor(container: HTMLElement) {
+      this.container = container;
+      this.targetDate = new Date(container.dataset.targetDate!);
+      this.matchId = container.dataset.matchId!;
+      this.textElement = container.querySelector('.countdown-text') as HTMLElement;
+      this.timerElement = container.querySelector('.countdown-timer') as HTMLElement;
+      
+      this.init();
+    }
+
+    init() {
+      this.updateTimer();
+      setInterval(() => this.updateTimer(), 1000);
+    }
+
+    updateTimer() {
+      const now = new Date();
+      const difference = this.targetDate.getTime() - now.getTime();
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        // Aggiorna il testo
+        const timeAgo = this.getTimeAgo(difference);
+        this.textElement.textContent = `Tra ${timeAgo}`;
+
+        // Aggiorna il timer
+        this.timerElement.innerHTML = `
+          ${days > 0 ? `<div class="bg-red-600 text-white rounded-lg px-2 py-1 text-xs font-bold">${days}g</div>` : ''}
+          <div class="bg-red-600 text-white rounded-lg px-2 py-1 text-xs font-bold">${hours.toString().padStart(2, '0')}h</div>
+          <div class="bg-red-600 text-white rounded-lg px-2 py-1 text-xs font-bold">${minutes.toString().padStart(2, '0')}m</div>
+          <div class="bg-red-600 text-white rounded-lg px-2 py-1 text-xs font-bold">${seconds.toString().padStart(2, '0')}s</div>
+        `;
+      } else {
+        this.textElement.innerHTML = '<span class="text-lg font-bold text-red-600 dark:text-red-400">Partita in corso!</span>';
+        this.timerElement.innerHTML = '';
+      }
+    }
+
+    getTimeAgo(difference: number): string {
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+
+      if (days > 0) {
+        return `${days} giorno${days > 1 ? 'i' : ''}`;
+      } else if (hours > 0) {
+        return `${hours} ora${hours > 1 ? 'e' : ''}`;
+      } else if (minutes > 0) {
+        return `${minutes} minut${minutes > 1 ? 'i' : 'o'}`;
+      } else {
+        return 'pochi secondi';
+      }
+    }
+  }
+
+  // Inizializza tutti i countdown timer
+  document.addEventListener('DOMContentLoaded', () => {
+    const countdownContainers = document.querySelectorAll('.countdown-container');
+    countdownContainers.forEach(container => {
+      new CountdownTimer(container as HTMLElement);
+    });
+  });
+</script> 

@@ -1,0 +1,78 @@
+---
+// Questo componente gestisce l'aggiornamento automatico dei dati del calendario
+---
+
+<div id="calendar-updater" class="hidden">
+  <!-- Componente nascosto per aggiornamenti automatici -->
+</div>
+
+<script>
+  class CalendarUpdater {
+    private updateInterval: number = 5 * 60 * 1000; // 5 minuti
+    private lastUpdate: number = 0;
+
+    constructor() {
+      this.init();
+    }
+
+    async init() {
+      // Aggiorna i dati al caricamento della pagina
+      await this.updateCalendarData();
+      
+      // Imposta l'aggiornamento periodico
+      setInterval(() => this.updateCalendarData(), this.updateInterval);
+      
+      // Ascolta eventi di aggiornamento
+      window.addEventListener('calendar:update', () => this.updateCalendarData());
+    }
+
+    async updateCalendarData() {
+      try {
+        const now = Date.now();
+        
+        // Evita aggiornamenti troppo frequenti
+        if (now - this.lastUpdate < 60000) { // Minimo 1 minuto tra aggiornamenti
+          return;
+        }
+
+        const response = await fetch('/api/calendar?team=svb&limit=3');
+        
+        if (response.ok) {
+          const data = await response.json();
+          
+          if (data.success) {
+            // Emetti un evento con i nuovi dati
+            window.dispatchEvent(new CustomEvent('calendar:updated', {
+              detail: data.data
+            }));
+            
+            this.lastUpdate = now;
+            console.log('Calendario aggiornato:', data.data.length, 'partite');
+          }
+        }
+      } catch (error) {
+        console.error('Errore nell\'aggiornamento del calendario:', error);
+      }
+    }
+
+    // Metodo per forzare un aggiornamento
+    forceUpdate() {
+      this.updateCalendarData();
+    }
+  }
+
+  // Inizializza l'updater quando il DOM è pronto
+  document.addEventListener('DOMContentLoaded', () => {
+    new CalendarUpdater();
+  });
+
+  // Espone il metodo per aggiornamenti manuali
+  window.calendarUpdater = {
+    forceUpdate: () => {
+      const updater = document.querySelector('#calendar-updater') as any;
+      if (updater && updater.updater) {
+        updater.updater.forceUpdate();
+      }
+    }
+  };
+</script> 

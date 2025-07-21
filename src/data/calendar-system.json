@@ -1,0 +1,114 @@
+{
+  "teams": {
+    "svb": {
+      "name": "Garden Toscana Resort Basket San Vincenzo",
+      "shortName": "SVB",
+      "logo": "/img/logo svb.png",
+      "homeVenue": "Pala Toscanini",
+      "homeVenueAddress": "San Vincenzo, LI"
+    },
+    "union-prato": {
+      "name": "Union Basket Prato",
+      "shortName": "Union Prato",
+      "logo": "/img/unionprato.jpg",
+      "homeVenue": "Pala Consiag",
+      "homeVenueAddress": "Prato, PO"
+    },
+    "fucecchio": {
+      "name": "Folgore Fucecchio",
+      "shortName": "Fucecchio",
+      "logo": "/img/fucecchio.png",
+      "homeVenue": "Pala Parenti",
+      "homeVenueAddress": "Fucecchio, FI"
+    },
+    "costone-siena": {
+      "name": "Costone Siena",
+      "shortName": "Costone",
+      "logo": "/img/costonesiena.png",
+      "homeVenue": "PalaEstra",
+      "homeVenueAddress": "Siena, SI"
+    },
+    "us-livorno": {
+      "name": "US Livorno",
+      "shortName": "Livorno",
+      "logo": "/img/uslivorno.png",
+      "homeVenue": "PalaMacchia",
+      "homeVenueAddress": "Livorno, LI"
+    }
+  },
+  "competitions": {
+    "serie-c": {
+      "name": "Serie C Unica",
+      "shortName": "Serie C",
+      "logo": "/img/fip_logo_reg_toscana.png",
+      "season": "2024-2025",
+      "status": "active"
+    },
+    "under19": {
+      "name": "Under 19 Gold",
+      "shortName": "Under 19",
+      "logo": "/img/fip_logo_reg_toscana.png",
+      "season": "2024-2025",
+      "status": "pending"
+    },
+    "under14": {
+      "name": "Under 14 Gold",
+      "shortName": "Under 14",
+      "logo": "/img/fip_logo_reg_toscana.png",
+      "season": "2024-2025",
+      "status": "pending"
+    }
+  },
+  "matches": [
+    {
+      "id": "serie-c-1",
+      "competition": "serie-c",
+      "homeTeam": "union-prato",
+      "awayTeam": "svb",
+      "date": "2024-10-13T18:00:00",
+      "venue": "Pala Toscanini",
+      "status": "scheduled",
+      "round": 1,
+      "season": "2024-2025"
+    },
+    {
+      "id": "serie-c-2",
+      "competition": "serie-c",
+      "homeTeam": "svb",
+      "awayTeam": "fucecchio",
+      "date": "2024-10-20T18:00:00",
+      "venue": "Pala Toscanini",
+      "status": "scheduled",
+      "round": 2,
+      "season": "2024-2025"
+    },
+    {
+      "id": "serie-c-3",
+      "competition": "serie-c",
+      "homeTeam": "costone-siena",
+      "awayTeam": "svb",
+      "date": "2024-10-27T18:00:00",
+      "venue": "PalaEstra",
+      "status": "scheduled",
+      "round": 3,
+      "season": "2024-2025"
+    },
+    {
+      "id": "serie-c-4",
+      "competition": "serie-c",
+      "homeTeam": "svb",
+      "awayTeam": "us-livorno",
+      "date": "2024-11-03T18:00:00",
+      "venue": "Pala Toscanini",
+      "status": "scheduled",
+      "round": 4,
+      "season": "2024-2025"
+    }
+  ],
+  "settings": {
+    "timezone": "Europe/Rome",
+    "countdownEnabled": true,
+    "autoUpdate": true,
+    "maxUpcomingMatches": 3
+  }
+} 
