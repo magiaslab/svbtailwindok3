@@ -41,10 +41,22 @@
         <div class="text-xs text-yellow-700 dark:text-yellow-300">
           <div class="grid grid-cols-2 gap-2">
             <div>• svb (Garden Toscana)</div>
+            <div>• us-livorno (U.S. Livorno)</div>
+            <div>• don-bosco-livorno (Don Bosco)</div>
+            <div>• montevarchi (Montevarchi)</div>
+            <div>• dukes-sansepolcro (Dukes)</div>
+            <div>• valdisieve (Valdisieve)</div>
+            <div>• agliana (Agliana)</div>
+            <div>• prato-2000 (Prato 2000)</div>
             <div>• union-prato (Union Prato)</div>
-            <div>• fucecchio (Folgore Fucecchio)</div>
-            <div>• costone-siena (Costone Siena)</div>
-            <div>• us-livorno (US Livorno)</div>
+            <div>• bottegone (Bottegone)</div>
+            <div>• pino-firenze (Pino Firenze)</div>
+            <div>• sancat-firenze (Sancat)</div>
+            <div>• cus-firenze (Cus Firenze)</div>
+            <div>• fucecchio (Fucecchio)</div>
+            <div>• castelfiorentino (Castelfiorentino)</div>
+            <div>• sel-rose (Sel Rose)</div>
+            <div>• virtus-certaldo (Certaldo)</div>
           </div>
         </div>
       </div>
@@ -156,7 +168,12 @@ under14,costone-siena,svb,2024-11-24T18:00:00,PalaEstra,2`;
 
     validateMatch(match) {
       const validCompetitions = ['serie-c', 'under19', 'under14'];
-      const validTeams = ['svb', 'union-prato', 'fucecchio', 'costone-siena', 'us-livorno'];
+      const validTeams = [
+        'svb', 'us-livorno', 'don-bosco-livorno', 'montevarchi', 'dukes-sansepolcro',
+        'valdisieve', 'agliana', 'prato-2000', 'union-prato', 'bottegone',
+        'pino-firenze', 'sancat-firenze', 'cus-firenze', 'fucecchio',
+        'castelfiorentino', 'sel-rose', 'virtus-certaldo'
+      ];
 
       return (
         validCompetitions.includes(match.competition) &&
@@ -216,10 +233,22 @@ under14,costone-siena,svb,2024-11-24T18:00:00,PalaEstra,2`;
     getTeamName(teamId) {
       const teams = {
         'svb': 'Garden Toscana',
-        'union-prato': 'Union Prato',
-        'fucecchio': 'Folgore Fucecchio',
-        'costone-siena': 'Costone Siena',
-        'us-livorno': 'US Livorno'
+        'us-livorno': 'U.S. Livorno Basket',
+        'don-bosco-livorno': 'Pall. Don Bosco Livorno',
+        'montevarchi': 'Fides Pall. Montevarchi',
+        'dukes-sansepolcro': 'Dukes Sansepolcro',
+        'valdisieve': 'Valdisieve',
+        'agliana': 'Pall. Agliana 2000',
+        'prato-2000': 'Pall. 2000 Prato',
+        'union-prato': 'Union Basket Prato',
+        'bottegone': 'Bottegone Basket 2001',
+        'pino-firenze': 'U.S. Pino Basket Firenze',
+        'sancat-firenze': 'Pol. Sancat Firenze',
+        'cus-firenze': 'Cus Firenze',
+        'fucecchio': 'G.S. Folgore Fucecchio',
+        'castelfiorentino': 'ABC Castelfiorentino',
+        'sel-rose': 'Basket Sel Rose Rosignano',
+        'virtus-certaldo': 'Virtus Certaldo'
       };
       return teams[teamId] || teamId;
     }

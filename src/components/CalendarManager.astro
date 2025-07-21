@@ -29,10 +29,22 @@
         </label>
         <select id="homeTeam" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
           <option value="svb">Garden Toscana (SVB)</option>
-          <option value="union-prato">Union Prato</option>
-          <option value="fucecchio">Folgore Fucecchio</option>
-          <option value="costone-siena">Costone Siena</option>
-          <option value="us-livorno">US Livorno</option>
+          <option value="us-livorno">U.S. Livorno Basket</option>
+          <option value="don-bosco-livorno">Pall. Don Bosco Livorno</option>
+          <option value="montevarchi">Fides Pall. Montevarchi</option>
+          <option value="dukes-sansepolcro">Dukes Sansepolcro</option>
+          <option value="valdisieve">Valdisieve</option>
+          <option value="agliana">Pall. Agliana 2000</option>
+          <option value="prato-2000">Pall. 2000 Prato</option>
+          <option value="union-prato">Union Basket Prato</option>
+          <option value="bottegone">Bottegone Basket 2001</option>
+          <option value="pino-firenze">U.S. Pino Basket Firenze</option>
+          <option value="sancat-firenze">Pol. Sancat Firenze</option>
+          <option value="cus-firenze">Cus Firenze</option>
+          <option value="fucecchio">G.S. Folgore Fucecchio</option>
+          <option value="castelfiorentino">ABC Castelfiorentino</option>
+          <option value="sel-rose">Basket Sel Rose Rosignano</option>
+          <option value="virtus-certaldo">Virtus Certaldo</option>
         </select>
       </div>
       
@@ -42,10 +54,22 @@
           Squadra Ospite
         </label>
         <select id="awayTeam" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white">
-          <option value="union-prato">Union Prato</option>
-          <option value="fucecchio">Folgore Fucecchio</option>
-          <option value="costone-siena">Costone Siena</option>
-          <option value="us-livorno">US Livorno</option>
+          <option value="us-livorno">U.S. Livorno Basket</option>
+          <option value="don-bosco-livorno">Pall. Don Bosco Livorno</option>
+          <option value="montevarchi">Fides Pall. Montevarchi</option>
+          <option value="dukes-sansepolcro">Dukes Sansepolcro</option>
+          <option value="valdisieve">Valdisieve</option>
+          <option value="agliana">Pall. Agliana 2000</option>
+          <option value="prato-2000">Pall. 2000 Prato</option>
+          <option value="union-prato">Union Basket Prato</option>
+          <option value="bottegone">Bottegone Basket 2001</option>
+          <option value="pino-firenze">U.S. Pino Basket Firenze</option>
+          <option value="sancat-firenze">Pol. Sancat Firenze</option>
+          <option value="cus-firenze">Cus Firenze</option>
+          <option value="fucecchio">G.S. Folgore Fucecchio</option>
+          <option value="castelfiorentino">ABC Castelfiorentino</option>
+          <option value="sel-rose">Basket Sel Rose Rosignano</option>
+          <option value="virtus-certaldo">Virtus Certaldo</option>
           <option value="svb">Garden Toscana (SVB)</option>
         </select>
       </div>
@@ -112,10 +136,22 @@
       
       const venues = {
         'svb': 'Pala Toscanini',
+        'us-livorno': 'PalaMacchia',
+        'don-bosco-livorno': 'Pala Don Bosco',
+        'montevarchi': 'Pala Montevarchi',
+        'dukes-sansepolcro': 'Pala Sansepolcro',
+        'valdisieve': 'Pala Valdisieve',
+        'agliana': 'Pala Agliana',
+        'prato-2000': 'Pala Prato 2000',
         'union-prato': 'Pala Consiag',
+        'bottegone': 'Pala Bottegone',
+        'pino-firenze': 'Pala Pino',
+        'sancat-firenze': 'Pala Sancat',
+        'cus-firenze': 'Pala Cus',
         'fucecchio': 'Pala Parenti',
-        'costone-siena': 'PalaEstra',
-        'us-livorno': 'PalaMacchia'
+        'castelfiorentino': 'Pala Castelfiorentino',
+        'sel-rose': 'Pala Sel Rose',
+        'virtus-certaldo': 'Pala Certaldo'
       };
 
       homeTeam.addEventListener('change', () => {
@@ -219,10 +255,22 @@
     getTeamName(teamId) {
       const teams = {
         'svb': 'Garden Toscana',
-        'union-prato': 'Union Prato',
-        'fucecchio': 'Folgore Fucecchio',
-        'costone-siena': 'Costone Siena',
-        'us-livorno': 'US Livorno'
+        'us-livorno': 'U.S. Livorno Basket',
+        'don-bosco-livorno': 'Pall. Don Bosco Livorno',
+        'montevarchi': 'Fides Pall. Montevarchi',
+        'dukes-sansepolcro': 'Dukes Sansepolcro',
+        'valdisieve': 'Valdisieve',
+        'agliana': 'Pall. Agliana 2000',
+        'prato-2000': 'Pall. 2000 Prato',
+        'union-prato': 'Union Basket Prato',
+        'bottegone': 'Bottegone Basket 2001',
+        'pino-firenze': 'U.S. Pino Basket Firenze',
+        'sancat-firenze': 'Pol. Sancat Firenze',
+        'cus-firenze': 'Cus Firenze',
+        'fucecchio': 'G.S. Folgore Fucecchio',
+        'castelfiorentino': 'ABC Castelfiorentino',
+        'sel-rose': 'Basket Sel Rose Rosignano',
+        'virtus-certaldo': 'Virtus Certaldo'
       };
       return teams[teamId] || teamId;
     }
