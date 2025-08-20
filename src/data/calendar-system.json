@@ -197,7 +197,7 @@
       "status": "active",
       "badgeColor": "bg-blue-600",
       "textColor": "text-white",
-      "icon": "trophy"
+      "icon": "medal"
     },
     "coppa-toscana": {
       "name": "Trofeo Piperno - Coppa Toscana",
@@ -207,7 +207,7 @@
       "status": "active",
       "badgeColor": "bg-red-600",
       "textColor": "text-white",
-      "icon": "trophy"
+      "icon": "cup"
     }
   },
   "matches": [
