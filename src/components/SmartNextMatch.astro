@@ -2,13 +2,9 @@
 import CountdownTimer from "./CountdownTimer.astro";
 import LucideIcon from "./LucideIcon.astro";
 import TeamLogo from "./TeamLogo.astro";
-import { format } from "date-fns";
-import { it } from "date-fns/locale";
-
-// Importa i dati del calendario
 import calendarData from "../data/calendar-system.json";
 
-// Funzione per ottenere le prossime partite
+// Funzione per ottenere le prossime partite (Serie C + Coppa Toscana)
 function getUpcomingMatches() {
   const now = new Date();
   const svbTeamId = "svb";
@@ -22,125 +18,165 @@ function getUpcomingMatches() {
     .slice(0, calendarData.settings.maxUpcomingMatches);
 }
 
-// Funzione per determinare se è casa o trasferta
-function isHomeMatch(match: any, teamId: string) {
-  return match.homeTeam === teamId;
-}
-
-// Funzione per ottenere i dati della squadra
-function getTeamData(teamId: string) {
-  return calendarData.teams[teamId as keyof typeof calendarData.teams];
-}
-
-// Funzione per ottenere i dati della competizione
-function getCompetitionData(competitionId: string) {
-  return calendarData.competitions[competitionId as keyof typeof calendarData.competitions];
-}
-
 const upcomingMatches = getUpcomingMatches();
 const svbTeamId = "svb";
+
+// Funzione per ottenere i dettagli della competizione
+function getCompetitionDetails(competitionId: string) {
+  return calendarData.competitions[competitionId];
+}
+
+// Funzione per ottenere il nome della squadra
+function getTeamName(teamId: string) {
+  return calendarData.teams[teamId]?.name || teamId;
+}
+
+// Funzione per ottenere il nome breve della squadra
+function getTeamShortName(teamId: string) {
+  return calendarData.teams[teamId]?.shortName || teamId;
+}
+
+// Funzione per ottenere la palestra
+function getVenue(match: any) {
+  if (match.homeTeam === 'svb') {
+    return calendarData.teams.svb.homeVenue;
+  } else {
+    return calendarData.teams[match.homeTeam]?.homeVenue || match.venue;
+  }
+}
+
+// Funzione per formattare la data
+function formatDate(dateString: string) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('it-IT', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+}
+
+// Funzione per formattare l'ora
+function formatTime(dateString: string) {
+  const date = new Date(dateString);
+  return date.toLocaleTimeString('it-IT', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
 ---
 
-<div class="flex flex-col w-full mb-10 border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-800 dark:border-gray-700 p-2 mt-32">
-  <h1 class="dark:text-white text-red-700 font-black m-2 text-center text-4xl mb-5">Prossime Partite</h1>
-  
-  <div class="flex justify-center border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700 rounded-lg">
-    <div class="items-center grid md:grid-cols-3 w-full grid-cols-1">
-      {upcomingMatches.length > 0 ? (
-        upcomingMatches.map((match) => {
-          const isHome = isHomeMatch(match, svbTeamId);
-          const homeTeam = getTeamData(match.homeTeam);
-          const awayTeam = getTeamData(match.awayTeam);
-          const competition = getCompetitionData(match.competition);
-          const matchDate = new Date(match.date);
+<section class="py-16 bg-gray-50 dark:bg-gray-900">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-extrabold text-gray-900 dark:text-white sm:text-4xl">
+        Prossime Partite
+      </h2>
+      <p class="mt-4 text-lg text-gray-600 dark:text-gray-400">
+        Calendario ufficiale SVB 2025/2026
+      </p>
+    </div>
+
+    {upcomingMatches.length > 0 ? (
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {upcomingMatches.map((match) => {
+          const competition = getCompetitionDetails(match.competition);
+          const isHome = match.homeTeam === svbTeamId;
+          const opponent = isHome ? match.awayTeam : match.homeTeam;
+          const opponentName = getTeamName(opponent);
+          const opponentShortName = getTeamShortName(opponent);
           
           return (
-            <div class="text-center rounded border-gray-200 bg-gray-200 dark:bg-gray-600 dark:border-gray-700 m-1 p-4">
-              <div class="grid grid-cols-3 grid-rows-1 gap-4">
-                {/* Squadra Home */}
-                <div class="flex flex-col justify-center items-center">
-                  <TeamLogo 
-                    teamId={match.homeTeam}
-                    teamName={homeTeam.name}
-                    logoPath={homeTeam.logo}
-                    class="mb-2"
-                  />
-                  <p class="text-xs text-black dark:text-white font-medium">{homeTeam.shortName}</p>
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              {/* Header con badge competizione */}
+              <div class={`px-6 py-4 ${competition.badgeColor} ${competition.textColor}`}>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center space-x-2">
+                    <LucideIcon icon={competition.icon} class="w-5 h-5" />
+                    <span class="font-semibold">{competition.shortName}</span>
+                  </div>
+                  <span class="text-sm opacity-90">Giornata {match.round}</span>
                 </div>
-                
-                {/* Centro con informazioni partita */}
-                <div class="flex justify-center items-center flex-col">
-                  {/* Competizione */}
-                  <div class={`text-center flex items-center justify-center gap-2 px-3 py-2 rounded-full ${competition.badgeColor} ${competition.textColor} text-sm font-bold mb-2 shadow-lg`}>
-                    <LucideIcon name={competition.icon} size={16} />
-                    <span>{competition.shortName}</span>
+              </div>
+
+              {/* Contenuto partita */}
+              <div class="p-6">
+                {/* Date e countdown */}
+                <div class="text-center mb-4">
+                  <div class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                    {formatDate(match.date)}
                   </div>
-                  
-                  {/* Icona Home/Away */}
-                  <div class="mb-2">
-                    {isHome ? (
-                      <div class="text-green-600 dark:text-green-400 flex flex-col items-center">
-                        <LucideIcon name="home" size={24} class="mb-1" />
-                        <span class="text-xs font-medium">Casa</span>
-                      </div>
-                    ) : (
-                      <div class="text-blue-600 dark:text-blue-400 flex flex-col items-center">
-                        <LucideIcon name="mapPin" size={24} class="mb-1" />
-                        <span class="text-xs font-medium">Trasferta</span>
-                      </div>
-                    )}
+                  <div class="text-lg text-gray-600 dark:text-gray-400 mb-4">
+                    {formatTime(match.date)}
                   </div>
-                  
-                  {/* Countdown Timer */}
-                  <CountdownTimer targetDate={match.date} matchId={match.id} />
-                  
-                  {/* Luogo e data */}
-                  <div class="flex items-center gap-1 text-gray-500 dark:text-gray-300 text-xs mt-2">
-                    <LucideIcon name="building" size={12} />
-                    <span>{match.venue}</span>
+                  <CountdownTimer targetDate={match.date} />
+                </div>
+
+                {/* Squadre */}
+                <div class="flex items-center justify-between mb-6">
+                  {/* Squadra casa */}
+                  <div class="text-center flex-1">
+                    <div class="mb-2">
+                      <TeamLogo teamId={match.homeTeam} teamName={getTeamName(match.homeTeam)} />
+                    </div>
+                    <div class="font-semibold text-gray-900 dark:text-white">
+                      {getTeamShortName(match.homeTeam)}
+                    </div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                      {isHome ? 'Casa' : 'Ospite'}
+                    </div>
                   </div>
-                  <div class="flex items-center gap-1 text-gray-500 dark:text-gray-300 text-xs">
-                    <LucideIcon name="calendar" size={12} />
-                    <span>{format(matchDate, "dd MMMM yyyy 'ore' HH:mm", { locale: it })}</span>
+
+                  {/* VS */}
+                  <div class="mx-4">
+                    <div class="text-2xl font-bold text-gray-400 dark:text-gray-500">VS</div>
+                  </div>
+
+                  {/* Squadra ospite */}
+                  <div class="text-center flex-1">
+                    <div class="mb-2">
+                      <TeamLogo teamId={match.awayTeam} teamName={getTeamName(match.awayTeam)} />
+                    </div>
+                    <div class="font-semibold text-gray-900 dark:text-white">
+                      {getTeamShortName(match.awayTeam)}
+                    </div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">
+                      {!isHome ? 'Casa' : 'Ospite'}
+                    </div>
                   </div>
                 </div>
-                
-                {/* Squadra Away */}
-                <div class="flex flex-col justify-center items-center">
-                  <TeamLogo 
-                    teamId={match.awayTeam}
-                    teamName={awayTeam.name}
-                    logoPath={awayTeam.logo}
-                    class="mb-2"
-                  />
-                  <p class="text-xs text-black dark:text-white font-medium">{awayTeam.shortName}</p>
+
+                {/* Luogo */}
+                <div class="text-center">
+                  <div class="text-sm text-gray-600 dark:text-gray-400">
+                    <div class="font-medium">{getVenue(match)}</div>
+                  </div>
                 </div>
               </div>
             </div>
           );
-        })
-      ) : (
-        // Nessuna partita programmata
-        <div class="col-span-3 text-center py-8">
-          <div class="text-gray-500 dark:text-gray-400">
-            <svg class="w-16 h-16 mx-auto mb-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-            </svg>
-            <p class="text-lg font-medium">Nessuna partita programmata</p>
-            <p class="text-sm">I calendari sono in fase di pubblicazione</p>
-          </div>
-        </div>
-      )}
+        })}
+      </div>
+    ) : (
+      <div class="text-center py-12">
+        <div class="text-gray-400 dark:text-gray-600 text-6xl mb-4">🏀</div>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">
+          Nessuna partita programmata
+        </h3>
+        <p class="text-gray-500 dark:text-gray-400">
+          Controlla più avanti per le prossime partite
+        </p>
+      </div>
+    )}
+
+    {/* Link al calendario completo */}
+    <div class="text-center mt-12">
+      <a 
+        href="/Calendari" 
+        class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 transition-colors duration-200"
+      >
+        <LucideIcon icon="calendar" class="w-5 h-5 mr-2" />
+        Vedi Calendario Completo
+      </a>
     </div>
   </div>
-  
-  <div class="w-full">
-    <a href="/Calendari">
-      <button type="button" class="mt-5 text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center gap-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
-        <LucideIcon name="calendar" size={20} />
-        <span>Vedi tutti i calendari</span>
-        <LucideIcon name="arrowRight" size={16} />
-      </button>
-    </a>
-  </div>
-</div> 
+</section> 

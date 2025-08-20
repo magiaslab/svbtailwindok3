@@ -198,9 +198,115 @@
       "badgeColor": "bg-blue-600",
       "textColor": "text-white",
       "icon": "trophy"
+    },
+    "coppa-toscana": {
+      "name": "Trofeo Piperno - Coppa Toscana",
+      "shortName": "Coppa Toscana",
+      "logo": "/img/fip_logo_reg_toscana.png",
+      "season": "2025-2026",
+      "status": "active",
+      "badgeColor": "bg-red-600",
+      "textColor": "text-white",
+      "icon": "trophy"
     }
   },
   "matches": [
+    {
+      "id": "coppa-toscana-1",
+      "competition": "coppa-toscana",
+      "homeTeam": "abc-castelfiorentino",
+      "awayTeam": "vincente-483",
+      "date": "2025-09-14T18:00:00",
+      "venue": "PALASPORT NEDO BETTI",
+      "status": "scheduled",
+      "round": 1,
+      "season": "2025-2026",
+      "match_number": 484
+    },
+    {
+      "id": "coppa-toscana-2",
+      "competition": "coppa-toscana",
+      "homeTeam": "pino-firenze",
+      "awayTeam": "valdisieve",
+      "date": "2025-09-13T18:30:00",
+      "venue": "PALESTRA E.BALDUCCI PONTASSIEV",
+      "status": "scheduled",
+      "round": 1,
+      "season": "2025-2026",
+      "match_number": 485
+    },
+    {
+      "id": "coppa-toscana-3",
+      "competition": "coppa-toscana",
+      "homeTeam": "fides-montevarchi",
+      "awayTeam": "cus-firenze",
+      "date": "2025-09-13T18:00:00",
+      "venue": "PALAZZETTO dello SPORT Monteva",
+      "status": "scheduled",
+      "round": 1,
+      "season": "2025-2026",
+      "match_number": 486
+    },
+    {
+      "id": "coppa-toscana-4",
+      "competition": "coppa-toscana",
+      "homeTeam": "union-basket-prato",
+      "awayTeam": "svb",
+      "date": "2025-09-14T18:00:00",
+      "venue": "PALESTRA TOSCANINI",
+      "status": "scheduled",
+      "round": 1,
+      "season": "2025-2026",
+      "match_number": 487
+    },
+    {
+      "id": "coppa-toscana-5",
+      "competition": "coppa-toscana",
+      "homeTeam": "prato-dragons",
+      "awayTeam": "folgore-fucecchio",
+      "date": "2025-09-14T18:30:00",
+      "venue": "PALESTRA TOSCANINI",
+      "status": "scheduled",
+      "round": 1,
+      "season": "2025-2026",
+      "match_number": 488
+    },
+    {
+      "id": "coppa-toscana-6",
+      "competition": "coppa-toscana",
+      "homeTeam": "us-livorno",
+      "awayTeam": "bottegone",
+      "date": "2025-09-13T18:15:00",
+      "venue": "PALACOSMELLI",
+      "status": "scheduled",
+      "round": 1,
+      "season": "2025-2026",
+      "match_number": 489
+    },
+    {
+      "id": "coppa-toscana-7",
+      "competition": "coppa-toscana",
+      "homeTeam": "polisportiva-sancat",
+      "awayTeam": "pall-sansepolcro",
+      "date": "2025-09-14T18:00:00",
+      "venue": "PALESTRA SC. D.COMPAGNI- L. GUARNIERI",
+      "status": "scheduled",
+      "round": 1,
+      "season": "2025-2026",
+      "match_number": 490
+    },
+    {
+      "id": "coppa-toscana-8",
+      "competition": "coppa-toscana",
+      "homeTeam": "endiasfalti-agliana",
+      "awayTeam": "don-bosco-livorno",
+      "date": "2025-09-14T18:00:00",
+      "venue": "ITC CAPITINI Agliana",
+      "status": "scheduled",
+      "round": 1,
+      "season": "2025-2026",
+      "match_number": 491
+    },
     {
       "id": "serie-c-1",
       "competition": "serie-c",
