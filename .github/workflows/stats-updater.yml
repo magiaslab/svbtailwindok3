@@ -1,0 +1,76 @@
+name: 📊 Aggiorna Statistiche Basket
+description: Aggiorna automaticamente le statistiche delle squadre SVB
+
+on:
+  schedule:
+    # Esegue ogni 6 ore (00:00, 06:00, 12:00, 18:00 UTC)
+    - cron: '0 */6 * * *'
+  
+  # Esecuzione manuale dal tab Actions di GitHub
+  workflow_dispatch:
+    inputs:
+      force_update:
+        description: 'Forza aggiornamento anche se nessun cambiamento'
+        required: false
+        default: 'false'
+        type: boolean
+
+  # Esegue quando viene pushato su master
+  push:
+    branches: [ master ]
+    paths:
+      - 'scripts/**'
+      - 'src/data/**'
+
+jobs:
+  update-stats:
+    name: 🏀 Aggiorna Statistiche
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: 📦 Installa Dipendenze
+        run: |
+          npm install puppeteer
+          npm install google-spreadsheet
+          npm install dotenv
+      
+      - name: 🔐 Setup Credenziali
+        run: |
+          echo "GOOGLE_SHEET_ID=${{ secrets.GOOGLE_SHEET_ID }}" >> .env
+          echo "GOOGLE_SERVICE_ACCOUNT_EMAIL=${{ secrets.GOOGLE_SERVICE_ACCOUNT_EMAIL }}" >> .env
+          echo "GOOGLE_PRIVATE_KEY='${{ secrets.GOOGLE_PRIVATE_KEY }}'" >> .env
+      
+      - name: 🕷️ Esegui Scraping Statistiche
+        run: node scripts/scrape-stats.js
+        env:
+          NODE_ENV: production
+      
+      - name: 📝 Commit Cambiamenti
+        run: |
+          git config --local user.email "stats-bot@basketsanvincenzo.it"
+          git config --local user.name "Stats Bot SVB"
+          git add -A
+          git diff --quiet && git diff --staged --quiet || git commit -m "📊 Aggiornate statistiche automaticamente - $(date -u +'%Y-%m-%d %H:%M UTC')"
+      
+      - name: 🚀 Push Cambiamenti
+        run: |
+          git push origin master
+        continue-on-error: true
+      
+      - name: ✅ Riepilogo
+        run: |
+          echo "🔄 Workflow completato!"
+          echo "📅 Timestamp: $(date -u)"
+          echo "🏀 Statistiche aggiornate per SVB"

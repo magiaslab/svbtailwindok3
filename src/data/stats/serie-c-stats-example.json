@@ -1,0 +1,76 @@
+{
+  "standings": [
+    {
+      "position": 1,
+      "team": "ABC Castelfiorentino",
+      "teamId": "568",
+      "teamLink": "https://www.playbasket.it/toscana/club.php?obj=568&action=view&eid=4",
+      "points": 0,
+      "pointsPerGame": 0.00,
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "percentage": 1.00,
+      "streak": "-",
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "quality": "n/a",
+      "pointsForPerGame": 0.0,
+      "pointsAgainstPerGame": 0.0
+    },
+    {
+      "position": 2,
+      "team": "Basket San Vincenzo",
+      "teamId": "3638",
+      "teamLink": "https://www.playbasket.it/toscana/club.php?obj=3638&action=view&eid=4",
+      "points": 0,
+      "pointsPerGame": 0.00,
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "percentage": 1.00,
+      "streak": "-1L",
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "quality": "n/a",
+      "pointsForPerGame": 0.0,
+      "pointsAgainstPerGame": 0.0
+    }
+  ],
+  "teamStats": {
+    "ABC Castelfiorentino": {
+      "position": 1,
+      "points": 0,
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "winPercentage": 1.00,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "pointDifference": 0,
+      "averagePointsFor": 0.0,
+      "averagePointsAgainst": 0.0
+    },
+    "Basket San Vincenzo": {
+      "position": 2,
+      "points": 0,
+      "games": 0,
+      "wins": 0,
+      "losses": 0,
+      "winPercentage": 1.00,
+      "pointsFor": 0,
+      "pointsAgainst": 0,
+      "pointDifference": 0,
+      "averagePointsFor": 0.0,
+      "averagePointsAgainst": 0.0
+    }
+  },
+  "lastUpdate": "2025-01-27T10:00:00.000Z",
+  "season": "2025-2026",
+  "competition": "Serie C Maschile Toscana",
+  "conference": "Conference Nord-Ovest",
+  "group": "Girone B",
+  "source": "playbasket.it",
+  "totalTeams": 17,
+  "status": "active"
+}
