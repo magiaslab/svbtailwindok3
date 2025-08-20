@@ -1,577 +1,425 @@
 {
   "teams": {
     "svb": {
-      "name": "Garden Toscana Resort Basket San Vincenzo",
+      "name": "BASKET SAN VINCENZO",
       "shortName": "SVB",
       "logo": "/img/logo svb.png",
-      "homeVenue": "Pala Toscanini",
-      "homeVenueAddress": "San Vincenzo, LI",
+      "homeVenue": "Palazz L. Giovani San Vincenz",
+      "homeVenueAddress": "P.za Giovanni XXIII - SAN VINCENZO - (LIVORNO)",
       "colors": {
         "primary": "#1e40af",
         "secondary": "#fbbf24"
       }
     },
     "us-livorno": {
-      "name": "U.S. Livorno Basket",
+      "name": "U.S. LIVORNO BASKET",
       "shortName": "Livorno",
       "logo": "/img/uslivorno.png",
-      "homeVenue": "PalaMacchia",
-      "homeVenueAddress": "Livorno, LI",
+      "homeVenue": "PALACOSMELLI",
+      "homeVenueAddress": "V. Pensieri / V. Allende n. 11 - LIVORNO - (LIVORNO)",
       "colors": {
         "primary": "#dc2626",
         "secondary": "#ffffff"
       }
     },
-    "don-bosco-livorno": {
-      "name": "Pall. Don Bosco Livorno",
-      "shortName": "Don Bosco",
-      "logo": "/img/teams/don-bosco-livorno.png",
-      "homeVenue": "Pala Don Bosco",
-      "homeVenueAddress": "Livorno, LI",
+    "endiasfalti-agliana": {
+      "name": "ENDIASFALTI PALL. AGLIANA 2000",
+      "shortName": "Agliana",
+      "logo": "/img/teams/endiasfalti-agliana.png",
+      "homeVenue": "ITC CAPITINI Agliana",
+      "homeVenueAddress": "Via Goldoni Snc - AGLIANA (PISTOIA)",
       "colors": {
         "primary": "#059669",
         "secondary": "#ffffff"
       }
     },
-    "montevarchi": {
-      "name": "Fides Pall. Montevarchi",
-      "shortName": "Montevarchi",
-      "logo": "/img/teams/montevarchi.png",
-      "homeVenue": "Pala Montevarchi",
-      "homeVenueAddress": "Montevarchi, AR",
+    "folgore-fucecchio": {
+      "name": "FOLGORE FUCECCHIO",
+      "shortName": "Fucecchio",
+      "logo": "/img/fucecchio.png",
+      "homeVenue": "Palasport Fucecchio (FI)",
+      "homeVenueAddress": "VIA FUCECCHIELLO, 8 - FUCECCHIO - (FIRENZE)",
       "colors": {
         "primary": "#7c3aed",
         "secondary": "#ffffff"
       }
     },
-    "dukes-sansepolcro": {
-      "name": "Dukes Sansepolcro",
-      "shortName": "Dukes",
-      "logo": "/img/teams/dukes-sansepolcro.png",
-      "homeVenue": "Pala Sansepolcro",
-      "homeVenueAddress": "Sansepolcro, AR",
+    "pall-sansepolcro": {
+      "name": "PALL. SANSEPOLCRO",
+      "shortName": "Sansepolcro",
+      "logo": "/img/teams/pall-sansepolcro.png",
+      "homeVenue": "PALASPORT Sansepolcro",
+      "homeVenueAddress": "Via Giuseppe Saragat - SANSEPOLCRO - (AREZZO)",
       "colors": {
         "primary": "#1f2937",
         "secondary": "#f59e0b"
       }
     },
-    "valdisieve": {
-      "name": "Valdisieve",
-      "shortName": "Valdisieve",
-      "logo": "/img/teams/valdisieve.png",
-      "homeVenue": "Pala Valdisieve",
-      "homeVenueAddress": "Rufina, FI",
-      "colors": {
-        "primary": "#0891b2",
-        "secondary": "#ffffff"
-      }
-    },
-    "agliana": {
-      "name": "Pall. Agliana 2000",
-      "shortName": "Agliana",
-      "logo": "/img/teams/agliana.png",
-      "homeVenue": "Pala Agliana",
-      "homeVenueAddress": "Agliana, PT",
-      "colors": {
-        "primary": "#059669",
-        "secondary": "#ffffff"
-      }
-    },
-    "prato-2000": {
-      "name": "Pall. 2000 Prato",
-      "shortName": "Prato 2000",
-      "logo": "/img/teams/prato-2000.png",
-      "homeVenue": "Pala Prato 2000",
-      "homeVenueAddress": "Prato, PO",
+    "prato-dragons": {
+      "name": "PALLACANESTRO PRATO DRAGONS",
+      "shortName": "Prato Dragons",
+      "logo": "/img/teams/prato-dragons.png",
+      "homeVenue": "PALESTRA TOSCANINI",
+      "homeVenueAddress": "Via Toscanini n. 2 - PRATO (PRATO)",
       "colors": {
         "primary": "#dc2626",
         "secondary": "#ffffff"
       }
     },
-    "union-prato": {
-      "name": "Union Basket Prato",
-      "shortName": "Union Prato",
-      "logo": "/img/unionprato.jpg",
-      "homeVenue": "Pala Consiag",
-      "homeVenueAddress": "Prato, PO",
+    "cus-firenze": {
+      "name": "CUS FIRENZE",
+      "shortName": "Cus Firenze",
+      "logo": "/img/teams/cus-firenze.png",
+      "homeVenue": "PALAZZETTO UNIV. (MONTALVE)",
+      "homeVenueAddress": "Via Vittoria della Rovere, 40 - FIRENZE - (FIRENZE)",
       "colors": {
-        "primary": "#1e40af",
+        "primary": "#dc2626",
+        "secondary": "#ffffff"
+      }
+    },
+    "valdisieve": {
+      "name": "VALDISIEVE",
+      "shortName": "Valdisieve",
+      "logo": "/img/teams/valdisieve.png",
+      "homeVenue": "PALESTRA E.BALDUCCI PONTASSIEV",
+      "homeVenueAddress": "Via Aretina 78/a - PONTASSIEVE - (FIRENZE)",
+      "colors": {
+        "primary": "#0891b2",
+        "secondary": "#ffffff"
+      }
+    },
+    "fides-montevarchi": {
+      "name": "FIDES P. MONTEVARCHI",
+      "shortName": "Montevarchi",
+      "logo": "/img/teams/fides-montevarchi.png",
+      "homeVenue": "PALAZZETTO dello SPORT Monteva",
+      "homeVenueAddress": "Viale Matteotti - MONTEVARCHI - (AREZZO)",
+      "colors": {
+        "primary": "#7c3aed",
         "secondary": "#ffffff"
       }
     },
     "bottegone": {
-      "name": "Bottegone Basket 2001",
+      "name": "BOTTEGONE BASKET 2001",
       "shortName": "Bottegone",
       "logo": "/img/teams/bottegone.png",
-      "homeVenue": "Pala Bottegone",
-      "homeVenueAddress": "Bottegone, PT",
+      "homeVenue": "Scuola M. L. King",
+      "homeVenueAddress": "Via Santi Loc. Bottegone - PISTOIA - (PISTOIA)",
       "colors": {
         "primary": "#7c2d12",
         "secondary": "#ffffff"
       }
     },
     "pino-firenze": {
-      "name": "U.S. Pino Basket Firenze",
+      "name": "UNIONE SPORTIVA PINO FIRENZE",
       "shortName": "Pino Firenze",
       "logo": "/img/teams/pino-firenze.png",
-      "homeVenue": "Pala Pino",
-      "homeVenueAddress": "Firenze, FI",
+      "homeVenue": "PALACOVERCIANO",
+      "homeVenueAddress": "Via De Robertis, 21 - FIRENZE - (FIRENZE)",
       "colors": {
         "primary": "#059669",
         "secondary": "#ffffff"
       }
     },
-    "sancat-firenze": {
-      "name": "Pol. Sancat Firenze",
-      "shortName": "Sancat",
-      "logo": "/img/teams/sancat-firenze.png",
-      "homeVenue": "Pala Sancat",
-      "homeVenueAddress": "Firenze, FI",
+    "virtus-certaldo": {
+      "name": "VIRTUS CERTALDO",
+      "shortName": "Certaldo",
+      "logo": "/img/teams/virtus-certaldo.png",
+      "homeVenue": "Palazzetto Sport Certaldo",
+      "homeVenueAddress": "Localita' Canonica - CERTALDO - (FIRENZE)",
       "colors": {
-        "primary": "#1e40af",
+        "primary": "#1f2937",
         "secondary": "#ffffff"
       }
     },
-    "cus-firenze": {
-      "name": "Cus Firenze",
-      "shortName": "Cus Firenze",
-      "logo": "/img/teams/cus-firenze.png",
-      "homeVenue": "Pala Cus",
-      "homeVenueAddress": "Firenze, FI",
-      "colors": {
-        "primary": "#dc2626",
-        "secondary": "#ffffff"
-      }
-    },
-    "fucecchio": {
-      "name": "G.S. Folgore Fucecchio",
-      "shortName": "Fucecchio",
-      "logo": "/img/fucecchio.png",
-      "homeVenue": "Pala Parenti",
-      "homeVenueAddress": "Fucecchio, FI",
-      "colors": {
-        "primary": "#7c3aed",
-        "secondary": "#ffffff"
-      }
-    },
-    "castelfiorentino": {
-      "name": "ABC Castelfiorentino",
+    "abc-castelfiorentino": {
+      "name": "ABC CASTELFIORENTINO",
       "shortName": "Castelfiorentino",
-      "logo": "/img/teams/castelfiorentino.png",
-      "homeVenue": "Pala Castelfiorentino",
-      "homeVenueAddress": "Castelfiorentino, FI",
+      "logo": "/img/teams/abc-castelfiorentino.png",
+      "homeVenue": "PALASPORT NEDO BETTI",
+      "homeVenueAddress": "Via Roosvelt - CASTELFIORENTINO - (FIRENZE)",
       "colors": {
         "primary": "#059669",
         "secondary": "#ffffff"
       }
     },
-    "sel-rose": {
-      "name": "Basket Sel Rose Rosignano",
-      "shortName": "Sel Rose",
-      "logo": "/img/teams/sel-rose.png",
-      "homeVenue": "Pala Sel Rose",
-      "homeVenueAddress": "Rosignano, LI",
+    "don-bosco-livorno": {
+      "name": "PALL. DON BOSCO LIVORNO",
+      "shortName": "Don Bosco",
+      "logo": "/img/teams/don-bosco-livorno.png",
+      "homeVenue": "PALASPORT 'B. MACCHIA'",
+      "homeVenueAddress": "Via S. Allende 2 - LIVORNO - (LIVORNO)",
+      "colors": {
+        "primary": "#059669",
+        "secondary": "#ffffff"
+      }
+    },
+    "us-sei-rose": {
+      "name": "U S BASKET SEI ROSE",
+      "shortName": "Sei Rose",
+      "logo": "/img/teams/us-sei-rose.png",
+      "homeVenue": "TENSOSTRUTTURA ROSIGNANO",
+      "homeVenueAddress": "Via Borsellino - ROSIGNANO MARITTIMO - (LIVORNO)",
       "colors": {
         "primary": "#be185d",
         "secondary": "#ffffff"
       }
     },
-    "virtus-certaldo": {
-      "name": "Virtus Certaldo",
-      "shortName": "Certaldo",
-      "logo": "/img/teams/virtus-certaldo.png",
-      "homeVenue": "Pala Certaldo",
-      "homeVenueAddress": "Certaldo, FI",
+    "polisportiva-sancat": {
+      "name": "POLISPORTIVA SANCAT",
+      "shortName": "Sancat",
+      "logo": "/img/teams/polisportiva-sancat.png",
+      "homeVenue": "PALESTRA SC. D.COMPAGNI- L. GUARNIERI",
+      "homeVenueAddress": "VIA DON GIOVANNI VERITA' SNC - FIRENZE - (FIRENZE)",
       "colors": {
-        "primary": "#1f2937",
+        "primary": "#1e40af",
+        "secondary": "#ffffff"
+      }
+    },
+    "union-basket-prato": {
+      "name": "UNION BASKET PRATO",
+      "shortName": "Union Prato",
+      "logo": "/img/unionprato.jpg",
+      "homeVenue": "PALESTRA TOSCANINI",
+      "homeVenueAddress": "Via Toscanini n. 2 - PRATO - (PRATO)",
+      "colors": {
+        "primary": "#1e40af",
         "secondary": "#ffffff"
       }
     }
   },
   "competitions": {
     "serie-c": {
-      "name": "Serie C Unica - Girone B Toscana",
+      "name": "Serie C - Conference Nord Ovest - Italiana - Girone C",
       "shortName": "Serie C",
       "logo": "/img/fip_logo_reg_toscana.png",
-      "season": "2024-2025",
+      "season": "2025-2026",
       "status": "active",
       "badgeColor": "bg-blue-600",
       "textColor": "text-white",
       "icon": "trophy"
-    },
-    "under20": {
-      "name": "Under 20 Gold - Girone B Toscana",
-      "shortName": "Under 20",
-      "logo": "/img/fip_logo_reg_toscana.png",
-      "season": "2024-2025",
-      "status": "active",
-      "badgeColor": "bg-green-600",
-      "textColor": "text-white",
-      "icon": "users"
-    },
-    "under15": {
-      "name": "Under 15 Gold - Girone B Toscana",
-      "shortName": "Under 15",
-      "logo": "/img/fip_logo_reg_toscana.png",
-      "season": "2024-2025",
-      "status": "active",
-      "badgeColor": "bg-purple-600",
-      "textColor": "text-white",
-      "icon": "baby"
     }
   },
   "matches": [
     {
       "id": "serie-c-1",
       "competition": "serie-c",
-      "homeTeam": "union-prato",
-      "awayTeam": "svb",
-      "date": "2025-08-24T18:00:00",
-      "venue": "Pala Consiag",
+      "homeTeam": "svb",
+      "awayTeam": "pall-sansepolcro",
+      "date": "2025-09-27T21:15:00",
+      "venue": "Palazz L. Giovani San Vincenz",
       "status": "scheduled",
       "round": 1,
-      "season": "2024-2025"
+      "season": "2025-2026"
     },
     {
       "id": "serie-c-2",
       "competition": "serie-c",
-      "homeTeam": "svb",
-      "awayTeam": "fucecchio",
-      "date": "2025-08-31T18:00:00",
-      "venue": "Pala Toscanini",
+      "homeTeam": "virtus-certaldo",
+      "awayTeam": "svb",
+      "date": "2025-10-04T21:15:00",
+      "venue": "Palazzetto Sport Certaldo",
       "status": "scheduled",
       "round": 2,
-      "season": "2024-2025"
+      "season": "2025-2026"
     },
     {
       "id": "serie-c-3",
       "competition": "serie-c",
-      "homeTeam": "montevarchi",
-      "awayTeam": "svb",
-      "date": "2025-09-07T18:00:00",
-      "venue": "Pala Montevarchi",
+      "homeTeam": "svb",
+      "awayTeam": "prato-dragons",
+      "date": "2025-10-11T21:15:00",
+      "venue": "Palazz L. Giovani San Vincenz",
       "status": "scheduled",
       "round": 3,
-      "season": "2024-2025"
+      "season": "2025-2026"
     },
     {
       "id": "serie-c-4",
       "competition": "serie-c",
       "homeTeam": "svb",
-      "awayTeam": "us-livorno",
-      "date": "2025-09-14T18:00:00",
-      "venue": "Pala Toscanini",
+      "awayTeam": "cus-firenze",
+      "date": "2025-10-19T18:00:00",
+      "venue": "PALAZZETTO UNIV. (MONTALVE)",
       "status": "scheduled",
       "round": 4,
-      "season": "2024-2025"
+      "season": "2025-2026"
     },
     {
       "id": "serie-c-5",
       "competition": "serie-c",
-      "homeTeam": "don-bosco-livorno",
-      "awayTeam": "svb",
-      "date": "2025-09-21T18:00:00",
-      "venue": "Pala Don Bosco",
+      "homeTeam": "svb",
+      "awayTeam": "pino-firenze",
+      "date": "2025-10-22T21:15:00",
+      "venue": "Palazz L. Giovani San Vincenz",
       "status": "scheduled",
       "round": 5,
-      "season": "2024-2025"
+      "season": "2025-2026"
     },
     {
       "id": "serie-c-6",
       "competition": "serie-c",
-      "homeTeam": "svb",
-      "awayTeam": "dukes-sansepolcro",
-      "date": "2025-09-28T18:00:00",
-      "venue": "Pala Toscanini",
+      "homeTeam": "us-livorno",
+      "awayTeam": "svb",
+      "date": "2025-11-01T18:15:00",
+      "venue": "PALACOSMELLI",
       "status": "scheduled",
-      "round": 6,
-      "season": "2024-2025"
+      "round": 7,
+      "season": "2025-2026"
     },
     {
       "id": "serie-c-7",
       "competition": "serie-c",
-      "homeTeam": "valdisieve",
-      "awayTeam": "svb",
-      "date": "2025-10-05T18:00:00",
-      "venue": "Pala Valdisieve",
+      "homeTeam": "svb",
+      "awayTeam": "abc-castelfiorentino",
+      "date": "2025-11-08T21:15:00",
+      "venue": "Palazz L. Giovani San Vincenz",
       "status": "scheduled",
-      "round": 7,
-      "season": "2024-2025"
+      "round": 8,
+      "season": "2025-2026"
     },
     {
       "id": "serie-c-8",
       "competition": "serie-c",
       "homeTeam": "svb",
-      "awayTeam": "agliana",
-      "date": "2025-10-12T18:00:00",
-      "venue": "Pala Toscanini",
+      "awayTeam": "folgore-fucecchio",
+      "date": "2025-11-16T18:00:00",
+      "venue": "Palasport Fucecchio (FI)",
       "status": "scheduled",
-      "round": 8,
-      "season": "2024-2025"
+      "round": 9,
+      "season": "2025-2026"
     },
     {
       "id": "serie-c-9",
       "competition": "serie-c",
-      "homeTeam": "prato-2000",
+      "homeTeam": "valdisieve",
       "awayTeam": "svb",
-      "date": "2025-10-19T18:00:00",
-      "venue": "Pala Prato 2000",
+      "date": "2025-11-29T18:30:00",
+      "venue": "PALESTRA E.BALDUCCI PONTASSIEV",
       "status": "scheduled",
-      "round": 9,
-      "season": "2024-2025"
+      "round": 11,
+      "season": "2025-2026"
     },
     {
       "id": "serie-c-10",
       "competition": "serie-c",
       "homeTeam": "svb",
-      "awayTeam": "bottegone",
-      "date": "2025-10-26T18:00:00",
-      "venue": "Pala Toscanini",
+      "awayTeam": "union-basket-prato",
+      "date": "2025-12-06T21:15:00",
+      "venue": "Palazz L. Giovani San Vincenz",
       "status": "scheduled",
-      "round": 10,
-      "season": "2024-2025"
+      "round": 12,
+      "season": "2025-2026"
     },
     {
       "id": "serie-c-11",
       "competition": "serie-c",
-      "homeTeam": "pino-firenze",
+      "homeTeam": "polisportiva-sancat",
       "awayTeam": "svb",
-      "date": "2025-11-02T18:00:00",
-      "venue": "Pala Pino",
+      "date": "2025-12-10T21:15:00",
+      "venue": "PALESTRA SC. D.COMPAGNI- L. GUARNIERI",
       "status": "scheduled",
-      "round": 11,
-      "season": "2024-2025"
+      "round": 13,
+      "season": "2025-2026"
     },
     {
       "id": "serie-c-12",
       "competition": "serie-c",
       "homeTeam": "svb",
-      "awayTeam": "sancat-firenze",
-      "date": "2025-11-09T18:00:00",
-      "venue": "Pala Toscanini",
+      "awayTeam": "bottegone",
+      "date": "2025-12-13T21:15:00",
+      "venue": "Palazz L. Giovani San Vincenz",
       "status": "scheduled",
-      "round": 12,
-      "season": "2024-2025"
+      "round": 14,
+      "season": "2025-2026"
     },
     {
       "id": "serie-c-13",
       "competition": "serie-c",
-      "homeTeam": "cus-firenze",
+      "homeTeam": "us-sei-rose",
       "awayTeam": "svb",
-      "date": "2025-11-16T18:00:00",
-      "venue": "Pala Cus",
+      "date": "2025-12-21T18:00:00",
+      "venue": "TENSOSTRUTTURA ROSIGNANO",
       "status": "scheduled",
-      "round": 13,
-      "season": "2024-2025"
+      "round": 15,
+      "season": "2025-2026"
     },
     {
       "id": "serie-c-14",
       "competition": "serie-c",
       "homeTeam": "svb",
-      "awayTeam": "castelfiorentino",
-      "date": "2025-11-23T18:00:00",
-      "venue": "Pala Toscanini",
+      "awayTeam": "endiasfalti-agliana",
+      "date": "2026-01-11T18:00:00",
+      "venue": "ITC CAPITINI Agliana",
       "status": "scheduled",
-      "round": 14,
-      "season": "2024-2025"
+      "round": 17,
+      "season": "2025-2026"
     },
     {
       "id": "serie-c-15",
       "competition": "serie-c",
-      "homeTeam": "sel-rose",
-      "awayTeam": "svb",
-      "date": "2025-11-30T18:00:00",
-      "venue": "Pala Sel Rose",
+      "homeTeam": "svb",
+      "awayTeam": "don-bosco-livorno",
+      "date": "2026-01-03T21:15:00",
+      "venue": "Palazz L. Giovani San Vincenz",
       "status": "scheduled",
-      "round": 15,
-      "season": "2024-2025"
+      "round": 16,
+      "season": "2025-2026"
     },
     {
       "id": "serie-c-16",
       "competition": "serie-c",
+      "homeTeam": "pall-sansepolcro",
+      "awayTeam": "svb",
+      "date": "2026-01-17T18:30:00",
+      "venue": "PALASPORT Sansepolcro",
+      "status": "scheduled",
+      "round": 18,
+      "season": "2025-2026"
+    },
+    {
+      "id": "serie-c-17",
+      "competition": "serie-c",
+      "homeTeam": "prato-dragons",
+      "awayTeam": "svb",
+      "date": "2026-02-01T18:00:00",
+      "venue": "PALESTRA TOSCANINI",
+      "status": "scheduled",
+      "round": 20,
+      "season": "2025-2026"
+    },
+    {
+      "id": "serie-c-18",
+      "competition": "serie-c",
+      "homeTeam": "svb",
+      "awayTeam": "cus-firenze",
+      "date": "2026-02-07T21:15:00",
+      "venue": "Palazz L. Giovani San Vincenz",
+      "status": "scheduled",
+      "round": 21,
+      "season": "2025-2026"
+    },
+    {
+      "id": "serie-c-19",
+      "competition": "serie-c",
+      "homeTeam": "pino-firenze",
+      "awayTeam": "svb",
+      "date": "2026-02-11T21:00:00",
+      "venue": "PALACOVERCIANO",
+      "status": "scheduled",
+      "round": 22,
+      "season": "2025-2026"
+    },
+    {
+      "id": "serie-c-20",
+      "competition": "serie-c",
       "homeTeam": "svb",
       "awayTeam": "virtus-certaldo",
-      "date": "2025-12-07T18:00:00",
-      "venue": "Pala Toscanini",
+      "date": "2026-01-24T21:15:00",
+      "venue": "Palazz L. Giovani San Vincenz",
       "status": "scheduled",
-      "round": 16,
-      "season": "2024-2025"
-    },
-    {
-      "id": "under20-1",
-      "competition": "under20",
-      "homeTeam": "svb",
-      "awayTeam": "union-prato",
-      "date": "2025-08-23T18:00:00",
-      "venue": "Pala Toscanini",
-      "status": "scheduled",
-      "round": 1,
-      "season": "2024-2025"
-    },
-    {
-      "id": "under20-2",
-      "competition": "under20",
-      "homeTeam": "fucecchio",
-      "awayTeam": "svb",
-      "date": "2025-08-30T18:00:00",
-      "venue": "Pala Parenti",
-      "status": "scheduled",
-      "round": 2,
-      "season": "2024-2025"
-    },
-    {
-      "id": "under20-3",
-      "competition": "under20",
-      "homeTeam": "svb",
-      "awayTeam": "montevarchi",
-      "date": "2025-09-06T18:00:00",
-      "venue": "Pala Toscanini",
-      "status": "scheduled",
-      "round": 3,
-      "season": "2024-2025"
-    },
-    {
-      "id": "under20-4",
-      "competition": "under20",
-      "homeTeam": "us-livorno",
-      "awayTeam": "svb",
-      "date": "2025-09-13T18:00:00",
-      "venue": "PalaMacchia",
-      "status": "scheduled",
-      "round": 4,
-      "season": "2024-2025"
-    },
-    {
-      "id": "under20-5",
-      "competition": "under20",
-      "homeTeam": "svb",
-      "awayTeam": "don-bosco-livorno",
-      "date": "2025-09-20T18:00:00",
-      "venue": "Pala Toscanini",
-      "status": "scheduled",
-      "round": 5,
-      "season": "2024-2025"
-    },
-    {
-      "id": "under20-6",
-      "competition": "under20",
-      "homeTeam": "dukes-sansepolcro",
-      "awayTeam": "svb",
-      "date": "2025-09-27T18:00:00",
-      "venue": "Pala Sansepolcro",
-      "status": "scheduled",
-      "round": 6,
-      "season": "2024-2025"
-    },
-    {
-      "id": "under20-7",
-      "competition": "under20",
-      "homeTeam": "svb",
-      "awayTeam": "valdisieve",
-      "date": "2025-10-04T18:00:00",
-      "venue": "Pala Toscanini",
-      "status": "scheduled",
-      "round": 7,
-      "season": "2024-2025"
-    },
-    {
-      "id": "under20-8",
-      "competition": "under20",
-      "homeTeam": "agliana",
-      "awayTeam": "svb",
-      "date": "2025-10-11T18:00:00",
-      "venue": "Pala Agliana",
-      "status": "scheduled",
-      "round": 8,
-      "season": "2024-2025"
-    },
-    {
-      "id": "under15-1",
-      "competition": "under15",
-      "homeTeam": "svb",
-      "awayTeam": "montevarchi",
-      "date": "2025-08-22T18:00:00",
-      "venue": "Pala Toscanini",
-      "status": "scheduled",
-      "round": 1,
-      "season": "2024-2025"
-    },
-    {
-      "id": "under15-2",
-      "competition": "under15",
-      "homeTeam": "union-prato",
-      "awayTeam": "svb",
-      "date": "2025-08-29T18:00:00",
-      "venue": "Pala Consiag",
-      "status": "scheduled",
-      "round": 2,
-      "season": "2024-2025"
-    },
-    {
-      "id": "under15-3",
-      "competition": "under15",
-      "homeTeam": "svb",
-      "awayTeam": "fucecchio",
-      "date": "2025-09-05T18:00:00",
-      "venue": "Pala Toscanini",
-      "status": "scheduled",
-      "round": 3,
-      "season": "2024-2025"
-    },
-    {
-      "id": "under15-4",
-      "competition": "under15",
-      "homeTeam": "us-livorno",
-      "awayTeam": "svb",
-      "date": "2025-09-12T18:00:00",
-      "venue": "PalaMacchia",
-      "status": "scheduled",
-      "round": 4,
-      "season": "2024-2025"
-    },
-    {
-      "id": "under15-5",
-      "competition": "under15",
-      "homeTeam": "svb",
-      "awayTeam": "don-bosco-livorno",
-      "date": "2025-09-19T18:00:00",
-      "venue": "Pala Toscanini",
-      "status": "scheduled",
-      "round": 5,
-      "season": "2024-2025"
-    },
-    {
-      "id": "under15-6",
-      "competition": "under15",
-      "homeTeam": "dukes-sansepolcro",
-      "awayTeam": "svb",
-      "date": "2025-09-26T18:00:00",
-      "venue": "Pala Sansepolcro",
-      "status": "scheduled",
-      "round": 6,
-      "season": "2024-2025"
-    },
-    {
-      "id": "under15-7",
-      "competition": "under15",
-      "homeTeam": "svb",
-      "awayTeam": "valdisieve",
-      "date": "2025-10-03T18:00:00",
-      "venue": "Pala Toscanini",
-      "status": "scheduled",
-      "round": 7,
-      "season": "2024-2025"
-    },
-    {
-      "id": "under15-8",
-      "competition": "under15",
-      "homeTeam": "agliana",
-      "awayTeam": "svb",
-      "date": "2025-10-10T18:00:00",
-      "venue": "Pala Agliana",
-      "status": "scheduled",
-      "round": 8,
-      "season": "2024-2025"
+      "round": 19,
+      "season": "2025-2026"
     }
   ],
   "settings": {
