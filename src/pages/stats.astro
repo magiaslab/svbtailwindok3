@@ -2,7 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import Classifica from "../components/classifica.astro"
 import Classifica2 from "../components/classifica2.astro"
-import Charts from "../components/Charts.astro";
+import DynamicStats from "../components/DynamicStats.astro";
 import data from "../data/site.json";
 ---
 
@@ -10,5 +10,5 @@ import data from "../data/site.json";
    
     <Classifica2 />
     <Classifica />
-     <Charts/>
-    </Layout>
+    <DynamicStats showTitle={true} showCharts={true} maxTeams={17} />
+</Layout>

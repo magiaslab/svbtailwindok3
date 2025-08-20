@@ -1,0 +1,327 @@
+---
+// Componente statistiche dinamiche per SVB
+// Si aggiorna automaticamente con i dati del sistema di scraping
+
+interface Props {
+  showTitle?: boolean;
+  showCharts?: boolean;
+  maxTeams?: number;
+}
+
+const { 
+  showTitle = true, 
+  showCharts = true, 
+  maxTeams = 8 
+} = Astro.props;
+
+// Carica le statistiche aggiornate
+let serieCStats = null;
+let statsError = null;
+
+try {
+  // Prova a caricare le statistiche aggiornate
+  const statsPath = new URL('../../data/stats/serie-c-stats.json', import.meta.url);
+  serieCStats = await import(statsPath.href).catch(() => null);
+} catch (error) {
+  // Se non ci sono statistiche aggiornate, usa i dati di fallback
+  try {
+    const fallbackPath = new URL('../../data/stats/serie-c-stats-example.json', import.meta.url);
+    serieCStats = await import(fallbackPath.href).catch(() => null);
+  } catch (fallbackError) {
+    statsError = "Statistiche non disponibili";
+  }
+}
+
+// Se non ci sono statistiche, mostra messaggio
+if (!serieCStats && !statsError) {
+  statsError = "Caricamento statistiche...";
+}
+
+// Funzione per formattare la percentuale
+function formatPercentage(value: number): string {
+  return (value * 100).toFixed(1) + '%';
+}
+
+// Funzione per ottenere il colore della posizione
+function getPositionColor(position: number): string {
+  if (position <= 4) return 'text-emerald-600 dark:text-emerald-400'; // Playoff
+  if (position <= 8) return 'text-blue-600 dark:text-blue-400';       // Mezza classifica
+  if (position <= 12) return 'text-yellow-600 dark:text-yellow-400';  // Zona media
+  return 'text-red-600 dark:text-red-400';                            // Zona pericolo
+}
+
+// Funzione per ottenere l'icona della posizione
+function getPositionIcon(position: number): string {
+  if (position <= 4) return '🏆'; // Playoff
+  if (position <= 8) return '⭐'; // Mezza classifica
+  if (position <= 12) return '⚡'; // Zona media
+  return '⚠️';                     // Zona pericolo
+}
+---
+
+<section class="py-16 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    {showTitle && (
+      <div class="text-center mb-12">
+        <h2 class="text-4xl font-extrabold text-gray-900 dark:text-white sm:text-5xl mb-4">
+          📊 Statistiche Serie C
+        </h2>
+        <p class="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          Classifica aggiornata {serieCStats?.lastUpdate ? new Date(serieCStats.lastUpdate).toLocaleDateString('it-IT') : 'in tempo reale'}
+        </p>
+      </div>
+    )}
+
+    {statsError ? (
+      <div class="text-center py-16">
+        <div class="text-gray-400 dark:text-gray-600 text-6xl mb-6">📊</div>
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          {statsError}
+        </h3>
+        <p class="text-lg text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+          Le statistiche si aggiorneranno automaticamente quando il campionato inizierà
+        </p>
+      </div>
+    ) : serieCStats?.standings ? (
+      <div class="space-y-8">
+        
+        {/* Top 8 Squadre */}
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+          <div class="px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700">
+            <h3 class="text-xl font-bold text-white">🏆 Top {Math.min(maxTeams, serieCStats.standings.length)} Classifica</h3>
+          </div>
+          
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Pos
+                  </th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    Squadra
+                  </th>
+                  <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    P.ti
+                  </th>
+                  <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    G
+                  </th>
+                  <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    V-P
+                  </th>
+                  <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    %
+                  </th>
+                  <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                    PF-PS
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                {serieCStats.standings.slice(0, maxTeams).map((team) => (
+                  <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="flex items-center">
+                        <span class={`text-lg font-bold ${getPositionColor(team.position)}`}>
+                          {getPositionIcon(team.position)} {team.position}
+                        </span>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                      <div class="flex items-center">
+                        <div class="w-8 h-8 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 rounded-full flex items-center justify-center mr-3">
+                          <span class="text-xs font-bold text-blue-800 dark:text-blue-200">
+                            {team.team.substring(0, 2).toUpperCase()}
+                          </span>
+                        </div>
+                        <div>
+                          <div class="text-sm font-semibold text-gray-900 dark:text-white">
+                            {team.team}
+                          </div>
+                          <div class="text-xs text-gray-500 dark:text-gray-400">
+                            {team.teamId}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                      <span class="text-lg font-bold text-gray-900 dark:text-white">
+                        {team.points}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                      <span class="text-sm text-gray-900 dark:text-white">
+                        {team.games}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                      <div class="text-sm">
+                        <span class="text-emerald-600 dark:text-emerald-400 font-semibold">
+                          {team.wins}
+                        </span>
+                        <span class="text-gray-400">-</span>
+                        <span class="text-red-600 dark:text-red-400 font-semibold">
+                          {team.losses}
+                        </span>
+                      </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                        {formatPercentage(team.percentage)}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                      <div class="text-xs">
+                        <div class="text-emerald-600 dark:text-emerald-400">
+                          {team.pointsFor}
+                        </div>
+                        <div class="text-red-600 dark:text-red-400">
+                          {team.pointsAgainst}
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Statistiche SVB */}
+        {serieCStats.standings.find(t => t.team.includes('San Vincenzo')) && (
+          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+            <div class="px-6 py-4 bg-gradient-to-r from-emerald-600 to-emerald-700">
+              <h3 class="text-xl font-bold text-white">🏀 Basket San Vincenzo - Performance</h3>
+            </div>
+            
+            <div class="p-6">
+              {(() => {
+                const svbTeam = serieCStats.standings.find(t => t.team.includes('San Vincenzo'));
+                if (!svbTeam) return null;
+                
+                return (
+                  <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                    <div class="text-center">
+                      <div class="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">
+                        {svbTeam.position}°
+                      </div>
+                      <div class="text-sm text-gray-600 dark:text-gray-400">Posizione</div>
+                    </div>
+                    <div class="text-center">
+                      <div class="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+                        {svbTeam.points}
+                      </div>
+                      <div class="text-sm text-gray-600 dark:text-gray-400">Punti</div>
+                    </div>
+                    <div class="text-center">
+                      <div class="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mb-2">
+                        {svbTeam.wins}
+                      </div>
+                      <div class="text-sm text-gray-600 dark:text-gray-400">Vittorie</div>
+                    </div>
+                    <div class="text-center">
+                      <div class="text-3xl font-bold text-red-600 dark:text-red-400 mb-2">
+                        {svbTeam.losses}
+                      </div>
+                      <div class="text-sm text-gray-600 dark:text-gray-400">Sconfitte</div>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+        )}
+
+        {/* Grafici (se abilitati) */}
+        {showCharts && serieCStats.standings && (
+          <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+            <div class="px-6 py-4 bg-gradient-to-r from-purple-600 to-purple-700">
+              <h3 class="text-xl font-bold text-white">📈 Analisi Performance</h3>
+            </div>
+            
+            <div class="p-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                {/* Distribuzione Punti */}
+                <div>
+                  <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    Distribuzione Punti
+                  </h4>
+                  <div class="space-y-3">
+                    {serieCStats.standings.slice(0, 5).map((team, index) => (
+                      <div class="flex items-center justify-between">
+                        <span class="text-sm text-gray-600 dark:text-gray-400 w-24 truncate">
+                          {team.team}
+                        </span>
+                        <div class="flex-1 mx-3">
+                          <div class="bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div 
+                              class="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                              style={`width: ${(team.points / Math.max(...serieCStats.standings.map(t => t.points))) * 100}%`}
+                            ></div>
+                          </div>
+                        </div>
+                        <span class="text-sm font-semibold text-gray-900 dark:text-white w-12 text-right">
+                          {team.points}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Statistiche Generali */}
+                <div>
+                  <h4 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                    Statistiche Generali
+                  </h4>
+                  <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm text-gray-600 dark:text-gray-400">Squadre totali:</span>
+                      <span class="text-sm font-semibold text-gray-900 dark:text-white">
+                        {serieCStats.standings.length}
+                      </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm text-gray-600 dark:text-gray-400">Ultimo aggiornamento:</span>
+                      <span class="text-sm font-semibold text-gray-900 dark:text-white">
+                        {new Date(serieCStats.lastUpdate).toLocaleString('it-IT')}
+                      </span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                      <span class="text-sm text-gray-600 dark:text-gray-400">Fonte:</span>
+                      <span class="text-sm font-semibold text-gray-900 dark:text-white">
+                        {serieCStats.source}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Link alla pagina completa */}
+        <div class="text-center">
+          <a 
+            href="/stats" 
+            class="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 dark:from-blue-700 dark:to-blue-800 dark:hover:from-blue-800 dark:hover:to-blue-900 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl"
+          >
+            📊 Vedi Statistiche Complete
+          </a>
+        </div>
+      </div>
+    ) : (
+      <div class="text-center py-16">
+        <div class="text-gray-400 dark:text-gray-600 text-6xl mb-6">🏀</div>
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          Campionato non ancora iniziato
+        </h3>
+        <p class="text-lg text-gray-500 dark:text-gray-400 max-w-md mx-auto">
+          Le statistiche saranno disponibili quando inizierà il campionato Serie C 2025/2026
+        </p>
+      </div>
+    )}
+  </div>
+</section>

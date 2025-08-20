@@ -8,7 +8,7 @@ import Logos from "../components/CustomerLogos.astro";
 import data from "../data/site.json";
 import SmartNextMatch from "../components/SmartNextMatch.astro";
 import CalendarUpdater from "../components/CalendarUpdater.astro";
-import Charts from "../components/Charts.astro";
+import DynamicStats from "../components/DynamicStats.astro";
 import Collab from "../components/Collaborazioni.astro"
 import Classifica2 from"../components/classifica2.astro"
 
@@ -23,7 +23,7 @@ import Classifica2 from"../components/classifica2.astro"
     <Blog/>
 <Classifica2 />
 <Classifica />
-<Charts />
+<DynamicStats showTitle={true} showCharts={true} maxTeams={6} />
 <Collab/>
 <CalendarUpdater />
     

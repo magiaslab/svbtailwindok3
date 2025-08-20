@@ -7,7 +7,7 @@
  * estraendole da PlayBasket.it e altri siti ufficiali
  */
 
-import puppeteer from 'puppeteer';
+import { chromium } from 'playwright';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 import fs from 'fs/promises';
 import path from 'path';
@@ -53,13 +53,13 @@ class StatsScraper {
   }
 
   /**
-   * Inizializza il browser Puppeteer
+   * Inizializza il browser Playwright
    */
   async init() {
     console.log('🚀 Inizializzazione browser...');
     
     try {
-      this.browser = await puppeteer.launch({
+      this.browser = await chromium.launch({
         headless: CONFIG.browser.headless,
         args: [
           '--no-sandbox',
@@ -73,8 +73,10 @@ class StatsScraper {
       });
       
       this.page = await this.browser.newPage();
-      await this.page.setUserAgent(CONFIG.browser.userAgent);
-      await this.page.setViewport({ width: 1920, height: 1080 });
+      await this.page.setExtraHTTPHeaders({
+        'User-Agent': CONFIG.browser.userAgent
+      });
+      await this.page.setViewportSize({ width: 1920, height: 1080 });
       
       console.log('✅ Browser inizializzato con successo');
     } catch (error) {
@@ -91,12 +93,16 @@ class StatsScraper {
     
     try {
       await this.page.goto(CONFIG.urls.serieC, { 
-        waitUntil: 'networkidle2',
+        waitUntil: 'networkidle',
         timeout: CONFIG.browser.timeout 
       });
       
-      // Aspetta che la tabella della classifica si carichi
-      await this.page.waitForSelector('table', { timeout: 15000 });
+      // Aspetta che la pagina si carichi e cerca la tabella della classifica
+      await this.page.waitForLoadState('networkidle', { timeout: 15000 });
+      
+      // Cerca la tabella con più righe (probabilmente la classifica)
+      const tableSelector = 'table';
+      await this.page.waitForSelector(tableSelector, { timeout: 15000 });
       
       const serieCStats = await this.page.evaluate(() => {
         const stats = {
@@ -109,8 +115,19 @@ class StatsScraper {
           group: 'Girone B'
         };
         
-        // Estrai la tabella della classifica
-        const table = document.querySelector('table');
+        // Estrai la tabella della classifica (cerca la tabella con più righe)
+        const tables = document.querySelectorAll('table');
+        let table = null;
+        let maxRows = 0;
+        
+        tables.forEach(t => {
+          const rows = t.querySelectorAll('tr');
+          if (rows.length > maxRows) {
+            maxRows = rows.length;
+            table = t;
+          }
+        });
+        
         if (!table) return stats;
         
         const rows = table.querySelectorAll('tbody tr');
@@ -195,7 +212,7 @@ class StatsScraper {
     
     try {
       await this.page.goto(CONFIG.urls.under17, { 
-        waitUntil: 'networkidle2',
+        waitUntil: 'networkidle',
         timeout: CONFIG.browser.timeout 
       });
       
@@ -226,7 +243,7 @@ class StatsScraper {
     
     try {
       await this.page.goto(CONFIG.urls.under13, { 
-        waitUntil: 'networkidle2',
+        waitUntil: 'networkidle',
         timeout: CONFIG.browser.timeout 
       });
       
