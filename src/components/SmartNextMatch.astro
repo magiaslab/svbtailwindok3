@@ -97,7 +97,7 @@ function formatTime(dateString: string) {
                 <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
                 <div class="relative flex items-center justify-between">
                   <div class="flex items-center space-x-3">
-                    <LucideIcon icon="trophy" class="w-6 h-6" />
+                    <LucideIcon icon={competition.icon} class="w-6 h-6" />
                     <span class="font-bold text-lg">{competition.shortName}</span>
                   </div>
                   <span class="text-sm opacity-90 bg-white/20 px-3 py-1 rounded-full font-medium">
@@ -183,14 +183,14 @@ function formatTime(dateString: string) {
                         <div class="w-5 h-5 bg-emerald-500 rounded-full flex items-center justify-center">
                           <LucideIcon icon="home" class="w-3 h-3 text-white" />
                         </div>
-                        <span class="text-sm font-medium text-emerald-700 dark:text-emerald-400">Partita in Casa</span>
+                        <span class="text-sm font-medium text-white">Partita in Casa</span>
                       </>
                     ) : (
                       <>
                         <div class="w-5 h-5 bg-rose-500 rounded-full flex items-center justify-center">
                           <LucideIcon icon="mapPin" class="w-3 h-3 text-white" />
                         </div>
-                        <span class="text-sm font-medium text-rose-700 dark:text-rose-400">Partita in Trasferta</span>
+                        <span class="text-sm font-medium text-white">Partita in Trasferta</span>
                       </>
                     )}
                   </div>
