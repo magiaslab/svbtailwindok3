@@ -14,7 +14,7 @@
     "us-livorno": {
       "name": "U.S. LIVORNO BASKET",
       "shortName": "Livorno",
-      "logo": "/img/uslivorno.png",
+      "logo": "/img/teams/logo_016720_U.D.D.LivornoBasket.png",
       "homeVenue": "PALACOSMELLI",
       "homeVenueAddress": "V. Pensieri / V. Allende n. 11 - LIVORNO - (LIVORNO)",
       "colors": {
@@ -36,7 +36,7 @@
     "folgore-fucecchio": {
       "name": "FOLGORE FUCECCHIO",
       "shortName": "Fucecchio",
-      "logo": "/img/fucecchio.png",
+      "logo": "/img/teams/logo_004714_G.S.FolgorePallacanestroFucecchio.png",
       "homeVenue": "Palasport Fucecchio (FI)",
       "homeVenueAddress": "VIA FUCECCHIELLO, 8 - FUCECCHIO - (FIRENZE)",
       "colors": {
@@ -47,7 +47,7 @@
     "pall-sansepolcro": {
       "name": "PALL. SANSEPOLCRO",
       "shortName": "Sansepolcro",
-      "logo": "/img/teams/pall-sansepolcro.png",
+      "logo": "/img/teams/dukes-sansepolcro.png",
       "homeVenue": "PALASPORT Sansepolcro",
       "homeVenueAddress": "Via Giuseppe Saragat - SANSEPOLCRO - (AREZZO)",
       "colors": {
@@ -58,7 +58,7 @@
     "prato-dragons": {
       "name": "PALLACANESTRO PRATO DRAGONS",
       "shortName": "Prato Dragons",
-      "logo": "/img/teams/prato-dragons.png",
+      "logo": "/img/teams/logo_045426_Pall.2000Prato.png",
       "homeVenue": "PALESTRA TOSCANINI",
       "homeVenueAddress": "Via Toscanini n. 2 - PRATO (PRATO)",
       "colors": {
@@ -69,7 +69,7 @@
     "cus-firenze": {
       "name": "CUS FIRENZE",
       "shortName": "Cus Firenze",
-      "logo": "/img/teams/cus-firenze.png",
+      "logo": "/img/teams/logo_000381_CUSFirenze.png",
       "homeVenue": "PALAZZETTO UNIV. (MONTALVE)",
       "homeVenueAddress": "Via Vittoria della Rovere, 40 - FIRENZE - (FIRENZE)",
       "colors": {
@@ -80,9 +80,9 @@
     "valdisieve": {
       "name": "VALDISIEVE",
       "shortName": "Valdisieve",
-      "logo": "/img/teams/valdisieve.png",
+      "logo": "/img/teams/logo_003487_ValdisieveBasket1975.png",
       "homeVenue": "PALESTRA E.BALDUCCI PONTASSIEV",
-      "homeVenueAddress": "Via Aretina 78/a - PONTASSIEVE - (FIRENZE)",
+      "homeVenueAddress": "Via Aretina 78/a - PONTASSIEV - (FIRENZE)",
       "colors": {
         "primary": "#0891b2",
         "secondary": "#ffffff"
@@ -91,7 +91,7 @@
     "fides-montevarchi": {
       "name": "FIDES P. MONTEVARCHI",
       "shortName": "Montevarchi",
-      "logo": "/img/teams/fides-montevarchi.png",
+      "logo": "/img/teams/logo_000391_U.S.D.FidesP.Montevarchi.png",
       "homeVenue": "PALAZZETTO dello SPORT Monteva",
       "homeVenueAddress": "Viale Matteotti - MONTEVARCHI - (AREZZO)",
       "colors": {
@@ -102,7 +102,7 @@
     "bottegone": {
       "name": "BOTTEGONE BASKET 2001",
       "shortName": "Bottegone",
-      "logo": "/img/teams/bottegone.png",
+      "logo": "/img/teams/logo_046751_BottegoneBasketS.Angelo.png",
       "homeVenue": "Scuola M. L. King",
       "homeVenueAddress": "Via Santi Loc. Bottegone - PISTOIA - (PISTOIA)",
       "colors": {
@@ -113,7 +113,7 @@
     "pino-firenze": {
       "name": "UNIONE SPORTIVA PINO FIRENZE",
       "shortName": "Pino Firenze",
-      "logo": "/img/teams/pino-firenze.png",
+      "logo": "/img/teams/logo_035117_PinoDragonsBKFirenze.png",
       "homeVenue": "PALACOVERCIANO",
       "homeVenueAddress": "Via De Robertis, 21 - FIRENZE - (FIRENZE)",
       "colors": {
@@ -124,7 +124,7 @@
     "virtus-certaldo": {
       "name": "VIRTUS CERTALDO",
       "shortName": "Certaldo",
-      "logo": "/img/teams/virtus-certaldo.png",
+      "logo": "/img/teams/logo_040215_S.S.VirtusCertaldo.png",
       "homeVenue": "Palazzetto Sport Certaldo",
       "homeVenueAddress": "Localita' Canonica - CERTALDO - (FIRENZE)",
       "colors": {
@@ -135,7 +135,7 @@
     "abc-castelfiorentino": {
       "name": "ABC CASTELFIORENTINO",
       "shortName": "Castelfiorentino",
-      "logo": "/img/teams/abc-castelfiorentino.png",
+      "logo": "/img/teams/castelfiorentino.png",
       "homeVenue": "PALASPORT NEDO BETTI",
       "homeVenueAddress": "Via Roosvelt - CASTELFIORENTINO - (FIRENZE)",
       "colors": {
@@ -146,7 +146,7 @@
     "don-bosco-livorno": {
       "name": "PALL. DON BOSCO LIVORNO",
       "shortName": "Don Bosco",
-      "logo": "/img/teams/don-bosco-livorno.png",
+      "logo": "/img/teams/logo_037420_Pall.DonBosco.png",
       "homeVenue": "PALASPORT 'B. MACCHIA'",
       "homeVenueAddress": "Via S. Allende 2 - LIVORNO - (LIVORNO)",
       "colors": {
@@ -157,7 +157,7 @@
     "us-sei-rose": {
       "name": "U S BASKET SEI ROSE",
       "shortName": "Sei Rose",
-      "logo": "/img/teams/us-sei-rose.png",
+      "logo": "/img/teams/logo_006457_U.S.BasketSeiRose.png",
       "homeVenue": "TENSOSTRUTTURA ROSIGNANO",
       "homeVenueAddress": "Via Borsellino - ROSIGNANO MARITTIMO - (LIVORNO)",
       "colors": {
@@ -168,7 +168,7 @@
     "polisportiva-sancat": {
       "name": "POLISPORTIVA SANCAT",
       "shortName": "Sancat",
-      "logo": "/img/teams/polisportiva-sancat.png",
+      "logo": "/img/teams/logo_050932_Sancat.png",
       "homeVenue": "PALESTRA SC. D.COMPAGNI- L. GUARNIERI",
       "homeVenueAddress": "VIA DON GIOVANNI VERITA' SNC - FIRENZE - (FIRENZE)",
       "colors": {
@@ -179,7 +179,7 @@
     "union-basket-prato": {
       "name": "UNION BASKET PRATO",
       "shortName": "Union Prato",
-      "logo": "/img/unionprato.jpg",
+      "logo": "/img/teams/unionprato.jpg",
       "homeVenue": "PALESTRA TOSCANINI",
       "homeVenueAddress": "Via Toscanini n. 2 - PRATO - (PRATO)",
       "colors": {
