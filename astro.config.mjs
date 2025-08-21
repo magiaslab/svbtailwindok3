@@ -11,15 +11,12 @@ export default defineConfig({
   integrations: [tailwind(), sitemap(), robotsTxt()],
   vite: {
     build: {
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            'apexcharts': ['apexcharts'],
-            'flowbite': ['flowbite']
-          }
-        }
-      },
+      target: 'esnext',
+      minify: 'esbuild',
       chunkSizeWarningLimit: 1000
+    },
+    optimizeDeps: {
+      include: ['apexcharts', 'flowbite']
     }
   }
 });
