@@ -54,15 +54,30 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, showCharts = true,
         const response = await fetch('/api/stats');
         if (response.ok) {
           const data = await response.json();
-          setStats(data);
-          console.log('📊 Statistiche caricate dall\'API:', data.standings?.length || 0, 'squadre');
+          
+          // Controlla se i dati sono vuoti o contengono errori
+          if (data.standings && data.standings.length > 0 && !data.error) {
+            setStats(data);
+            console.log('📊 Statistiche caricate dall\'API:', data.standings.length, 'squadre');
+          } else {
+            // Se i dati sono vuoti o contengono errori, usa il fallback
+            console.log('⚠️ Dati API vuoti o con errori, uso fallback');
+            const fallbackResponse = await fetch('/stats/serie-c-stats-example.json');
+            if (fallbackResponse.ok) {
+              const fallbackData = await fallbackResponse.json();
+              setStats(fallbackData);
+              console.log('🔄 Usando dati di fallback:', fallbackData.standings.length, 'squadre');
+            } else {
+              throw new Error('Impossibile caricare le statistiche');
+            }
+          }
         } else {
           // Se l'API fallisce, usa i dati dalla cartella public
           const fallbackResponse = await fetch('/stats/serie-c-stats-example.json');
           if (fallbackResponse.ok) {
             const fallbackData = await fallbackResponse.json();
             setStats(fallbackData);
-            console.log('🔄 Usando dati di fallback:', fallbackData.standings?.length || 0, 'squadre');
+            console.log('🔄 Usando dati di fallback:', fallbackData.standings.length, 'squadre');
           } else {
             throw new Error('Impossibile caricare le statistiche');
           }
@@ -82,18 +97,16 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, showCharts = true,
     return (value * 100).toFixed(1) + '%';
   };
 
-  const getPositionColor = (position: number): string => {
-    if (position <= 4) return 'text-emerald-600 dark:text-emerald-400'; // Playoff
-    if (position <= 8) return 'text-blue-600 dark:text-blue-400';       // Mezza classifica
-    if (position <= 12) return 'text-yellow-600 dark:text-yellow-400';  // Zona media
-    return 'text-red-600 dark:text-red-400';                            // Zona pericolo
+  const getPositionIcon = (position: number): string => {
+    if (position <= 8) return 'trophy'; // Prime 8 squadre - coppa
+    if (position === 9) return 'star'; // 9a squadra - stella
+    return 'zap'; // Altre - fulmine
   };
 
-  const getPositionIcon = (position: number): string => {
-    if (position <= 4) return 'trophy'; // Playoff
-    if (position <= 8) return 'star'; // Mezza classifica
-    if (position <= 12) return 'zap'; // Zona media
-    return 'alertTriangle';           // Zona pericolo
+  const getPositionColor = (position: number): string => {
+    if (position <= 8) return 'text-green-400'; // Prime 8 squadre - verde
+    if (position === 9) return 'text-yellow-400'; // 9a squadra - giallo
+    return 'text-red-600'; // Altre - rosso ancora più forte
   };
 
   if (loading) {
@@ -152,7 +165,7 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, showCharts = true,
         {showTitle && (
           <div className="text-center mb-12">
             <h2 className="text-4xl font-extrabold text-gray-900 dark:text-white sm:text-5xl mb-4">
-              📊 Statistiche Serie C
+              Statistiche Serie C
             </h2>
             <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
               Classifica aggiornata {stats.lastUpdate ? new Date(stats.lastUpdate).toLocaleDateString('it-IT') : 'in tempo reale'}
@@ -163,7 +176,8 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, showCharts = true,
         <div className="space-y-8">
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
             <div className="px-6 py-4 bg-gradient-to-r from-blue-600 to-blue-700">
-              <h3 className="text-xl font-bold text-white">🏆 Top {Math.min(maxTeams, stats.standings.length)} Classifica</h3>
+              <h3 className="text-xl font-bold text-white">Classifica Serie C</h3>
+              <p className="text-sm text-blue-100 mt-1">Fase: Conference NordOvest - Italiana • Girone: Girone C</p>
             </div>
             
             {/* Messaggio informativo per valori a zero */}
@@ -182,15 +196,15 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, showCharts = true,
               <table className="w-full">
                 <thead className="bg-gray-50 dark:bg-gray-700">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">#</th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Squadra</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Pt</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">G</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">V</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">P</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">%</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">PF</th>
-                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">PS</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">#</th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Squadra</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">Pt</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">G</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">V</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider" style={{color: '#dc2626'}}>P</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">%</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">PF</th>
+                    <th className="px-4 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">PS</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -198,7 +212,7 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, showCharts = true,
                     <tr key={team.teamId} className={`hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${team.team === 'Basket San Vincenzo' ? 'bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-200 dark:ring-blue-800' : ''}`}>
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className={`text-lg font-bold ${getPositionColor(team.position)} mr-2`}>
+                          <div className={`mr-2 ${getPositionColor(team.position)}`}>
                             <LucideIcon name={getPositionIcon(team.position)} size={20} className={getPositionColor(team.position)} />
                           </div>
                           <span className={`text-sm font-medium ${getPositionColor(team.position)}`}>
@@ -215,12 +229,16 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, showCharts = true,
                               className="w-8 h-8 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
                               onError={(e) => {
                                 const target = e.target as HTMLImageElement;
+                                console.warn(`⚠️ Logo non caricato per ${team.team}, uso fallback`);
                                 target.src = '/img/logo-default.svg';
+                              }}
+                              onLoad={() => {
+                                console.log(`✅ Logo caricato correttamente per ${team.team}`);
                               }}
                             />
                           </div>
                           <div>
-                            <div className={`text-sm font-medium text-gray-900 dark:text-white ${team.team === 'Basket San Vincenzo' ? 'font-bold' : ''}`}>
+                            <div className={`text-sm font-medium text-white ${team.team === 'Basket San Vincenzo' ? 'font-bold' : ''}`}>
                               {team.team}
                               {team.team === 'Basket San Vincenzo' && (
                                 <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
@@ -232,25 +250,25 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, showCharts = true,
                         </div>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-center">
-                        <span className="text-sm font-semibold text-gray-900 dark:text-white">{team.points}</span>
+                        <span className="text-sm font-semibold text-white">{team.points}</span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-center">
-                        <span className="text-sm text-gray-500 dark:text-gray-300">{team.games}</span>
+                        <span className="text-sm text-white">{team.games}</span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-center">
-                        <span className="text-sm text-green-600 dark:text-green-400 font-medium">{team.wins}</span>
+                        <span className="text-sm text-green-500 font-medium">{team.wins}</span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-center">
-                        <span className="text-sm text-red-600 dark:text-red-400 font-medium">{team.losses}</span>
+                        <span className="text-sm text-red-700 font-medium">{team.losses}</span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-center">
-                        <span className="text-sm text-gray-900 dark:text-white font-medium">{formatPercentage(team.percentage)}</span>
+                        <span className="text-sm text-white font-medium">{formatPercentage(team.percentage)}</span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-center">
-                        <span className="text-sm text-gray-500 dark:text-gray-300">{team.pointsFor}</span>
+                        <span className="text-sm text-white">{team.pointsFor}</span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-center">
-                        <span className="text-sm text-gray-500 dark:text-gray-300">{team.pointsAgainst}</span>
+                        <span className="text-sm text-white">{team.pointsAgainst}</span>
                       </td>
                     </tr>
                   ))}
@@ -266,7 +284,7 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, showCharts = true,
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6">
               <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
                 <LucideIcon name="basketball" size={24} className="mr-2 text-blue-600" />
-                📊 Grafici Statistiche Dettagliate
+                Grafici Statistiche Dettagliate
               </h3>
               <StatsCharts standings={stats.standings} />
             </div>
