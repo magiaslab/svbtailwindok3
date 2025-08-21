@@ -21,7 +21,16 @@ let statsError = null;
 try {
   // Prova a caricare le statistiche aggiornate
   const statsPath = new URL('../../data/stats/serie-c-stats.json', import.meta.url);
-  serieCStats = await import(statsPath.href).catch(() => null);
+  const mainStats = await import(statsPath.href).catch(() => null);
+  
+  // Se le statistiche principali sono vuote o non valide, usa i dati di fallback
+  if (mainStats && mainStats.standings && mainStats.standings.length > 0) {
+    serieCStats = mainStats;
+  } else {
+    // Usa i dati di fallback
+    const fallbackPath = new URL('../../data/stats/serie-c-stats-example.json', import.meta.url);
+    serieCStats = await import(fallbackPath.href).catch(() => null);
+  }
 } catch (error) {
   // Se non ci sono statistiche aggiornate, usa i dati di fallback
   try {
