@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import LucideIcon from './LucideIcon';
 import { getTeamLogo } from '../data/team-logos';
+import StatsCharts from './StatsCharts';
 
 interface Team {
   position: number;
@@ -257,6 +258,19 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, maxTeams = 17 }) =
             </div>
           </div>
         </div>
+
+        {/* Grafici Statistiche */}
+        {showCharts && (
+          <div className="mt-8">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center">
+                <LucideIcon name="basketball" size={24} className="mr-2 text-blue-600" />
+                📊 Grafici Statistiche Dettagliate
+              </h3>
+              <StatsCharts standings={serieCStats.standings} />
+            </div>
+          </div>
+        )}
 
         {/* Footer con info */}
         <div className="mt-8 text-center">
