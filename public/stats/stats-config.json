@@ -1,0 +1,64 @@
+{
+  "competitions": {
+    "serieC": {
+      "name": "Serie C Maschile Toscana",
+      "shortName": "Serie C",
+      "season": "2025-2026",
+      "conference": "Conference Nord-Ovest",
+      "group": "Girone B",
+      "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&season=2026&lg=1&mod=st",
+      "teams": [
+        "ABC Castelfiorentino",
+        "Basket San Vincenzo",
+        "Basket Sei Rose",
+        "Bottegone S.Angelo",
+        "CUS Firenze",
+        "Don Bosco Livorno",
+        "Dukes Sansepolcro",
+        "Fides Montevarchi",
+        "Folgore Fucecchio",
+        "Pall. Prato",
+        "Pallacanestro Agliana",
+        "Pall. Valdisieve",
+        "Pino Dragons Firenze",
+        "Sancat Firenze",
+        "Union Basket Prato",
+        "US Livorno",
+        "Virtus Certaldo"
+      ]
+    },
+    "under17": {
+      "name": "Under 17 Eccellenza Toscana",
+      "shortName": "Under 17",
+      "season": "2025-2026",
+      "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&season=2026&lg=1&mod=st",
+      "enabled": false
+    },
+    "under13": {
+      "name": "Under 13 Eccellenza Toscana",
+      "shortName": "Under 13",
+      "season": "2025-2026",
+      "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&season=2026&lg=1&mod=st",
+      "enabled": false
+    }
+  },
+  "scraping": {
+    "enabled": true,
+    "frequency": "6h",
+    "timeout": 30000,
+    "retryAttempts": 3,
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+  },
+  "output": {
+    "backupEnabled": true,
+    "maxBackups": 10,
+    "format": "json",
+    "compression": false
+  },
+  "notifications": {
+    "enabled": true,
+    "onSuccess": true,
+    "onError": true,
+    "onNoChanges": false
+  }
+}

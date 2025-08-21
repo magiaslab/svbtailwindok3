@@ -19,31 +19,13 @@ let serieCStats = null;
 let statsError = null;
 
 try {
-  // Prova a caricare le statistiche aggiornate
-  const statsPath = new URL('../../data/stats/serie-c-stats.json', import.meta.url);
-  const mainStats = await import(statsPath.href).catch(() => null);
-  
-  // Se le statistiche principali sono vuote o non valide, usa i dati di fallback
-  if (mainStats && mainStats.standings && mainStats.standings.length > 0 && !mainStats.error) {
-    serieCStats = mainStats;
-    console.log('📊 Usando statistiche principali:', mainStats.standings.length, 'squadre');
-  } else {
-    // Usa i dati di fallback
-    const fallbackPath = new URL('../../data/stats/serie-c-stats-example.json', import.meta.url);
-    serieCStats = await import(fallbackPath.href).catch(() => null);
-    console.log('🔄 Usando dati di fallback:', serieCStats?.standings?.length || 0, 'squadre');
-  }
+  // Importa direttamente le statistiche dal file di dati
+  const { serieCStatsData } = await import('../../data/stats-data.ts');
+  serieCStats = serieCStatsData;
+  console.log('📊 Statistiche caricate:', serieCStats.standings.length, 'squadre');
 } catch (error) {
-  console.warn('⚠️ Errore caricamento statistiche principali, uso fallback:', error);
-  // Se non ci sono statistiche aggiornate, usa i dati di fallback
-  try {
-    const fallbackPath = new URL('../../data/stats/serie-c-stats-example.json', import.meta.url);
-    serieCStats = await import(fallbackPath.href).catch(() => null);
-    console.log('🔄 Usando dati di fallback dopo errore:', serieCStats?.standings?.length || 0, 'squadre');
-  } catch (fallbackError) {
-    console.error('❌ Errore anche nel fallback:', fallbackError);
-    statsError = "Statistiche non disponibili";
-  }
+  console.error('❌ Errore caricamento statistiche:', error);
+  statsError = "Statistiche non disponibili";
 }
 
 // Se non ci sono statistiche, mostra messaggio
