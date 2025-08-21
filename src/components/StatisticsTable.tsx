@@ -36,10 +36,11 @@ interface StatsData {
 
 interface Props {
   showTitle?: boolean;
+  showCharts?: boolean;
   maxTeams?: number;
 }
 
-const StatisticsTable: React.FC<Props> = ({ showTitle = true, maxTeams = 17 }) => {
+const StatisticsTable: React.FC<Props> = ({ showTitle = true, showCharts = true, maxTeams = 17 }) => {
   const [stats, setStats] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -267,7 +268,7 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, maxTeams = 17 }) =
                 <LucideIcon name="basketball" size={24} className="mr-2 text-blue-600" />
                 📊 Grafici Statistiche Dettagliate
               </h3>
-              <StatsCharts standings={serieCStats.standings} />
+              <StatsCharts standings={stats.standings} />
             </div>
           </div>
         )}
