@@ -7,9 +7,10 @@ pubDate: 2025-01-27
 immagine:
   url: "/img/seriec/lorenzopistillo.jpg"
   alt: "Lorenzo Pistillo - Basket San Vincenzo Serie C"
-puntitotali: 0
-partite: 0
-media: 0.0
+stats: "Nuovo acquisto"
+puntitotali: "0"
+avversari: []
+media: "0.0"
 ---
 
 Lorenzo Pistillo è un'ala del Basket San Vincenzo Serie C. Con il numero 12, si distingue per la sua versatilità e capacità di gioco.
