@@ -109,6 +109,12 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, showCharts = true,
     return 'text-red-600'; // Altre - rosso ancora più forte
   };
 
+  const getPositionStyle = (position: number): React.CSSProperties => {
+    if (position <= 8) return { color: '#4ade80' }; // Verde
+    if (position === 9) return { color: '#facc15' }; // Giallo
+    return { color: '#dc2626' }; // Rosso
+  };
+
   if (loading) {
     return (
       <section className="py-16 bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -212,10 +218,10 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, showCharts = true,
                     <tr key={team.teamId} className={`hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${team.team === 'Basket San Vincenzo' ? 'bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-200 dark:ring-blue-800' : ''}`}>
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className={`mr-2 ${getPositionColor(team.position)}`}>
-                            <LucideIcon name={getPositionIcon(team.position)} size={20} className={getPositionColor(team.position)} />
+                          <div className="mr-2">
+                            <LucideIcon name={getPositionIcon(team.position)} size={20} style={getPositionStyle(team.position)} />
                           </div>
-                          <span className={`text-sm font-medium ${getPositionColor(team.position)}`}>
+                          <span className="text-sm font-medium" style={getPositionStyle(team.position)}>
                             {team.position}
                           </span>
                         </div>
@@ -259,7 +265,7 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, showCharts = true,
                         <span className="text-sm text-green-500 font-medium">{team.wins}</span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-center">
-                        <span className="text-sm text-red-700 font-medium">{team.losses}</span>
+                        <span className="text-sm font-medium" style={{color: '#dc2626'}}>{team.losses}</span>
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-center">
                         <span className="text-sm text-white font-medium">{formatPercentage(team.percentage)}</span>
