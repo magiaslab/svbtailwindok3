@@ -24,19 +24,24 @@ try {
   const mainStats = await import(statsPath.href).catch(() => null);
   
   // Se le statistiche principali sono vuote o non valide, usa i dati di fallback
-  if (mainStats && mainStats.standings && mainStats.standings.length > 0) {
+  if (mainStats && mainStats.standings && mainStats.standings.length > 0 && !mainStats.error) {
     serieCStats = mainStats;
+    console.log('📊 Usando statistiche principali:', mainStats.standings.length, 'squadre');
   } else {
     // Usa i dati di fallback
     const fallbackPath = new URL('../../data/stats/serie-c-stats-example.json', import.meta.url);
     serieCStats = await import(fallbackPath.href).catch(() => null);
+    console.log('🔄 Usando dati di fallback:', serieCStats?.standings?.length || 0, 'squadre');
   }
 } catch (error) {
+  console.warn('⚠️ Errore caricamento statistiche principali, uso fallback:', error);
   // Se non ci sono statistiche aggiornate, usa i dati di fallback
   try {
     const fallbackPath = new URL('../../data/stats/serie-c-stats-example.json', import.meta.url);
     serieCStats = await import(fallbackPath.href).catch(() => null);
+    console.log('🔄 Usando dati di fallback dopo errore:', serieCStats?.standings?.length || 0, 'squadre');
   } catch (fallbackError) {
+    console.error('❌ Errore anche nel fallback:', fallbackError);
     statsError = "Statistiche non disponibili";
   }
 }

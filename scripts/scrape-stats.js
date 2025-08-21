@@ -100,8 +100,8 @@ class StatsScraper {
       // Aspetta che la pagina si carichi e cerca la tabella della classifica
       await this.page.waitForLoadState('networkidle', { timeout: 15000 });
       
-      // Cerca la tabella con più righe (probabilmente la classifica)
-      const tableSelector = 'table';
+      // Cerca la tabella specifica della classifica usando la classe CSS
+      const tableSelector = 'table.league_standings_ranking.stats';
       await this.page.waitForSelector(tableSelector, { timeout: 15000 });
       
       const serieCStats = await this.page.evaluate(() => {
@@ -115,20 +115,13 @@ class StatsScraper {
           group: 'Girone B'
         };
         
-        // Estrai la tabella della classifica (cerca la tabella con più righe)
-        const tables = document.querySelectorAll('table');
-        let table = null;
-        let maxRows = 0;
+        // Estrai la tabella della classifica usando la classe specifica
+        const table = document.querySelector('table.league_standings_ranking.stats');
         
-        tables.forEach(t => {
-          const rows = t.querySelectorAll('tr');
-          if (rows.length > maxRows) {
-            maxRows = rows.length;
-            table = t;
-          }
-        });
-        
-        if (!table) return stats;
+        if (!table) {
+          console.warn('Tabella classifica non trovata');
+          return stats;
+        }
         
         const rows = table.querySelectorAll('tbody tr');
         rows.forEach((row, index) => {
