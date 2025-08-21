@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import LucideIcon from './LucideIcon';
+import { getTeamLogo } from '../data/team-logos';
 
 interface Team {
   position: number;
@@ -86,10 +88,10 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, maxTeams = 17 }) =
   };
 
   const getPositionIcon = (position: number): string => {
-    if (position <= 4) return '🏆'; // Playoff
-    if (position <= 8) return '⭐'; // Mezza classifica
-    if (position <= 12) return '⚡'; // Zona media
-    return '⚠️';                     // Zona pericolo
+    if (position <= 4) return 'trophy'; // Playoff
+    if (position <= 8) return 'star'; // Mezza classifica
+    if (position <= 12) return 'zap'; // Zona media
+    return 'alertTriangle';           // Zona pericolo
   };
 
   if (loading) {
@@ -166,9 +168,7 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, maxTeams = 17 }) =
             {stats.standings[0]?.points === 0 && (
               <div className="px-6 py-3 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
                 <div className="flex items-center text-blue-700 dark:text-blue-300">
-                  <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"></path>
-                  </svg>
+                  <LucideIcon name="info" size={20} className="mr-2" />
                   <span className="text-sm font-medium">
                     Campionato non ancora iniziato - I valori si aggiorneranno automaticamente quando inizieranno le partite
                   </span>
@@ -196,9 +196,9 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, maxTeams = 17 }) =
                     <tr key={team.teamId} className={`hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${team.team === 'Basket San Vincenzo' ? 'bg-blue-50 dark:bg-blue-900/20 ring-2 ring-blue-200 dark:ring-blue-800' : ''}`}>
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <span className={`text-lg font-bold ${getPositionColor(team.position)} mr-2`}>
-                            {getPositionIcon(team.position)}
-                          </span>
+                          <div className={`text-lg font-bold ${getPositionColor(team.position)} mr-2`}>
+                            <LucideIcon name={getPositionIcon(team.position)} size={20} className={getPositionColor(team.position)} />
+                          </div>
                           <span className={`text-sm font-medium ${getPositionColor(team.position)}`}>
                             {team.position}
                           </span>
@@ -206,6 +206,17 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, maxTeams = 17 }) =
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap">
                         <div className="flex items-center">
+                          <div className="flex-shrink-0 mr-3">
+                            <img 
+                              src={getTeamLogo(team.team)} 
+                              alt={`Logo ${team.team}`}
+                              className="w-8 h-8 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
+                              onError={(e) => {
+                                const target = e.target as HTMLImageElement;
+                                target.src = '/img/logo-default.svg';
+                              }}
+                            />
+                          </div>
                           <div>
                             <div className={`text-sm font-medium text-gray-900 dark:text-white ${team.team === 'Basket San Vincenzo' ? 'font-bold' : ''}`}>
                               {team.team}
@@ -249,9 +260,12 @@ const StatisticsTable: React.FC<Props> = ({ showTitle = true, maxTeams = 17 }) =
 
         {/* Footer con info */}
         <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Dati aggiornati da {stats.source} • Ultimo aggiornamento: {new Date(stats.lastUpdate).toLocaleString('it-IT')}
-          </p>
+          <div className="flex items-center justify-center text-sm text-gray-500 dark:text-gray-400">
+            <LucideIcon name="basketball" size={16} className="mr-2" />
+            <span>
+              Dati aggiornati da {stats.source} • Ultimo aggiornamento: {new Date(stats.lastUpdate).toLocaleString('it-IT')}
+            </span>
+          </div>
         </div>
       </div>
     </section>
