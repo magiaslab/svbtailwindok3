@@ -1,0 +1,22 @@
+{
+  "serieC": {
+    "standings": [],
+    "teamStats": {},
+    "lastUpdate": "2025-09-28T06:51:27.848Z",
+    "error": "Dati non disponibili"
+  },
+  "under17": {
+    "standings": [],
+    "teamStats": {},
+    "lastUpdate": "2025-09-28T06:51:57.868Z",
+    "error": "Dati non disponibili"
+  },
+  "under13": {
+    "standings": [],
+    "teamStats": {},
+    "lastUpdate": "2025-09-28T06:52:27.904Z",
+    "error": "Dati non disponibili"
+  },
+  "lastUpdate": "2025-09-28T06:50:56.260Z",
+  "source": "playbasket.it"
+}

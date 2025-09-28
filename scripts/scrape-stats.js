@@ -28,7 +28,7 @@ const CONFIG = {
   // Timeout e configurazioni browser
   browser: {
     headless: true,
-    timeout: 30000,
+    timeout: 60000,
     userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
   },
   
@@ -93,16 +93,16 @@ class StatsScraper {
     
     try {
       await this.page.goto(CONFIG.urls.serieC, { 
-        waitUntil: 'networkidle',
+        waitUntil: 'domcontentloaded',
         timeout: CONFIG.browser.timeout 
       });
       
-      // Aspetta che la pagina si carichi e cerca la tabella della classifica
-      await this.page.waitForLoadState('networkidle', { timeout: 15000 });
+      // Aspetta un po' per il caricamento dinamico
+      await this.page.waitForTimeout(5000);
       
       // Cerca la tabella specifica della classifica usando la classe CSS
-      const tableSelector = 'table.league_standings_ranking.stats';
-      await this.page.waitForSelector(tableSelector, { timeout: 15000 });
+      const tableSelector = 'table';
+      await this.page.waitForSelector(tableSelector, { timeout: 10000 });
       
       const serieCStats = await this.page.evaluate(() => {
         const stats = {
@@ -115,37 +115,52 @@ class StatsScraper {
           group: 'Girone B'
         };
         
-        // Estrai la tabella della classifica usando la classe specifica
-        const table = document.querySelector('table.league_standings_ranking.stats');
+        // Estrai la tabella della classifica - cerca la tabella con i dati della classifica
+        const tables = document.querySelectorAll('table');
+        let table = null;
+        
+        // Trova la tabella che contiene la classifica (quella con le colonne P.ti, G, V, P, etc.)
+        for (let t of tables) {
+          const headers = t.querySelectorAll('th, td');
+          const headerText = Array.from(headers).map(h => h.textContent.trim()).join(' ');
+          if (headerText.includes('P.ti') && headerText.includes('Squadra')) {
+            table = t;
+            break;
+          }
+        }
         
         if (!table) {
           console.warn('Tabella classifica non trovata');
           return stats;
         }
         
-        const rows = table.querySelectorAll('tbody tr');
+        const rows = table.querySelectorAll('tr');
         rows.forEach((row, index) => {
           const cells = row.querySelectorAll('td');
-          if (cells.length >= 13) {
-            // Estrai i dati dalla riga
-            const position = parseInt(cells[0]?.textContent?.trim()) || index + 1;
-            const teamName = cells[1]?.textContent?.trim() || '';
-            const points = parseInt(cells[2]?.textContent) || 0;
-            const pointsPerGame = parseFloat(cells[3]?.textContent) || 0;
-            const games = parseInt(cells[4]?.textContent) || 0;
-            const wins = parseInt(cells[5]?.textContent) || 0;
-            const losses = parseInt(cells[6]?.textContent) || 0;
-            const percentage = parseFloat(cells[7]?.textContent) || 0;
+          if (cells.length >= 12 && cells[0]?.textContent?.trim() !== '#') {
+            // Estrai i dati dalla riga basandosi sulla struttura HTML reale
+            const position = parseInt(cells[0]?.textContent?.trim()) || 0;
+            const teamCell = cells[1];
+            const teamName = teamCell?.textContent?.trim() || '';
+            const points = parseInt(cells[2]?.textContent?.trim()) || 0;
+            const pointsPerGame = parseFloat(cells[3]?.textContent?.trim()) || 0;
+            const games = parseInt(cells[4]?.textContent?.trim()) || 0;
+            const wins = parseInt(cells[5]?.textContent?.trim()) || 0;
+            const losses = parseInt(cells[6]?.textContent?.trim()) || 0;
+            const percentage = parseFloat(cells[7]?.textContent?.trim().replace('.', '0.')) || 0;
             const streak = cells[8]?.textContent?.trim() || '-';
-            const pointsFor = parseInt(cells[9]?.textContent) || 0;
-            const pointsAgainst = parseInt(cells[10]?.textContent) || 0;
+            const pointsFor = parseInt(cells[9]?.textContent?.trim()) || 0;
+            const pointsAgainst = parseInt(cells[10]?.textContent?.trim()) || 0;
             const quality = cells[11]?.textContent?.trim() || 'n/a';
-            const pointsForPerGame = parseFloat(cells[12]?.textContent) || 0;
-            const pointsAgainstPerGame = parseFloat(cells[13]?.textContent) || 0;
+            const pointsForPerGame = parseFloat(cells[12]?.textContent?.trim()) || 0;
+            const pointsAgainstPerGame = parseFloat(cells[13]?.textContent?.trim()) || 0;
             
             // Estrai il link della squadra se presente
-            const teamLink = cells[1]?.querySelector('a')?.href || '';
+            const teamLink = teamCell?.querySelector('a')?.href || '';
             const teamId = teamLink ? new URL(teamLink, window.location.href).searchParams.get('obj') : '';
+            
+            // Salta le righe header o vuote
+            if (!position || position === 0) return;
             
             stats.standings.push({
               position,
