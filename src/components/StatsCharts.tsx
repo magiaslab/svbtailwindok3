@@ -368,22 +368,22 @@ const StatsCharts: React.FC<StatsChartsProps> = ({ standings, className = "" }) 
     <div className={`grid grid-cols-1 lg:grid-cols-2 gap-8 ${className}`}>
       {/* Grafico 1: Punti per Squadra */}
       <div className="bg-white dark:bg-gray-700 rounded-lg p-4 shadow-sm">
-        <div ref={(el) => chartRefs.current.pointsChart = el}></div>
+        <div ref={(el) => { chartRefs.current.pointsChart = el; }}></div>
       </div>
 
       {/* Grafico 2: Vittorie vs Sconfitte */}
       <div className="bg-white dark:bg-gray-700 rounded-lg p-4 shadow-sm">
-        <div ref={(el) => chartRefs.current.winsLossesChart = el}></div>
+        <div ref={(el) => { chartRefs.current.winsLossesChart = el; }}></div>
       </div>
 
       {/* Grafico 3: Differenza Punti */}
       <div className="bg-white dark:bg-gray-700 rounded-lg p-4 shadow-sm">
-        <div ref={(el) => chartRefs.current.pointsDiffChart = el}></div>
+        <div ref={(el) => { chartRefs.current.pointsDiffChart = el; }}></div>
       </div>
 
       {/* Grafico 4: Percentuale Vittorie SVB */}
       <div className="bg-white dark:bg-gray-700 rounded-lg p-4 shadow-sm">
-        <div ref={(el) => chartRefs.current.percentageChart = el}></div>
+        <div ref={(el) => { chartRefs.current.percentageChart = el; }}></div>
       </div>
     </div>
   );
