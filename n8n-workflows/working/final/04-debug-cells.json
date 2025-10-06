@@ -1,0 +1,50 @@
+{
+  "name": "04 - Debug Celle HTML",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "responseFormat": "string"
+      },
+      "id": "http-request",
+      "name": "Get HTML",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// === DEBUG CELLE HTML ===\nconsole.log('🔍 Debug celle HTML...');\n\n// Accesso ai dati HTML\nlet htmlData = '';\nif (items && items.length > 0) {\n  const item = items[0];\n  \n  if (item.json && item.json.data && typeof item.json.data === 'string') {\n    htmlData = item.json.data;\n  } else if (item.json && typeof item.json === 'string') {\n    htmlData = item.json;\n  } else if (item.data && typeof item.data === 'string') {\n    htmlData = item.data;\n  }\n}\n\nif (!htmlData || htmlData.length < 1000) {\n  return [{ json: { error: 'HTML not found' } }];\n}\n\n// Trova la tabella\nconst tableRegex = /<table[^>]*class=[\"']league_standings_ranking stats[\"'][^>]*>([\\s\\S]*?)<\\/table>/i;\nconst tableMatch = htmlData.match(tableRegex);\n\nif (!tableMatch) {\n  return [{ json: { error: 'Table not found' } }];\n}\n\n// Estrai le prime 3 righe per debug\nconst rowRegex = /<tr[^>]*>([\\s\\S]*?)<\\/tr>/gi;\nconst rows = [];\nlet match;\nlet rowCount = 0;\n\nwhile ((match = rowRegex.exec(tableMatch[1])) !== null && rowCount < 3) {\n  rows.push(match[1]);\n  rowCount++;\n}\n\nconst debugData = {\n  timestamp: new Date().toISOString(),\n  totalRowsFound: rowCount,\n  rows: []\n};\n\n// Analizza ogni riga\nrows.forEach((rowContent, index) => {\n  const cellRegex = /<td[^>]*>([\\s\\S]*?)<\\/td>/gi;\n  const cells = [];\n  let cellMatch;\n  \n  while ((cellMatch = cellRegex.exec(rowContent)) !== null) {\n    cells.push(cellMatch[1]);\n  }\n  \n  debugData.rows.push({\n    rowIndex: index,\n    isHeader: rowContent.includes('<th'),\n    cellCount: cells.length,\n    cells: cells.map((cell, cellIndex) => ({\n      index: cellIndex,\n      rawHtml: cell.substring(0, 200), // Prime 200 caratteri\n      cleanText: cell.replace(/<[^>]*>/g, '').replace(/\\s+/g, ' ').trim(),\n      hasLink: cell.includes('href='),\n      hasSpan: cell.includes('<span'),\n      hasHighlighted: cell.includes('highlighted_data')\n    }))\n  });\n});\n\nconsole.log('🎯 Debug risultati:', debugData);\nreturn [{ json: debugData }];"
+      },
+      "id": "debug-cells",
+      "name": "Debug Cells",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [480, 300]
+    }
+  ],
+  "connections": {
+    "Get HTML": {
+      "main": [
+        [
+          {
+            "node": "Debug Cells",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "timezone": "Europe/Rome"
+  },
+  "versionId": "debug-cells-v1",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "debug-cells-workflow",
+  "tags": []
+}
+

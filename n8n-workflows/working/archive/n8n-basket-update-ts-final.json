@@ -1,0 +1,100 @@
+{
+  "name": "🏀 Update TypeScript File - FINAL",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://raw.githubusercontent.com/magiaslab/svbtailwindok3/master/src/data/stats/serie-c-stats.json",
+        "responseFormat": "json"
+      },
+      "id": "node1",
+      "name": "📥 Get JSON Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepara il contenuto TypeScript usando i dati JSON\nconst statsData = items[0].json;\n\nif (!statsData || !statsData.standings) {\n  console.error('❌ Dati statistiche non validi');\n  return [{ json: { success: false, error: 'Invalid stats data' } }];\n}\n\nconsole.log(`📊 Processando ${statsData.standings.length} squadre`);\n\n// Crea contenuto TypeScript\nconst tsContent = `// Dati delle statistiche Serie C\n// Questo file viene importato direttamente dai componenti\n// Aggiornato automaticamente: ${new Date().toISOString()}\n\nexport const serieCStatsData = ${JSON.stringify(statsData, null, 2)};`;\n\n// Codifica in Base64\nconst base64Content = Buffer.from(tsContent).toString('base64');\n\n// Usa SHA fisso (quello che hai fornito)\nconst currentSha = '196d837a645edb2673070fa03bcdaf332cc1d567';\n\nconst result = {\n  message: `Aggiornamento automatico stats-data.ts - ${new Date().toISOString()}`,\n  content: base64Content,\n  sha: currentSha\n};\n\nconsole.log('🔧 Dati preparati:', {\n  messageLength: result.message.length,\n  contentLength: result.content.length,\n  sha: result.sha,\n  teamsCount: statsData.standings.length\n});\n\nreturn [{ json: result }];"
+      },
+      "id": "node2",
+      "name": "🔧 Prepare TS Content",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats-data.ts",
+        "authentication": "headerAuth",
+        "requestMethod": "PUT",
+        "responseFormat": "json",
+        "jsonParameters": true,
+        "bodyParametersJson": "={{ $json }}",
+        "options": {}
+      },
+      "id": "node3",
+      "name": "📤 Update TS File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Messaggio di successo\nconst githubResponse = items[0].json;\n\nif (githubResponse.content) {\n  const message = `🎉 File TypeScript aggiornato!\n\n📊 File: ✅ Successo\n📝 Commit: ${githubResponse.commit ? githubResponse.commit.sha : 'N/A'}\n📁 Size: ${githubResponse.content.size || 'N/A'} bytes\n⏰ Time: ${new Date().toISOString()}`;\n  \n  console.log(message);\n  return [{ json: { success: true, message, githubResponse } }];\n} else {\n  console.error('❌ Errore aggiornamento');\n  return [{ json: { success: false, error: 'Update failed', githubResponse } }];\n}"
+      },
+      "id": "node4",
+      "name": "🎉 Success Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    }
+  ],
+  "connections": {
+    "📥 Get JSON Data": {
+      "main": [
+        [
+          {
+            "node": "🔧 Prepare TS Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔧 Prepare TS Content": {
+      "main": [
+        [
+          {
+            "node": "📤 Update TS File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📤 Update TS File": {
+      "main": [
+        [
+          {
+            "node": "🎉 Success Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    "basketball",
+    "typescript",
+    "final"
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-09-28T20:30:00.000Z",
+  "versionId": "update-ts-final-v1"
+}

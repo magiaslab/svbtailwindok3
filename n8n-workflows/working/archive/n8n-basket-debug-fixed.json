@@ -1,0 +1,52 @@
+{
+  "name": "🏀 Basket Stats Scraper - DEBUG FIXED",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "responseFormat": "string"
+      },
+      "id": "node1",
+      "name": "🌐 Fetch PlayBasket Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Debug del parsing HTML - VERSIONE CORRETTA\nconsole.log('🔍 INIZIO DEBUG PARSING');\n\nif (!items || items.length === 0) {\n  console.error('❌ Nessun dato ricevuto');\n  return [{ json: { success: false, error: 'No input data' } }];\n}\n\nconsole.log('📊 Struttura item ricevuto:', Object.keys(items[0]));\nconsole.log('📊 Tipo di dati:', typeof items[0]);\n\n// Prova diversi modi per accedere ai dati HTML\nlet html = null;\n\n// Metodo 1: items[0].json (per responseFormat: json)\nif (items[0].json && typeof items[0].json === 'string') {\n  html = items[0].json;\n  console.log('✅ HTML trovato in items[0].json (string)');\n} else if (items[0].json && items[0].json.data) {\n  html = items[0].json.data;\n  console.log('✅ HTML trovato in items[0].json.data');\n}\n\n// Metodo 2: items[0].data (per responseFormat: string)\nif (!html && items[0].data) {\n  html = items[0].data;\n  console.log('✅ HTML trovato in items[0].data');\n}\n\n// Metodo 3: items[0].binary (per dati binari)\nif (!html && items[0].binary && items[0].binary.data) {\n  html = Buffer.from(items[0].binary.data, 'base64').toString();\n  console.log('✅ HTML trovato in items[0].binary.data');\n}\n\n// Metodo 4: accesso diretto\nif (!html && typeof items[0] === 'string') {\n  html = items[0];\n  console.log('✅ HTML è direttamente items[0]');\n}\n\nif (!html) {\n  console.error('❌ HTML non trovato in nessuna struttura');\n  console.log('📊 Struttura completa item:', JSON.stringify(items[0], null, 2));\n  return [{ json: { success: false, error: 'HTML not found in any structure', itemStructure: Object.keys(items[0]) } }];\n}\n\nconsole.log('📊 Lunghezza HTML ricevuto:', html.length);\nconsole.log('📊 Primi 500 caratteri HTML:', html.substring(0, 500));\n\n// Test 1: Verifica presenza tabella\nconst tableTest = html.includes('league_standings_ranking stats');\nconsole.log('🔍 Test tabella presente:', tableTest);\n\n// Test 2: Verifica presenza righe\nconst rowTest = html.includes('row_standings');\nconsole.log('🔍 Test righe presenti:', rowTest);\n\n// Test 3: Conta le righe\nconst rowMatches = html.match(/row_standings/g);\nconsole.log('🔍 Numero righe trovate:', rowMatches ? rowMatches.length : 0);\n\n// Test 4: Estrai prima riga per debug\nconst firstRowRegex = /<tr[^>]*class=[\"']row_standings[\"'][^>]*>([\\s\\S]*?)<\\/tr>/;\nconst firstRowMatch = firstRowRegex.exec(html);\nif (firstRowMatch) {\n  console.log('🔍 Prima riga trovata, lunghezza contenuto:', firstRowMatch[1].length);\n  console.log('🔍 Primi 200 caratteri della prima riga:', firstRowMatch[1].substring(0, 200));\n} else {\n  console.log('❌ Prima riga NON trovata');\n}\n\n// Test 5: Prova regex più semplice\nconst simpleRowRegex = /<tr class='row_standings'>([\\s\\S]*?)<\\/tr>/g;\nlet simpleRowMatch;\nlet simpleRowCount = 0;\nwhile ((simpleRowMatch = simpleRowRegex.exec(html)) !== null && simpleRowCount < 3) {\n  simpleRowCount++;\n  console.log(`🔍 Riga semplice ${simpleRowCount} trovata, lunghezza:`, simpleRowMatch[1].length);\n  \n  // Test estrazione posizione\n  const posMatch = /<td[^>]*class=[\"']colfrozen[\"']>(\\d+)<\\/td>/.exec(simpleRowMatch[1]);\n  console.log(`🔍 Posizione riga ${simpleRowCount}:`, posMatch ? posMatch[1] : 'NON TROVATA');\n  \n  // Test estrazione squadra\n  const teamMatch = /<td[^>]*class=\"sq colfrozen\"><a[^>]*href=\"club\\.php\\?obj=(\\d+)&action=view&eid=\\d+\">([^<]+)<\\/a>/.exec(simpleRowMatch[1]);\n  console.log(`🔍 Squadra riga ${simpleRowCount}:`, teamMatch ? teamMatch[2] : 'NON TROVATA');\n  \n  // Test estrazione punti\n  const pointsMatch = /<td[^>]*class=[\"']highlighted_data[\"']>(\\d+)<\\/td>/.exec(simpleRowMatch[1]);\n  console.log(`🔍 Punti riga ${simpleRowCount}:`, pointsMatch ? pointsMatch[1] : 'NON TROVATI');\n}\n\n// Test 6: Verifica struttura HTML più ampia\nconst tableStartIndex = html.indexOf('<table');\nconst tableEndIndex = html.indexOf('</table>');\nconsole.log('🔍 Indice inizio tabella:', tableStartIndex);\nconsole.log('🔍 Indice fine tabella:', tableEndIndex);\n\nif (tableStartIndex !== -1 && tableEndIndex !== -1) {\n  const tableContent = html.substring(tableStartIndex, tableEndIndex + 8);\n  console.log('🔍 Lunghezza contenuto tabella:', tableContent.length);\n  \n  // Conta tutte le righe tr nella tabella\n  const allRowMatches = tableContent.match(/<tr[^>]*>/g);\n  console.log('🔍 Numero totale righe <tr> nella tabella:', allRowMatches ? allRowMatches.length : 0);\n}\n\n// Risultato debug\nconst debugResult = {\n  success: simpleRowCount > 0,\n  message: `Debug completato: ${simpleRowCount} righe processate`,\n  debug: {\n    htmlLength: html.length,\n    tablePresent: tableTest,\n    rowsPresent: rowTest,\n    rowCount: rowMatches ? rowMatches.length : 0,\n    processedRows: simpleRowCount,\n    firstRowFound: !!firstRowMatch,\n    tableStartIndex: tableStartIndex,\n    tableEndIndex: tableEndIndex,\n    dataAccessMethod: html === items[0].json ? 'items[0].json' : \n                     html === items[0].data ? 'items[0].data' : \n                     html === items[0].json?.data ? 'items[0].json.data' : 'other'\n  }\n};\n\nconsole.log('🎉 Debug completato:', JSON.stringify(debugResult, null, 2));\nreturn [{ json: debugResult }];"
+      },
+      "id": "node2",
+      "name": "🔍 Debug Parser Fixed",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    }
+  ],
+  "connections": {
+    "🌐 Fetch PlayBasket Data": {
+      "main": [
+        [
+          {
+            "node": "🔍 Debug Parser Fixed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    "basketball",
+    "scraping",
+    "debug"
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-09-28T19:00:00.000Z",
+  "versionId": "debug-fixed-v1"
+}

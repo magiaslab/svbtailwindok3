@@ -1,0 +1,14 @@
+{
+  "method": "PUT",
+  "url": "https://api.github.com/repos/TUO_USERNAME/svbtailwindok3/contents/public/stats/serie-c-stats.json",
+  "headers": {
+    "Authorization": "Bearer {{ $env.GITHUB_TOKEN }}",
+    "Accept": "application/vnd.github.v3+json",
+    "Content-Type": "application/json"
+  },
+  "body": {
+    "message": "📊 Aggiornamento automatico classifiche Serie C - {{ new Date().toISOString() }}",
+    "content": "{{ Buffer.from(JSON.stringify($json.serieCStats, null, 2)).toString('base64') }}",
+    "sha": "{{ $json.currentSha }}"
+  }
+}

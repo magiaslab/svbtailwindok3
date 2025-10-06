@@ -1,0 +1,218 @@
+{
+  "name": "Basket San Vincenzo - Scraping Semplice",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1,4"
+            }
+          ]
+        }
+      },
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        240,
+        300
+      ],
+      "id": "node1"
+    },
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        460,
+        300
+      ],
+      "id": "node2"
+    },
+    {
+      "parameters": {
+        "dataPropertyName": "data",
+        "extractionValues": {
+          "tableRows": {
+            "cssSelector": "table tr",
+            "returnArray": true,
+            "returnValue": "html"
+          }
+        }
+      },
+      "name": "HTML Extract",
+      "type": "n8n-nodes-base.htmlExtract",
+      "typeVersion": 1,
+      "position": [
+        680,
+        300
+      ],
+      "id": "node3"
+    },
+    {
+      "parameters": {
+        "jsCode": "const htmlRows = $input.all()[0].json.tableRows || [];\nconst standings = [];\n\nhtmlRows.forEach((rowHtml, index) => {\n  try {\n    const parser = new DOMParser();\n    const doc = parser.parseFromString(`<table><tbody>${rowHtml}</tbody></table>`, 'text/html');\n    const cells = doc.querySelectorAll('td');\n    \n    if (cells.length < 10) return;\n    \n    const position = parseInt(cells[0]?.textContent?.trim()) || 0;\n    const teamName = cells[1]?.textContent?.trim() || '';\n    \n    if (position === 0 || !teamName || teamName === 'Squadra') return;\n    \n    const points = parseInt(cells[2]?.textContent?.trim()) || 0;\n    const games = parseInt(cells[4]?.textContent?.trim()) || 0;\n    const wins = parseInt(cells[5]?.textContent?.trim()) || 0;\n    const losses = parseInt(cells[6]?.textContent?.trim()) || 0;\n    \n    standings.push({\n      position,\n      team: teamName,\n      points,\n      games,\n      wins,\n      losses\n    });\n    \n  } catch (error) {\n    console.error(`Errore riga ${index}:`, error.message);\n  }\n});\n\nconst result = {\n  standings: standings.sort((a, b) => a.position - b.position),\n  lastUpdate: new Date().toISOString(),\n  totalTeams: standings.length\n};\n\nreturn { json: result };"
+      },
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [
+        900,
+        300
+      ],
+      "id": "node4"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.github.com/repos/{{ $env.GITHUB_REPO }}/contents/public/stats/serie-c-stats.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "name": "Get File SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1120,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "github-auth",
+          "name": "GitHub Auth"
+        }
+      },
+      "id": "node5"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "=https://api.github.com/repos/{{ $env.GITHUB_REPO }}/contents/public/stats/serie-c-stats.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "=Aggiornamento classifiche - {{ new Date().toISOString() }}"
+            },
+            {
+              "name": "content",
+              "value": "={{ Buffer.from(JSON.stringify($('Code').item.json, null, 2)).toString('base64') }}"
+            },
+            {
+              "name": "sha",
+              "value": "={{ $('Get File SHA').item.json.sha }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Update GitHub",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1340,
+        300
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "github-auth",
+          "name": "GitHub Auth"
+        }
+      },
+      "id": "node6"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.NETLIFY_BUILD_HOOK }}"
+      },
+      "name": "Netlify Deploy",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1560,
+        300
+      ],
+      "id": "node7"
+    }
+  ],
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTML Extract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML Extract": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Get File SHA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get File SHA": {
+      "main": [
+        [
+          {
+            "node": "Update GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update GitHub": {
+      "main": [
+        [
+          {
+            "node": "Netlify Deploy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

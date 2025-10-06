@@ -1,0 +1,253 @@
+{
+  "name": "🏀 Basket San Vincenzo - Scraping Corretto",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1,4"
+            }
+          ]
+        }
+      },
+      "id": "node1",
+      "name": "⏰ Schedule (Lun-Gio 8:00)",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "responseFormat": "string"
+      },
+      "id": "node2",
+      "name": "🌐 Fetch PlayBasket Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 🏀 Elaborazione dati classifiche Basket San Vincenzo - VERSIONE FINALE\n\n// Funzioni helper per estrarre testo e link dall'HTML\nfunction extractTextFromHtml(html) {\n  if (!html) return '';\n  return html.replace(/<[^>]*>/g, '').trim();\n}\n\nfunction extractHref(html) {\n  if (!html) return '';\n  const match = html.match(/href=\"([^\"]*)\"/);\n  return match ? match[1] : '';\n}\n\nfunction extractNumber(str) {\n  if (!str) return 0;\n  const match = str.match(/\\d+/);\n  return match ? parseInt(match[0], 10) : 0;\n}\n\nfunction extractFloat(str) {\n  if (!str) return 0;\n  const match = str.match(/\\d+\\.?\\d*/);\n  return match ? parseFloat(match[0]) : 0;\n}\n\n// Funzione principale per processare l'HTML\nfunction processPlayBasketHTML(html) {\n  console.log('Inizio elaborazione HTML...');\n  \n  const standings = [];\n  const teamStats = {};\n  \n  // Cerca tutte le tabelle con classi che contengono 'standings' o 'ranking'\n  const tableRegex = /<table[^>]*class=['\"][^'\"]*(?:standings|ranking)[^'\"]*['\"][^>]*>([\\s\\S]*?)<\\/table>/gi;\n  let tableMatch;\n  let tableCount = 0;\n  \n  while ((tableMatch = tableRegex.exec(html)) !== null) {\n    tableCount++;\n    console.log(`Analizzando tabella ${tableCount}...`);\n    \n    const tableContent = tableMatch[1];\n    \n    // Cerca le righe della tabella (tr)\n    const rowRegex = /<tr[^>]*>([\\s\\S]*?)<\\/tr>/gi;\n    let rowMatch;\n    let rowCount = 0;\n    \n    while ((rowMatch = rowRegex.exec(tableContent)) !== null) {\n      rowCount++;\n      const rowContent = rowMatch[1];\n      \n      // Estrai tutte le celle (td)\n      const cellRegex = /<td[^>]*>([\\s\\S]*?)<\\/td>/gi;\n      const cells = [];\n      let cellMatch;\n      \n      while ((cellMatch = cellRegex.exec(rowContent)) !== null) {\n        cells.push(cellMatch[1]);\n      }\n      \n      // Verifica se abbiamo abbastanza celle per una riga di classifica\n      if (cells.length >= 8) {\n        // Estrai posizione (prima cella)\n        const positionText = extractTextFromHtml(cells[0]);\n        const position = extractNumber(positionText);\n        \n        // Salta se non è una posizione valida\n        if (position > 0 && position <= 20) {\n          // Estrai nome squadra (seconda cella)\n          const teamCell = cells[1];\n          const teamName = extractTextFromHtml(teamCell);\n          const teamLink = extractHref(teamCell);\n          const teamIdMatch = teamLink.match(/obj=(\\d+)/);\n          const teamId = teamIdMatch ? teamIdMatch[1] : '';\n          \n          // Estrai dati numerici dalle celle successive\n          const points = extractNumber(cells[2] || '');\n          const games = extractNumber(cells[3] || '');\n          const wins = extractNumber(cells[4] || '');\n          const losses = extractNumber(cells[5] || '');\n          const percentage = extractFloat(cells[6] || '');\n          const pointsFor = extractNumber(cells[7] || '');\n          const pointsAgainst = extractNumber(cells[8] || '');\n          \n          // Calcola valori derivati\n          const pointsPerGame = games > 0 ? (points / games) : 0;\n          const pointsForPerGame = games > 0 ? (pointsFor / games) : 0;\n          const pointsAgainstPerGame = games > 0 ? (pointsAgainst / games) : 0;\n          \n          // Crea oggetto squadra\n          const teamData = {\n            position,\n            team: teamName,\n            teamId,\n            teamLink: teamLink ? `https://www.playbasket.it/toscana/${teamLink}` : '',\n            points,\n            pointsPerGame,\n            games,\n            wins,\n            losses,\n            percentage,\n            streak: '-',\n            pointsFor,\n            pointsAgainst,\n            quality: 'n/a',\n            pointsForPerGame,\n            pointsAgainstPerGame\n          };\n          \n          standings.push(teamData);\n          \n          // Crea statistiche dettagliate\n          teamStats[teamName] = {\n            position,\n            points,\n            games,\n            wins,\n            losses,\n            winPercentage: percentage,\n            pointsFor,\n            pointsAgainst,\n            pointDifference: pointsFor - pointsAgainst,\n            averagePointsFor: pointsForPerGame,\n            averagePointsAgainst: pointsAgainstPerGame\n          };\n          \n          console.log(`Processata squadra: ${teamName} - Posizione: ${position}`);\n        }\n      }\n    }\n    \n    console.log(`Trovate ${rowCount} righe nella tabella ${tableCount}`);\n  }\n  \n  // Ordina per posizione\n  standings.sort((a, b) => a.position - b.position);\n  \n  console.log(`Totale squadre trovate: ${standings.length}`);\n  \n  return {\n    standings,\n    teamStats,\n    lastUpdate: new Date().toISOString(),\n    season: '2025-2026',\n    competition: 'Serie C Maschile Toscana',\n    conference: 'Conference Nord-Ovest',\n    group: 'Girone B',\n    totalTeams: standings.length\n  };\n}\n\n// Codice principale\nconst inputData = $input.all()[0].json;\nconst html = inputData.data;\n\nconsole.log('Ricevuto HTML, lunghezza:', html ? html.length : 0);\n\nif (!html) {\n  console.error('Nessun HTML ricevuto');\n  return [{\n    json: {\n      success: false,\n      message: 'Nessun HTML ricevuto',\n      standings: [],\n      teamStats: {},\n      lastUpdate: new Date().toISOString()\n    }\n  }];\n}\n\nconst processedData = processPlayBasketHTML(html);\n\n// Trova Basket San Vincenzo\nconst basketSanVincenzo = processedData.standings.find(team => \n  team.team.toLowerCase().includes('san vincenzo') ||\n  team.team.toLowerCase().includes('svb')\n);\n\nconsole.log('Basket San Vincenzo trovato:', basketSanVincenzo);\n\n// Restituisci sempre sotto chiave 'json' per evitare errori n8n\nreturn [{\n  json: {\n    success: processedData.standings.length > 0,\n    message: processedData.standings.length > 0 ? 'Scraping completato con successo' : 'Nessuna classifica trovata',\n    standings: processedData.standings,\n    teamStats: processedData.teamStats,\n    lastUpdate: processedData.lastUpdate,\n    season: processedData.season,\n    competition: processedData.competition,\n    conference: processedData.conference,\n    group: processedData.group,\n    totalTeams: processedData.totalTeams,\n    basketSanVincenzo: basketSanVincenzo,\n    basketSanVincenzoPosition: basketSanVincenzo ? basketSanVincenzo.position : 'Non trovato'\n  }\n}];"
+      },
+      "id": "node3",
+      "name": "⚙️ Process Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.success }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "node4",
+      "name": "✅ Check Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats-database.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github.v3+json"
+            }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "ref",
+              "value": "master"
+            }
+          ]
+        }
+      },
+      "id": "node5",
+      "name": "📥 Get Current Stats",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats-database.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github.v3+json"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "🏀 Aggiornamento automatico classifiche Serie C - {{ new Date().toLocaleDateString('it-IT') }}"
+            },
+            {
+              "name": "content",
+              "value": "={{ Buffer.from(JSON.stringify($('⚙️ Process Data').first().json, null, 2)).toString('base64') }}"
+            },
+            {
+              "name": "sha",
+              "value": "={{ $json.sha }}"
+            }
+          ]
+        }
+      },
+      "id": "node6",
+      "name": "📤 Update GitHub Stats",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1340, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://api.netlify.com/build_hooks/{{ $('⚙️ Process Data').first().json.basketSanVincenzoPosition === 'Non trovato' ? 'deploy-fallback' : 'deploy-success' }}",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "trigger_title",
+              "value": "🏀 Deploy automatico - Classifiche aggiornate"
+            },
+            {
+              "name": "trigger_branch",
+              "value": "master"
+            }
+          ]
+        }
+      },
+      "id": "node7",
+      "name": "🚀 Trigger Netlify Deploy",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1560, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 📊 Log finale del workflow\nconst data = $input.all()[0].json;\n\nconsole.log('=== WORKFLOW COMPLETATO ===');\nconsole.log('Successo:', data.success);\nconsole.log('Messaggio:', data.message);\nconsole.log('Squadre trovate:', data.totalTeams);\nconsole.log('Basket San Vincenzo:', data.basketSanVincenzoPosition);\nconsole.log('Ultimo aggiornamento:', data.lastUpdate);\n\nreturn [{\n  json: {\n    workflowStatus: 'completed',\n    timestamp: new Date().toISOString(),\n    summary: {\n      success: data.success,\n      teamsFound: data.totalTeams,\n      svbPosition: data.basketSanVincenzoPosition,\n      lastUpdate: data.lastUpdate\n    }\n  }\n}];"
+      },
+      "id": "node8",
+      "name": "📋 Final Log",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1780, 200]
+    }
+  ],
+  "connections": {
+    "⏰ Schedule (Lun-Gio 8:00)": {
+      "main": [
+        [
+          {
+            "node": "🌐 Fetch PlayBasket Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🌐 Fetch PlayBasket Data": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Process Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Process Data": {
+      "main": [
+        [
+          {
+            "node": "✅ Check Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Check Success": {
+      "main": [
+        [
+          {
+            "node": "📥 Get Current Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📥 Get Current Stats": {
+      "main": [
+        [
+          {
+            "node": "📤 Update GitHub Stats",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📤 Update GitHub Stats": {
+      "main": [
+        [
+          {
+            "node": "🚀 Trigger Netlify Deploy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🚀 Trigger Netlify Deploy": {
+      "main": [
+        [
+          {
+            "node": "📋 Final Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-01-28T10:00:00.000Z",
+  "versionId": "1"
+}

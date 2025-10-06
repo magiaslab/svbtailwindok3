@@ -1,0 +1,344 @@
+{
+  "name": "🏀 Basket San Vincenzo - Scraping Pronto",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1,4"
+            }
+          ]
+        }
+      },
+      "name": "🕐 Lunedì e Giovedì ore 8:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "id": "node1"
+    },
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "options": {
+          "timeout": 120000,
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3"
+          },
+          "retry": {
+            "enabled": true,
+            "maxRetries": 3,
+            "retryDelay": 10000
+          }
+        }
+      },
+      "name": "🌐 Fetch PlayBasket",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [460, 300],
+      "id": "node2"
+    },
+    {
+      "parameters": {
+        "dataPropertyName": "data",
+        "extractionValues": {
+          "tableRows": {
+            "cssSelector": "table tr",
+            "returnArray": true,
+            "returnValue": "html"
+          },
+          "pageTitle": {
+            "cssSelector": "title",
+            "returnValue": "text"
+          }
+        }
+      },
+      "name": "📊 Extract HTML",
+      "type": "n8n-nodes-base.htmlExtract",
+      "typeVersion": 1,
+      "position": [680, 300],
+      "id": "node3"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 🏀 Elaborazione dati classifiche Basket San Vincenzo - Versione Regex\n\nconst htmlRows = $input.all()[0].json.tableRows || [];\nconst standings = [];\nconst teamStats = {};\n\nconsole.log(`🔍 Processando ${htmlRows.length} righe HTML...`);\n\n// Funzione per estrarre testo da tag HTML\nfunction extractTextFromHtml(html) {\n  if (!html) return '';\n  return html.replace(/<[^>]*>/g, '').trim();\n}\n\n// Funzione per estrarre href da tag a\nfunction extractHref(html) {\n  if (!html) return '';\n  const match = html.match(/href=[\"']([^\"']*)[\"']/i);\n  return match ? match[1] : '';\n}\n\nhtmlRows.forEach((rowHtml, index) => {\n  try {\n    if (!rowHtml || typeof rowHtml !== 'string') return;\n    \n    // Estrai le celle TD dalla riga\n    const tdMatches = rowHtml.match(/<td[^>]*>.*?<\\/td>/gi);\n    if (!tdMatches || tdMatches.length < 10) return;\n    \n    const cells = tdMatches.map(td => extractTextFromHtml(td));\n    \n    const positionText = cells[0]?.trim();\n    const position = parseInt(positionText) || 0;\n    \n    // Salta header e righe non valide\n    if (position === 0 || positionText === '#' || positionText === 'Pos' || !positionText) return;\n    \n    const teamName = cells[1]?.trim() || '';\n    if (!teamName || teamName === 'Squadra' || teamName === 'Team') return;\n    \n    // Estrai link squadra\n    const teamLink = extractHref(tdMatches[1] || '');\n    const teamId = teamLink ? (teamLink.match(/obj=(\\d+)/) || [])[1] || '' : '';\n    \n    const points = parseInt(cells[2]?.trim()) || 0;\n    const pointsPerGame = parseFloat(cells[3]?.trim()) || 0;\n    const games = parseInt(cells[4]?.trim()) || 0;\n    const wins = parseInt(cells[5]?.trim()) || 0;\n    const losses = parseInt(cells[6]?.trim()) || 0;\n    \n    // Gestisci percentuale\n    let percentage = cells[7]?.trim() || '0';\n    if (percentage.startsWith('.')) percentage = '0' + percentage;\n    if (percentage === '1') percentage = '1.00';\n    percentage = parseFloat(percentage) || 0;\n    \n    const streak = cells[8]?.trim() || '-';\n    const pointsFor = parseInt(cells[9]?.trim()) || 0;\n    const pointsAgainst = parseInt(cells[10]?.trim()) || 0;\n    const quality = cells[11]?.trim() || 'n/a';\n    \n    const pointsForPerGame = cells[12] ? parseFloat(cells[12].trim()) || 0 : (games > 0 ? pointsFor / games : 0);\n    const pointsAgainstPerGame = cells[13] ? parseFloat(cells[13].trim()) || 0 : (games > 0 ? pointsAgainst / games : 0);\n    \n    const teamData = {\n      position,\n      team: teamName,\n      teamId,\n      teamLink: teamLink ? `https://www.playbasket.it/toscana/${teamLink}` : '',\n      points,\n      pointsPerGame,\n      games,\n      wins,\n      losses,\n      percentage,\n      streak,\n      pointsFor,\n      pointsAgainst,\n      quality,\n      pointsForPerGame,\n      pointsAgainstPerGame\n    };\n    \n    standings.push(teamData);\n    \n    teamStats[teamName] = {\n      position,\n      points,\n      games,\n      wins,\n      losses,\n      winPercentage: percentage,\n      pointsFor,\n      pointsAgainst,\n      pointDifference: pointsFor - pointsAgainst,\n      averagePointsFor: pointsForPerGame,\n      averagePointsAgainst: pointsAgainstPerGame,\n      form: streak,\n      efficiency: games > 0 ? (wins / games * 100).toFixed(1) : '0.0'\n    };\n    \n    console.log(`✅ Processata: ${teamName} - Pos: ${position} - Punti: ${points}`);\n    \n  } catch (error) {\n    console.error(`❌ Errore processando riga ${index}:`, error.message);\n    console.error(`❌ HTML riga:`, rowHtml.substring(0, 100));\n  }\n});\n\nconst sortedStandings = standings.sort((a, b) => a.position - b.position);\n\nconst result = {\n  standings: sortedStandings,\n  teamStats,\n  lastUpdate: new Date().toISOString(),\n  season: '2025-2026',\n  competition: 'Serie C Maschile Toscana',\n  conference: 'Conference Nord-Ovest',\n  group: 'Girone B',\n  totalTeams: sortedStandings.length,\n  scrapingInfo: {\n    timestamp: new Date().toISOString(),\n    source: 'playbasket.it',\n    method: 'n8n-automated-regex',\n    rowsProcessed: htmlRows.length,\n    teamsFound: sortedStandings.length\n  }\n};\n\n// Trova Basket San Vincenzo\nconst basketSanVincenzo = sortedStandings.find(team => \n  team.team.toLowerCase().includes('san vincenzo') || \n  team.team.toLowerCase().includes('basket san vincenzo')\n);\n\nconsole.log(`🏆 Basket San Vincenzo: ${basketSanVincenzo?.position || 'Non trovato'}° posto`);\nconsole.log(`📊 Totale squadre processate: ${result.totalTeams}`);\nconsole.log(`📋 Prime 3 righe HTML:`, htmlRows.slice(0, 3));\n\nreturn { json: result };"
+      },
+      "name": "⚙️ Process Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "id": "node4"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.totalTeams }}",
+              "operation": "largerEqual",
+              "value2": 10
+            }
+          ]
+        }
+      },
+      "name": "✅ Check Data Quality",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1120, 300],
+      "id": "node5"
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/public/stats/serie-c-stats.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "headers": {
+            "Accept": "application/vnd.github.v3+json",
+            "User-Agent": "N8N-Basketball-Scraper"
+          },
+          "timeout": 30000
+        }
+      },
+      "name": "📁 Get File SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1340, 200],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "github-auth",
+          "name": "GitHub Auth"
+        }
+      },
+      "id": "node6"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/public/stats/serie-c-stats.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "=📊 Aggiornamento classifiche Serie C - {{ new Date().toLocaleDateString('it-IT') }} {{ new Date().toLocaleTimeString('it-IT') }}"
+            },
+            {
+              "name": "content",
+              "value": "={{ Buffer.from(JSON.stringify($('⚙️ Process Data').item.json, null, 2)).toString('base64') }}"
+            },
+            {
+              "name": "sha",
+              "value": "={{ $('📁 Get File SHA').item.json.sha }}"
+            }
+          ]
+        },
+        "options": {
+          "headers": {
+            "Accept": "application/vnd.github.v3+json",
+            "Content-Type": "application/json",
+            "User-Agent": "N8N-Basketball-Scraper"
+          },
+          "timeout": 30000
+        }
+      },
+      "name": "🔄 Update GitHub File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1560, 200],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "github-auth",
+          "name": "GitHub Auth"
+        }
+      },
+      "id": "node7"
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/public/stats/stats-database.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "headers": {
+            "Accept": "application/vnd.github.v3+json",
+            "User-Agent": "N8N-Basketball-Scraper"
+          },
+          "timeout": 30000
+        }
+      },
+      "name": "📁 Get DB SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1340, 400],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "github-auth",
+          "name": "GitHub Auth"
+        }
+      },
+      "id": "node8"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/public/stats/stats-database.json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "=📊 Database completo aggiornato - {{ new Date().toLocaleDateString('it-IT') }}"
+            },
+            {
+              "name": "content",
+              "value": "={{ Buffer.from(JSON.stringify({ serieC: $('⚙️ Process Data').item.json, under17: { standings: [], teamStats: {}, lastUpdate: new Date().toISOString() }, under13: { standings: [], teamStats: {}, lastUpdate: new Date().toISOString() }, lastUpdate: new Date().toISOString(), source: 'playbasket.it' }, null, 2)).toString('base64') }}"
+            },
+            {
+              "name": "sha",
+              "value": "={{ $('📁 Get DB SHA').item.json.sha }}"
+            }
+          ]
+        },
+        "options": {
+          "headers": {
+            "Accept": "application/vnd.github.v3+json",
+            "Content-Type": "application/json",
+            "User-Agent": "N8N-Basketball-Scraper"
+          },
+          "timeout": 30000
+        }
+      },
+      "name": "🔄 Update Database",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1560, 400],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "github-auth",
+          "name": "GitHub Auth"
+        }
+      },
+      "id": "node9"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "INSERISCI_QUI_IL_TUO_NETLIFY_BUILD_HOOK",
+        "options": {
+          "headers": {
+            "User-Agent": "N8N-Basketball-Scraper"
+          },
+          "timeout": 60000
+        }
+      },
+      "name": "🚀 Netlify Deploy",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1780, 300],
+      "id": "node10"
+    }
+  ],
+  "connections": {
+    "🕐 Lunedì e Giovedì ore 8:00": {
+      "main": [
+        [
+          {
+            "node": "🌐 Fetch PlayBasket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🌐 Fetch PlayBasket": {
+      "main": [
+        [
+          {
+            "node": "📊 Extract HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Extract HTML": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Process Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Process Data": {
+      "main": [
+        [
+          {
+            "node": "✅ Check Data Quality",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Check Data Quality": {
+      "main": [
+        [
+          {
+            "node": "📁 Get File SHA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "📁 Get DB SHA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📁 Get File SHA": {
+      "main": [
+        [
+          {
+            "node": "🔄 Update GitHub File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📁 Get DB SHA": {
+      "main": [
+        [
+          {
+            "node": "🔄 Update Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔄 Update GitHub File": {
+      "main": [
+        [
+          {
+            "node": "🚀 Netlify Deploy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,421 @@
+{
+  "name": "🏀 Basket Stats Scraper - FINAL WORKING",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "0 8 * * 1,4"
+            }
+          ]
+        }
+      },
+      "id": "node1",
+      "name": "⏰ Cron Schedule",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "responseFormat": "string"
+      },
+      "id": "node2",
+      "name": "🌐 Fetch PlayBasket Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Scraping delle statistiche dal sito PlayBasket\n// Debug dell'input\nconsole.log('🔍 Debug input items:', JSON.stringify(items, null, 2));\nconsole.log('📊 Items length:', items.length);\n\nif (!items || items.length === 0) {\n  console.error('❌ Nessun dato ricevuto dal nodo precedente');\n  return [{ json: { success: false, error: 'No input data', message: 'Nessun dato ricevuto' } }];\n}\n\n// Prova diversi modi per accedere ai dati HTML\nlet html;\nif (items[0].json && items[0].json.data) {\n  html = items[0].json.data;\n  console.log('✅ Dati trovati in items[0].json.data');\n} else if (items[0].json && typeof items[0].json === 'string') {\n  html = items[0].json;\n  console.log('✅ Dati trovati in items[0].json (string)');\n} else if (items[0].binary && items[0].binary.data) {\n  html = items[0].binary.data.toString();\n  console.log('✅ Dati trovati in items[0].binary.data');\n} else {\n  console.error('❌ Struttura dati non riconosciuta:', Object.keys(items[0]));\n  return [{ json: { success: false, error: 'Invalid data structure', message: 'Struttura dati non valida', debug: items[0] } }];\n}\n\nif (!html || html.length === 0) {\n  console.error('❌ HTML vuoto o non valido');\n  return [{ json: { success: false, error: 'Empty HTML', message: 'HTML vuoto' } }];\n}\n\nconst standings = [];\nconst teamStats = {};\nconst season = \"2025-2026\";\nconst competition = \"Serie C Maschile Toscana\";\n\nconsole.log('🔍 Inizio parsing HTML...');\nconsole.log('📊 Lunghezza HTML:', html.length);\n\n// Regex corretta per trovare le tabelle\nconst tableRegex = /<table[^>]*class=[\"']league_standings_ranking stats[\"'][^>]*>([\\s\\S]*?)<\\/table>/g;\nlet tableMatch;\nlet tableCount = 0;\n\nwhile ((tableMatch = tableRegex.exec(html)) !== null) {\n  tableCount++;\n  const tableContent = tableMatch[1];\n  console.log(`📋 Trovata tabella ${tableCount}`);\n\n  // Regex per trovare le righe della tabella\n  const rowRegex = /<tr[^>]*class=[\"']row_standings[\"'][^>]*>([\\s\\S]*?)<\\/tr>/g;\n  let rowMatch;\n  let rowCount = 0;\n\n  while ((rowMatch = rowRegex.exec(tableContent)) !== null) {\n    rowCount++;\n    const rowContent = rowMatch[1];\n\n    // Estrazione dei dati con regex più robuste\n    const positionMatch = /<td[^>]*class=[\"']colfrozen[\"']>(\\d+)<\\/td>/.exec(rowContent);\n    const teamNameMatch = /<td[^>]*class=\"sq colfrozen\"><a[^>]*href=\"club\\.php\\?obj=(\\d+)&action=view&eid=\\d+\">([^<]+)<\\/a>/.exec(rowContent);\n    const teamLinkMatch = /<td[^>]*class=\"sq colfrozen\"><a[^>]*href=\"(club\\.php\\?obj=\\d+&action=view&eid=\\d+)\">/.exec(rowContent);\n    const pointsMatch = /<td[^>]*class=[\"']highlighted_data[\"']>(\\d+)<\\/td>/.exec(rowContent);\n    const gamesMatch = /<td[^>]*title=[\"']Partite giocate[\"']>(\\d+)<\\/td>/.exec(rowContent);\n    const winsMatch = /<td[^>]*title=[\"']Partite vinte[\"']>(\\d+)<\\/td>/.exec(rowContent);\n    const lossesMatch = /<td[^>]*title=[\"']Partite perse[\"']>(\\d+)<\\/td>/.exec(rowContent);\n    const percentageMatch = /<td[^>]*title=[\"']Percentuale vittorie \\(Percentage\\)[\"']>([\\d.]+)<\\/td>/.exec(rowContent);\n    const streakMatch = /<td[^>]*class=[\"']divisore streak[\"']>(?:<span[^>]*>.*?<\\/span>)?([^<]+)<\\/td>/.exec(rowContent);\n    const pointsForMatch = /<td[^>]*title=[\"']Punti realizzati[\"']>(\\d+)<\\/td>/.exec(rowContent);\n    const pointsAgainstMatch = /<td[^>]*title=[\"']Punti subiti[\"']>(\\d+)<\\/td>/.exec(rowContent);\n    const qualityMatch = /<td[^>]*title=[\"']Quoziente punti \\| Punti realizzati per ogni canestro subito[\"']>([\\d.\\/na]+)<\\/td>/.exec(rowContent);\n    const pointsForPerGameMatch = /<td[^>]*title=[\"']Punti realizzati di media a gara[\"']>([\\d.]+)<\\/td>/.exec(rowContent);\n    const pointsAgainstPerGameMatch = /<td[^>]*title=[\"']Punti subiti di media a gara[\"']>([\\d.]+)<\\/td>/.exec(rowContent);\n\n    if (positionMatch && teamNameMatch && pointsMatch) {\n      const teamName = teamNameMatch[2].trim();\n      const teamId = teamNameMatch[1];\n      const teamLink = teamLinkMatch ? `https://www.playbasket.it/toscana/${teamLinkMatch[1]}` : '';\n      const position = parseInt(positionMatch[1], 10);\n      const points = parseInt(pointsMatch[1], 10);\n      const games = gamesMatch ? parseInt(gamesMatch[1], 10) : 0;\n      const wins = winsMatch ? parseInt(winsMatch[1], 10) : 0;\n      const losses = lossesMatch ? parseInt(lossesMatch[1], 10) : 0;\n      const percentage = percentageMatch ? parseFloat(percentageMatch[1]) : 0;\n      const streak = streakMatch ? streakMatch[1].trim() : '-';\n      const pointsFor = pointsForMatch ? parseInt(pointsForMatch[1], 10) : 0;\n      const pointsAgainst = pointsAgainstMatch ? parseInt(pointsAgainstMatch[1], 10) : 0;\n      const quality = qualityMatch ? qualityMatch[1].trim() : 'n/a';\n      const pointsForPerGame = pointsForPerGameMatch ? parseFloat(pointsForPerGameMatch[1]) : 0;\n      const pointsAgainstPerGame = pointsAgainstPerGameMatch ? parseFloat(pointsAgainstPerGameMatch[1]) : 0;\n\n      const teamData = {\n        position,\n        team: teamName,\n        teamId,\n        teamLink,\n        points,\n        pointsPerGame: games > 0 ? (points / games) : 0,\n        games,\n        wins,\n        losses,\n        percentage,\n        streak,\n        pointsFor,\n        pointsAgainst,\n        quality,\n        pointsForPerGame,\n        pointsAgainstPerGame,\n      };\n\n      standings.push(teamData);\n\n      teamStats[teamName] = {\n        position,\n        points,\n        games,\n        wins,\n        losses,\n        winPercentage: percentage,\n        pointsFor,\n        pointsAgainst,\n        pointDifference: pointsFor - pointsAgainst,\n        averagePointsFor: pointsForPerGame,\n        averagePointsAgainst: pointsAgainstPerGame,\n      };\n\n      console.log(`✅ Squadra ${position}: ${teamName} - ${points} punti`);\n    }\n  }\n  console.log(`📊 Trovate ${rowCount} righe nella tabella ${tableCount}`);\n}\n\n// Trova i dati specifici del Basket San Vincenzo\nconst basketSanVincenzo = standings.find(team => \n  team.team.toLowerCase().includes('basket san vincenzo') || \n  team.team.toLowerCase().includes('san vincenzo')\n);\n\nconst result = {\n  success: standings.length > 0,\n  message: standings.length > 0 ? 'Scraping completato con successo' : 'Nessun dato trovato',\n  standings,\n  teamStats,\n  lastUpdate: new Date().toISOString(),\n  season,\n  competition,\n  conference: \"Conference Nord-Ovest\",\n  group: \"Girone B\",\n  totalTeams: standings.length,\n};\n\n// Aggiungi dati specifici del Basket San Vincenzo se trovati\nif (basketSanVincenzo) {\n  result.basketSanVincenzo = basketSanVincenzo;\n  result.basketSanVincenzoPosition = basketSanVincenzo.position;\n  console.log(`🏀 Basket San Vincenzo trovato in posizione ${basketSanVincenzo.position}`);\n}\n\nconsole.log(`🎉 Scraping completato: ${standings.length} squadre trovate`);\n\nreturn [{ json: result }];"
+      },
+      "id": "node3",
+      "name": "⚙️ Process Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.success }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "node4",
+      "name": "✅ Check Quality",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats/serie-c-stats.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github.v3+json"
+            }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "ref",
+              "value": "master"
+            }
+          ]
+        }
+      },
+      "id": "node5",
+      "name": "📥 Get JSON Stats",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats-data.ts",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github.v3+json"
+            }
+          ]
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "ref",
+              "value": "master"
+            }
+          ]
+        }
+      },
+      "id": "node6",
+      "name": "📥 Get TS Stats",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1120, 400]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepara i dati JSON per serie-c-stats.json\nconst processData = $input.first().json;\n\nconsole.log('🔧 Preparazione dati JSON...');\nconsole.log('📊 Squadre processate:', processData.totalTeams);\n\nconst jsonData = {\n  \"standings\": processData.standings,\n  \"teamStats\": processData.teamStats,\n  \"lastUpdate\": processData.lastUpdate,\n  \"season\": processData.season,\n  \"competition\": processData.competition,\n  \"conference\": processData.conference,\n  \"group\": processData.group,\n  \"totalTeams\": processData.totalTeams,\n  \"source\": \"playbasket.it\",\n  \"scrapedBy\": \"n8n-workflow\"\n};\n\nconst jsonBase64 = Buffer.from(JSON.stringify(jsonData, null, 2), 'utf8').toString('base64');\nconst commitMessage = `📊 Aggiornamento statistiche Serie C JSON - ${processData.totalTeams} squadre - ${new Date().toLocaleString('it-IT')}`;\n\nconsole.log('📝 JSON preparato, lunghezza Base64:', jsonBase64.length);\n\nreturn [{\n  json: {\n    content: jsonBase64,\n    message: commitMessage,\n    processData: processData\n  }\n}];"
+      },
+      "id": "node7",
+      "name": "🔧 Prepare JSON Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepara i dati TypeScript per stats-data.ts\nconst processData = $input.first().json;\n\nconsole.log('🔧 Preparazione dati TypeScript...');\nconsole.log('📊 Squadre processate:', processData.totalTeams);\n\nconst tsData = `// Dati delle statistiche Serie C\n// Questo file viene importato direttamente dai componenti\n// Aggiornato automaticamente dal workflow n8n\n\nexport const serieCStatsData = {\n  standings: ${JSON.stringify(processData.standings, null, 4)},\n  lastUpdate: \"${processData.lastUpdate}\",\n  season: \"${processData.season}\",\n  competition: \"${processData.competition}\",\n  conference: \"${processData.conference}\",\n  group: \"${processData.group}\",\n  source: \"playbasket.it\",\n  totalTeams: ${processData.totalTeams},\n  status: \"active\",\n  scrapedBy: \"n8n-workflow\"\n};\n`;\n\nconst tsBase64 = Buffer.from(tsData, 'utf8').toString('base64');\nconst commitMessage = `📊 Aggiornamento statistiche Serie C TS - ${processData.totalTeams} squadre - ${new Date().toLocaleString('it-IT')}`;\n\nconsole.log('📝 TS preparato, lunghezza Base64:', tsBase64.length);\n\nreturn [{\n  json: {\n    content: tsBase64,\n    message: commitMessage,\n    processData: processData\n  }\n}];"
+      },
+      "id": "node8",
+      "name": "🔧 Prepare TS Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 400]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats/serie-c-stats.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $('🔧 Prepare JSON Data').item.json.message }}"
+            },
+            {
+              "name": "content",
+              "value": "={{ $('🔧 Prepare JSON Data').item.json.content }}"
+            },
+            {
+              "name": "sha",
+              "value": "={{ $('📥 Get JSON Stats').item.json.sha }}"
+            },
+            {
+              "name": "branch",
+              "value": "master"
+            }
+          ]
+        }
+      },
+      "id": "node9",
+      "name": "📤 Update JSON File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1560, 200]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats-data.ts",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $('🔧 Prepare TS Data').item.json.message }}"
+            },
+            {
+              "name": "content",
+              "value": "={{ $('🔧 Prepare TS Data').item.json.content }}"
+            },
+            {
+              "name": "sha",
+              "value": "={{ $('📥 Get TS Stats').item.json.sha }}"
+            },
+            {
+              "name": "branch",
+              "value": "master"
+            }
+          ]
+        }
+      },
+      "id": "node10",
+      "name": "📤 Update TS File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1560, 400]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.netlify.com/build_hooks/68d8f925792a5800aecc4fa4",
+        "responseFormat": "string",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "User-Agent",
+              "value": "n8n-workflow/1.0"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "trigger",
+              "value": "n8n-dual-stats-update"
+            }
+          ]
+        }
+      },
+      "id": "node11",
+      "name": "🚀 Trigger Netlify Deploy",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1780, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Risultato finale del workflow con aggiornamento doppio\nconst jsonResponse = $('📤 Update JSON File').item.json;\nconst tsResponse = $('📤 Update TS File').item.json;\nconst netlifyResponse = $input.first().json;\n\nconst result = {\n  success: true,\n  timestamp: new Date().toISOString(),\n  message: '🎉 Workflow dual-update completato con successo!',\n  execution: {\n    triggeredBy: 'cron',\n    schedule: 'Lunedì e Giovedì alle 8:00',\n    filesUpdated: ['serie-c-stats.json', 'stats-data.ts']\n  },\n  steps: {\n    scraping: '✅ Dati scrapati da PlayBasket',\n    jsonFile: jsonResponse?.commit ? '✅ File JSON aggiornato su GitHub' : '❌ Errore JSON',\n    tsFile: tsResponse?.commit ? '✅ File TypeScript aggiornato su GitHub' : '❌ Errore TS',\n    netlify: netlifyResponse ? '✅ Deploy Netlify triggerato' : '❌ Deploy fallito'\n  },\n  details: {\n    jsonCommit: jsonResponse?.commit?.sha || 'N/A',\n    tsCommit: tsResponse?.commit?.sha || 'N/A',\n    netlifyDeploy: netlifyResponse || 'N/A'\n  },\n  summary: {\n    bothFilesUpdated: !!(jsonResponse?.commit && tsResponse?.commit),\n    deployTriggered: !!netlifyResponse,\n    totalSteps: 'Scraping → JSON + TS Files → Netlify → Complete'\n  }\n};\n\nconsole.log('🎊 DUAL UPDATE WORKFLOW COMPLETATO!');\nconsole.log('📊 JSON commit:', result.details.jsonCommit);\nconsole.log('📊 TS commit:', result.details.tsCommit);\nconsole.log('🚀 Netlify response:', result.details.netlifyDeploy);\nconsole.log('✅ Entrambi i file aggiornati:', result.summary.bothFilesUpdated);\n\nreturn [{ json: result }];"
+      },
+      "id": "node12",
+      "name": "🎉 Final Success",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2000, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gestione errori del workflow\nconst errorData = {\n  success: false,\n  timestamp: new Date().toISOString(),\n  message: '❌ Errore durante l\\'esecuzione del workflow',\n  error: 'Dati non validi o scraping fallito',\n  suggestion: 'Verificare il sito PlayBasket e la struttura HTML'\n};\n\nconsole.error('❌ DUAL UPDATE WORKFLOW FALLITO');\n\nreturn [{ json: errorData }];"
+      },
+      "id": "node13",
+      "name": "❌ Error Handler",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 600]
+    }
+  ],
+  "connections": {
+    "⏰ Cron Schedule": {
+      "main": [
+        [
+          {
+            "node": "🌐 Fetch PlayBasket Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🌐 Fetch PlayBasket Data": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Process Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Process Data": {
+      "main": [
+        [
+          {
+            "node": "✅ Check Quality",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Check Quality": {
+      "main": [
+        [
+          {
+            "node": "📥 Get JSON Stats",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "📥 Get TS Stats",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "🔧 Prepare JSON Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "🔧 Prepare TS Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "❌ Error Handler",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📥 Get JSON Stats": {
+      "main": [
+        [
+          {
+            "node": "📤 Update JSON File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📥 Get TS Stats": {
+      "main": [
+        [
+          {
+            "node": "📤 Update TS File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔧 Prepare JSON Data": {
+      "main": [
+        [
+          {
+            "node": "📤 Update JSON File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔧 Prepare TS Data": {
+      "main": [
+        [
+          {
+            "node": "📤 Update TS File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📤 Update JSON File": {
+      "main": [
+        [
+          {
+            "node": "🚀 Trigger Netlify Deploy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📤 Update TS File": {
+      "main": [
+        [
+          {
+            "node": "🚀 Trigger Netlify Deploy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🚀 Trigger Netlify Deploy": {
+      "main": [
+        [
+          {
+            "node": "🎉 Final Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    "basketball",
+    "scraping",
+    "automation",
+    "production"
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-09-28T18:45:00.000Z",
+  "versionId": "final-working-v1"
+}

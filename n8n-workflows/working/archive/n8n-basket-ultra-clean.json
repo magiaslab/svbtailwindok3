@@ -1,0 +1,249 @@
+{
+  "name": "🏀 Basket Stats - ULTRA CLEAN",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "value": "0 8 * * 1,4"
+            }
+          ]
+        }
+      },
+      "id": "schedule-node-001",
+      "name": "Schedule Mon Thu 8AM",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st"
+      },
+      "id": "http-playbasket-001",
+      "name": "Get HTML",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats/serie-c-stats.json",
+        "options": {
+          "headers": {
+            "Accept": "application/vnd.github.v3+json",
+            "Authorization": "token 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"
+          }
+        }
+      },
+      "id": "http-github-json-001",
+      "name": "Get JSON SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [480, 180]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats-data.ts",
+        "options": {
+          "headers": {
+            "Accept": "application/vnd.github.v3+json",
+            "Authorization": "token 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"
+          }
+        }
+      },
+      "id": "http-github-ts-001",
+      "name": "Get TS SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [480, 420]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parsing HTML robusto\nfunction extractText(html) {\n  return html.replace(/<[^>]*>/g, '').replace(/\\s+/g, ' ').trim();\n}\n\nfunction extractHref(html) {\n  const match = html.match(/href=[\"']([^\"']*)[\"']/);\n  return match ? match[1] : '';\n}\n\n// Accesso dati\nlet htmlData = '';\nlet jsonSha = '';\nlet tsSha = '';\n\nfor (let i = 0; i < items.length; i++) {\n  const item = items[i];\n  if (item.data && typeof item.data === 'string' && item.data.length > 10000) {\n    htmlData = item.data;\n  } else if (item.sha && item.path && item.path.includes('serie-c-stats.json')) {\n    jsonSha = item.sha;\n  } else if (item.sha && item.path && item.path.includes('stats-data.ts')) {\n    tsSha = item.sha;\n  }\n}\n\nif (!htmlData) {\n  return [{ json: { error: 'HTML not found' } }];\n}\n\n// Trova tabella\nconst tableRegex = /<table[^>]*league_standings_ranking[^>]*>([\\s\\S]*?)<\\/table>/;\nconst tableMatch = htmlData.match(tableRegex);\n\nif (!tableMatch) {\n  return [{ json: { error: 'Table not found' } }];\n}\n\n// Parse righe\nconst rowRegex = /<tr[^>]*>([\\s\\S]*?)<\\/tr>/g;\nconst standings = [];\nlet match;\nlet skipFirst = true;\n\nwhile ((match = rowRegex.exec(tableMatch[1])) !== null) {\n  if (skipFirst || match[1].includes('<th')) {\n    skipFirst = false;\n    continue;\n  }\n  \n  const cellRegex = /<td[^>]*>([\\s\\S]*?)<\\/td>/g;\n  const cells = [];\n  let cellMatch;\n  \n  while ((cellMatch = cellRegex.exec(match[1])) !== null) {\n    cells.push(cellMatch[1]);\n  }\n  \n  if (cells.length >= 8) {\n    const teamName = extractText(cells[1] || '');\n    const teamLink = extractHref(cells[1] || '');\n    const teamId = teamLink.match(/obj=(\\d+)/) ? teamLink.match(/obj=(\\d+)/)[1] : '';\n    \n    let points = 0;\n    const pointsMatch = cells[2].match(/<span[^>]*highlighted_data[^>]*>([^<]+)<\\/span>/);\n    if (pointsMatch) {\n      points = parseInt(pointsMatch[1]) || 0;\n    }\n    \n    const games = parseInt(extractText(cells[3] || '0')) || 0;\n    const wins = parseInt(extractText(cells[4] || '0')) || 0;\n    const losses = parseInt(extractText(cells[5] || '0')) || 0;\n    const percentage = games > 0 ? wins / games : 0;\n    const pointsFor = parseInt(extractText(cells[7] || '0')) || 0;\n    const pointsAgainst = parseInt(extractText(cells[8] || '0')) || 0;\n    \n    standings.push({\n      position: standings.length + 1,\n      team: teamName,\n      teamId: teamId,\n      teamLink: teamLink.startsWith('http') ? teamLink : 'https://www.playbasket.it' + teamLink,\n      points: points,\n      games: games,\n      wins: wins,\n      losses: losses,\n      percentage: percentage,\n      pointsFor: pointsFor,\n      pointsAgainst: pointsAgainst\n    });\n  }\n}\n\nconst now = new Date().toISOString();\nconst statsData = {\n  standings: standings,\n  lastUpdate: now,\n  season: '2025-2026',\n  competition: 'Serie C Maschile Toscana',\n  totalTeams: standings.length\n};\n\nconst tsContent = `export const serieCStatsData = ${JSON.stringify(statsData, null, 2)};`;\n\nreturn [{\n  json: {\n    success: true,\n    data: statsData,\n    tsContent: tsContent,\n    jsonSha: jsonSha,\n    tsSha: tsSha\n  }\n}];"
+      },
+      "id": "code-parse-001",
+      "name": "Parse Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.success}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "if-check-001",
+      "name": "Check Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [920, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats/serie-c-stats.json",
+        "requestMethod": "PUT",
+        "jsonParameters": true,
+        "options": {
+          "headers": {
+            "Authorization": "token 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",
+            "Content-Type": "application/json"
+          }
+        },
+        "bodyParametersJson": "={ \"message\": \"Auto update stats\", \"content\": \"{{ $base64(JSON.stringify($json.data, null, 2)) }}\", \"sha\": \"{{ $json.jsonSha }}\" }"
+      },
+      "id": "http-update-json-001",
+      "name": "Update JSON",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1140, 200]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats-data.ts",
+        "requestMethod": "PUT",
+        "jsonParameters": true,
+        "options": {
+          "headers": {
+            "Authorization": "token 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",
+            "Content-Type": "application/json"
+          }
+        },
+        "bodyParametersJson": "={ \"message\": \"Auto update TS\", \"content\": \"{{ $base64($json.tsContent) }}\", \"sha\": \"{{ $json.tsSha }}\" }"
+      },
+      "id": "http-update-ts-001",
+      "name": "Update TS",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1140, 400]
+    },
+    {
+      "parameters": {
+        "url": "https://api.netlify.com/build_hooks/66f7e9c6e0b7a7b8c9d0e1f2",
+        "requestMethod": "POST"
+      },
+      "id": "http-netlify-001",
+      "name": "Deploy Netlify",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1360, 300]
+    }
+  ],
+  "connections": {
+    "Schedule Mon Thu 8AM": {
+      "main": [
+        [
+          {
+            "node": "Get HTML",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get JSON SHA",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get TS SHA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get HTML": {
+      "main": [
+        [
+          {
+            "node": "Parse Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get JSON SHA": {
+      "main": [
+        [
+          {
+            "node": "Parse Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get TS SHA": {
+      "main": [
+        [
+          {
+            "node": "Parse Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Data": {
+      "main": [
+        [
+          {
+            "node": "Check Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Success": {
+      "main": [
+        [
+          {
+            "node": "Update JSON",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update TS",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update JSON": {
+      "main": [
+        [
+          {
+            "node": "Deploy Netlify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update TS": {
+      "main": [
+        [
+          {
+            "node": "Deploy Netlify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "timezone": "Europe/Rome"
+  }
+}

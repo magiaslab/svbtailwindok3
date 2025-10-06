@@ -1,0 +1,299 @@
+{
+  "name": "🏀 Basket San Vincenzo - Scraping Corretto",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": {
+            "field": "cronExpression",
+            "expression": "0 8 * * 1,4"
+          }
+        }
+      },
+      "name": "🕐 Schedule - Lunedì e Giovedì ore 8:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "id": "schedule-trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "options": {
+          "timeout": 120000,
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+            "Accept-Language": "it-IT,it;q=0.8,en-US;q=0.5,en;q=0.3"
+          },
+          "retry": {
+            "enabled": true,
+            "maxRetries": 3,
+            "retryDelay": 10000
+          }
+        }
+      },
+      "name": "🌐 Fetch PlayBasket Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [460, 300],
+      "id": "fetch-data"
+    },
+    {
+      "parameters": {
+        "dataPropertyName": "data",
+        "extractionValues": {
+          "tableRows": {
+            "cssSelector": "table tr",
+            "returnArray": true
+          }
+        }
+      },
+      "name": "📊 Extract Table Rows",
+      "type": "n8n-nodes-base.htmlExtract",
+      "typeVersion": 1,
+      "position": [680, 300],
+      "id": "extract-html"
+    },
+    {
+      "parameters": {
+        "jsCode": "// 🏀 Elaborazione dati classifiche Basket San Vincenzo - Versione Regex\n\nconst htmlRows = $input.all()[0].json.tableRows || [];\nconst standings = [];\nconst teamStats = {};\n\nconsole.log(`🔍 Processando ${htmlRows.length} righe HTML...`);\n\n// Funzione per estrarre testo da tag HTML\nfunction extractTextFromHtml(html) {\n  if (!html) return '';\n  return html.replace(/<[^>]*>/g, '').trim();\n}\n\n// Funzione per estrarre href da tag a\nfunction extractHref(html) {\n  if (!html) return '';\n  const match = html.match(/href=[\"']([^\"']*)[\"']/i);\n  return match ? match[1] : '';\n}\n\nhtmlRows.forEach((rowHtml, index) => {\n  try {\n    if (!rowHtml || typeof rowHtml !== 'string') return;\n    \n    // Estrai le celle TD dalla riga\n    const tdMatches = rowHtml.match(/<td[^>]*>.*?<\\/td>/gi);\n    if (!tdMatches || tdMatches.length < 10) return;\n    \n    const cells = tdMatches.map(td => extractTextFromHtml(td));\n    \n    const positionText = cells[0]?.trim();\n    const position = parseInt(positionText) || 0;\n    \n    // Salta header e righe non valide\n    if (position === 0 || positionText === '#' || positionText === 'Pos' || !positionText) return;\n    \n    const teamName = cells[1]?.trim() || '';\n    if (!teamName || teamName === 'Squadra' || teamName === 'Team') return;\n    \n    // Estrai link squadra\n    const teamLink = extractHref(tdMatches[1] || '');\n    const teamId = teamLink ? (teamLink.match(/obj=(\\d+)/) || [])[1] || '' : '';\n    \n    const points = parseInt(cells[2]?.trim()) || 0;\n    const pointsPerGame = parseFloat(cells[3]?.trim()) || 0;\n    const games = parseInt(cells[4]?.trim()) || 0;\n    const wins = parseInt(cells[5]?.trim()) || 0;\n    const losses = parseInt(cells[6]?.trim()) || 0;\n    \n    // Gestisci percentuale\n    let percentage = cells[7]?.trim() || '0';\n    if (percentage.startsWith('.')) percentage = '0' + percentage;\n    if (percentage === '1') percentage = '1.00';\n    percentage = parseFloat(percentage) || 0;\n    \n    const streak = cells[8]?.trim() || '-';\n    const pointsFor = parseInt(cells[9]?.trim()) || 0;\n    const pointsAgainst = parseInt(cells[10]?.trim()) || 0;\n    const quality = cells[11]?.trim() || 'n/a';\n    \n    const pointsForPerGame = cells[12] ? parseFloat(cells[12].trim()) || 0 : (games > 0 ? pointsFor / games : 0);\n    const pointsAgainstPerGame = cells[13] ? parseFloat(cells[13].trim()) || 0 : (games > 0 ? pointsAgainst / games : 0);\n    \n    const teamData = {\n      position,\n      team: teamName,\n      teamId,\n      teamLink: teamLink ? `https://www.playbasket.it/toscana/${teamLink}` : '',\n      points,\n      pointsPerGame,\n      games,\n      wins,\n      losses,\n      percentage,\n      streak,\n      pointsFor,\n      pointsAgainst,\n      quality,\n      pointsForPerGame,\n      pointsAgainstPerGame\n    };\n    \n    standings.push(teamData);\n    \n    teamStats[teamName] = {\n      position,\n      points,\n      games,\n      wins,\n      losses,\n      winPercentage: percentage,\n      pointsFor,\n      pointsAgainst,\n      pointDifference: pointsFor - pointsAgainst,\n      averagePointsFor: pointsForPerGame,\n      averagePointsAgainst: pointsAgainstPerGame,\n      form: streak,\n      efficiency: games > 0 ? (wins / games * 100).toFixed(1) : '0.0'\n    };\n    \n    console.log(`✅ Processata: ${teamName} - Pos: ${position} - Punti: ${points}`);\n    \n  } catch (error) {\n    console.error(`❌ Errore processando riga ${index}:`, error.message);\n    console.error(`❌ HTML riga:`, rowHtml.substring(0, 100));\n  }\n});\n\nconst sortedStandings = standings.sort((a, b) => a.position - b.position);\n\nconst result = {\n  standings: sortedStandings,\n  teamStats,\n  lastUpdate: new Date().toISOString(),\n  season: '2025-2026',\n  competition: 'Serie C Maschile Toscana',\n  conference: 'Conference Nord-Ovest',\n  group: 'Girone B',\n  totalTeams: sortedStandings.length,\n  scrapingInfo: {\n    timestamp: new Date().toISOString(),\n    source: 'playbasket.it',\n    method: 'n8n-automated-regex',\n    rowsProcessed: htmlRows.length,\n    teamsFound: sortedStandings.length\n  }\n};\n\n// Trova Basket San Vincenzo\nconst basketSanVincenzo = sortedStandings.find(team => \n  team.team.toLowerCase().includes('san vincenzo') || \n  team.team.toLowerCase().includes('basket san vincenzo')\n);\n\nconsole.log(`🏆 Basket San Vincenzo: ${basketSanVincenzo?.position || 'Non trovato'}° posto`);\nconsole.log(`📊 Totale squadre processate: ${result.totalTeams}`);\nconsole.log(`📋 Prime 3 righe HTML:`, htmlRows.slice(0, 3));\n\nreturn { json: result };"
+      },
+      "name": "⚙️ Process Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [900, 300],
+      "id": "process-data"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": {
+            "value1": "={{ $json.totalTeams }}",
+            "operation": "largerEqual",
+            "value2": 10
+          }
+        }
+      },
+      "name": "✅ Check Data Quality",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1120, 300],
+      "id": "check-quality"
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/public/stats/serie-c-stats.json",
+        "authentication": "httpHeaderAuth",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "headers": {
+            "Accept": "application/vnd.github.v3+json"
+          }
+        }
+      },
+      "name": "📁 Get File SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1340, 200],
+      "id": "get-file-sha"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/public/stats/serie-c-stats.json",
+        "authentication": "httpHeaderAuth",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "message": "📊 Aggiornamento classifiche Serie C - {{ new Date().toLocaleDateString('it-IT') }} {{ new Date().toLocaleTimeString('it-IT') }}",
+          "content": "={{ Buffer.from(JSON.stringify($('⚙️ Process Data').item.json, null, 2)).toString('base64') }}",
+          "sha": "={{ $json.sha }}"
+        },
+        "options": {
+          "headers": {
+            "Accept": "application/vnd.github.v3+json"
+          }
+        }
+      },
+      "name": "🔄 Update GitHub File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1560, 200],
+      "id": "update-file"
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats-database.json",
+        "authentication": "httpHeaderAuth",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {
+          "headers": {
+            "Accept": "application/vnd.github.v3+json"
+          }
+        }
+      },
+      "name": "📁 Get DB SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1340, 400],
+      "id": "get-db-sha"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats-database.json",
+        "authentication": "httpHeaderAuth",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "message": "📊 Database completo aggiornato - {{ new Date().toLocaleDateString('it-IT') }}",
+          "content": "={{ Buffer.from(JSON.stringify({ serieC: $('⚙️ Process Data').item.json, under17: { standings: [], teamStats: {}, lastUpdate: new Date().toISOString() }, under13: { standings: [], teamStats: {}, lastUpdate: new Date().toISOString() }, lastUpdate: new Date().toISOString(), source: 'playbasket.it' }, null, 2)).toString('base64') }}",
+          "sha": "={{ $json.sha }}"
+        },
+        "options": {
+          "headers": {
+            "Accept": "application/vnd.github.v3+json"
+          }
+        }
+      },
+      "name": "🔄 Update Database",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1560, 400],
+      "id": "update-database"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.netlify.com/build_hooks/65f8a1b2-1234-5678-9abc-def012345678",
+        "options": {
+          "headers": {
+            "Content-Type": "application/json"
+          }
+        }
+      },
+      "name": "🚀 Netlify Deploy",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1780, 300],
+      "id": "netlify-deploy"
+    }
+  ],
+  "connections": {
+    "schedule-trigger": {
+      "main": [
+        [
+          {
+            "node": "fetch-data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "fetch-data": {
+      "main": [
+        [
+          {
+            "node": "extract-html",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "extract-html": {
+      "main": [
+        [
+          {
+            "node": "process-data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "process-data": {
+      "main": [
+        [
+          {
+            "node": "check-quality",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check-quality": {
+      "main": [
+        [
+          {
+            "node": "get-file-sha",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "get-db-sha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get-file-sha": {
+      "main": [
+        [
+          {
+            "node": "update-file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "get-db-sha": {
+      "main": [
+        [
+          {
+            "node": "update-database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update-file": {
+      "main": [
+        [
+          {
+            "node": "netlify-deploy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "update-database": {
+      "main": [
+        [
+          {
+            "node": "netlify-deploy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-01-28T10:00:00.000Z",
+  "versionId": "1"
+}

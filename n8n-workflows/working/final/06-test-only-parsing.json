@@ -1,0 +1,50 @@
+{
+  "name": "06 - Test Solo Parsing (Senza GitHub/Netlify)",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "responseFormat": "string"
+      },
+      "id": "http-request",
+      "name": "Get HTML",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// === TEST SOLO PARSING (STESSO CODICE DEL WORKFLOW CORRECTED) ===\nconsole.log('🚀 Test solo parsing...');\n\n// Accesso ai dati HTML\nlet htmlData = '';\nif (items && items.length > 0) {\n  const item = items[0];\n  console.log('📥 Item ricevuto:', typeof item, Object.keys(item || {}));\n  \n  if (item.json && item.json.data && typeof item.json.data === 'string' && item.json.data.length > 1000) {\n    htmlData = item.json.data;\n    console.log('✅ HTML trovato in item.json.data');\n  } else if (item.json && typeof item.json === 'string' && item.json.length > 1000) {\n    htmlData = item.json;\n    console.log('✅ HTML trovato in item.json (string)');\n  } else if (item.data && typeof item.data === 'string' && item.data.length > 1000) {\n    htmlData = item.data;\n    console.log('✅ HTML trovato in item.data');\n  }\n}\n\nif (!htmlData || htmlData.length < 1000) {\n  return [{\n    json: {\n      error: 'HTML_NOT_FOUND',\n      message: 'Impossibile accedere ai dati HTML',\n      success: false\n    }\n  }];\n}\n\n// Parsing della tabella\nconst tableRegex = /<table[^>]*class=[\"']league_standings_ranking stats[\"'][^>]*>([\\s\\S]*?)<\\/table>/i;\nconst tableMatch = htmlData.match(tableRegex);\n\nif (!tableMatch) {\n  return [{\n    json: {\n      error: 'TABLE_NOT_FOUND',\n      message: 'Tabella non trovata',\n      success: false\n    }\n  }];\n}\n\n// Estrazione righe\nconst rowRegex = /<tr[^>]*>([\\s\\S]*?)<\\/tr>/gi;\nconst rows = [];\nlet match;\n\nwhile ((match = rowRegex.exec(tableMatch[1])) !== null) {\n  rows.push(match[1]);\n}\n\nconst standings = [];\n\n// Parsing squadre (salta header)\nfor (let i = 1; i < rows.length; i++) {\n  const rowContent = rows[i];\n  const cellRegex = /<td[^>]*>([\\s\\S]*?)<\\/td>/gi;\n  const cells = [];\n  let cellMatch;\n  \n  while ((cellMatch = cellRegex.exec(rowContent)) !== null) {\n    cells.push(cellMatch[1]);\n  }\n  \n  if (cells.length >= 11) {\n    const cleanText = (html) => html.replace(/<[^>]*>/g, '').replace(/\\s+/g, ' ').trim();\n    const extractHref = (html) => {\n      const match = html.match(/href=[\"']([^\"']*)[\"']/);\n      return match ? match[1] : '';\n    };\n    \n    // MAPPING CORRETTO DELLE CELLE\n    const position = parseInt(cleanText(cells[0])) || standings.length + 1;\n    const teamCell = cells[1] || '';\n    const teamName = cleanText(teamCell);\n    const teamLink = extractHref(teamCell);\n    const teamIdMatch = teamLink.match(/obj=(\\d+)/);\n    const teamId = teamIdMatch ? teamIdMatch[1] : '';\n    const points = parseInt(cleanText(cells[2])) || 0;\n    const games = parseInt(cleanText(cells[4])) || 0;\n    const wins = parseInt(cleanText(cells[5])) || 0;\n    const losses = parseInt(cleanText(cells[6])) || 0;\n    const percentage = parseFloat(cleanText(cells[7])) || 0;\n    const streak = cleanText(cells[8]) || '-';\n    const pointsFor = parseInt(cleanText(cells[10])) || 0;\n    const quality = parseFloat(cleanText(cells[9])) || 50;\n    const pointsAgainst = games > 0 ? Math.max(0, Math.round(pointsFor - ((quality - 50) * games / 10))) : 0;\n    \n    standings.push({\n      position: position,\n      team: teamName,\n      teamId: teamId,\n      teamLink: teamLink.startsWith('http') ? teamLink : `https://www.playbasket.it/toscana/${teamLink}`,\n      points: points,\n      pointsPerGame: games > 0 ? (points / games).toFixed(2) : '0.00',\n      games: games,\n      wins: wins,\n      losses: losses,\n      percentage: percentage,\n      streak: streak,\n      pointsFor: pointsFor,\n      pointsAgainst: pointsAgainst,\n      quality: quality.toFixed(2),\n      pointsForPerGame: games > 0 ? Math.round(pointsFor / games) : 0,\n      pointsAgainstPerGame: games > 0 ? Math.round(pointsAgainst / games) : 0\n    });\n  }\n}\n\nif (standings.length === 0) {\n  return [{\n    json: {\n      error: 'NO_TEAMS_FOUND',\n      message: 'Nessuna squadra trovata',\n      success: false\n    }\n  }];\n}\n\n// Creazione oggetto finale\nconst now = new Date().toISOString();\nconst statsData = {\n  standings: standings,\n  teamStats: {},\n  lastUpdate: now,\n  season: '2025-2026',\n  competition: 'Serie C Maschile Toscana',\n  conference: 'Conference Nord-Ovest',\n  group: 'Girone B',\n  totalTeams: standings.length,\n  source: 'playbasket.it',\n  status: 'active'\n};\n\n// Genera teamStats\nstandings.forEach(team => {\n  statsData.teamStats[team.team] = {\n    position: team.position,\n    points: team.points,\n    games: team.games,\n    wins: team.wins,\n    losses: team.losses,\n    winPercentage: team.percentage,\n    pointsFor: team.pointsFor,\n    pointsAgainst: team.pointsAgainst,\n    pointDifference: team.pointsFor - team.pointsAgainst,\n    averagePointsFor: team.pointsForPerGame,\n    averagePointsAgainst: team.pointsAgainstPerGame\n  };\n});\n\n// TEST QUALITY CHECK\nconst qualityCheckPassed = standings.length > 5;\n\nconst testResult = {\n  timestamp: now,\n  parsing: {\n    success: true,\n    teamsFound: standings.length,\n    firstTeam: standings[0],\n    sampleData: {\n      team: standings[0].team,\n      points: standings[0].points,\n      pointsFor: standings[0].pointsFor,\n      link: standings[0].teamLink\n    }\n  },\n  qualityCheck: {\n    passed: qualityCheckPassed,\n    threshold: 5,\n    actual: standings.length,\n    message: qualityCheckPassed ? '✅ Quality check OK' : '❌ Quality check fallito'\n  },\n  data: statsData,\n  success: qualityCheckPassed,\n  message: qualityCheckPassed ? \n    `✅ PARSING PERFETTO: ${standings.length} squadre con dati corretti` :\n    `❌ Quality check fallito: solo ${standings.length} squadre`\n};\n\nconsole.log('🎯 Test risultato:', testResult.message);\nconsole.log('📊 Prima squadra:', standings[0]);\n\nreturn [{ json: testResult }];"
+      },
+      "id": "test-parsing",
+      "name": "Test Parsing Only",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [480, 300]
+    }
+  ],
+  "connections": {
+    "Get HTML": {
+      "main": [
+        [
+          {
+            "node": "Test Parsing Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "timezone": "Europe/Rome"
+  },
+  "versionId": "test-parsing-only-v1",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "test-parsing-only-workflow",
+  "tags": []
+}
+

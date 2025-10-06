@@ -1,0 +1,124 @@
+{
+  "name": "🏀 Update TypeScript File",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://raw.githubusercontent.com/magiaslab/svbtailwindok3/master/src/data/stats/serie-c-stats.json",
+        "responseFormat": "json"
+      },
+      "id": "node1",
+      "name": "📥 Get Updated JSON Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats-data.ts",
+        "authentication": "headerAuth",
+        "responseFormat": "json",
+        "options": {}
+      },
+      "id": "node2",
+      "name": "📥 Get Current TS SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [240, 420]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Preparazione dati TypeScript\nconst statsData = items[0].json;\nconst tsFileInfo = items[1].json;\n\n// Creazione contenuto TypeScript\nconst tsContent = `// Dati delle statistiche Serie C\n// Questo file viene importato direttamente dai componenti\n// Aggiornato automaticamente: ${new Date().toISOString()}\n\nexport const serieCStatsData = ${JSON.stringify(statsData, null, 2)};`;\n\nconst base64Content = Buffer.from(tsContent).toString('base64');\n\nconst result = {\n  message: `Aggiornamento automatico stats-data.ts - ${new Date().toISOString()}`,\n  content: base64Content,\n  sha: tsFileInfo.sha\n};\n\nconsole.log('🔧 Dati TS preparati:', {\n  messageLength: result.message.length,\n  contentLength: result.content.length,\n  sha: result.sha,\n  teamsCount: statsData.standings.length\n});\n\nreturn [{ json: result }];"
+      },
+      "id": "node3",
+      "name": "🔧 Prepare TS Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 360]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats-data.ts",
+        "authentication": "headerAuth",
+        "requestMethod": "PUT",
+        "responseFormat": "json",
+        "jsonParameters": true,
+        "bodyParametersJson": "={{ $json }}",
+        "options": {}
+      },
+      "id": "node4",
+      "name": "📤 Update TS File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [680, 360]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Messaggio di successo per TS\nconst githubResponse = items[0].json;\n\nconst message = `🎉 File TypeScript aggiornato!\n\n📊 File aggiornato: ${githubResponse.content ? '✅ Successo' : '❌ Errore'}\n📝 Commit SHA: ${githubResponse.commit ? githubResponse.commit.sha : 'N/A'}\n⏰ Timestamp: ${new Date().toISOString()}`;\n\nconsole.log(message);\n\nreturn [{\n  json: {\n    success: true,\n    message: message,\n    githubResponse: githubResponse,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "node5",
+      "name": "🎉 TS Success Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [880, 360]
+    }
+  ],
+  "connections": {
+    "📥 Get Updated JSON Data": {
+      "main": [
+        [
+          {
+            "node": "🔧 Prepare TS Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📥 Get Current TS SHA": {
+      "main": [
+        [
+          {
+            "node": "🔧 Prepare TS Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔧 Prepare TS Data": {
+      "main": [
+        [
+          {
+            "node": "📤 Update TS File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📤 Update TS File": {
+      "main": [
+        [
+          {
+            "node": "🎉 TS Success Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    "basketball",
+    "typescript",
+    "update"
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-09-28T19:45:00.000Z",
+  "versionId": "update-ts-v1"
+}

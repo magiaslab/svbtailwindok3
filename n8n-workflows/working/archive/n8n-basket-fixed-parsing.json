@@ -1,0 +1,259 @@
+{
+  "name": "Basket Scraping - Fixed Parsing",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "id": "node1"
+    },
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "responseFormat": "string"
+      },
+      "name": "🌐 Fetch PlayBasket Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [460, 300],
+      "id": "node2"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Funzioni helper per estrarre testo e link dall'HTML\nfunction extractTextFromHtml(html) {\n  if (!html) return '';\n  return html.replace(/<[^>]*>/g, '').trim();\n}\n\nfunction extractHref(html) {\n  if (!html) return '';\n  const match = html.match(/href=\"([^\"]*)\"/);\n  return match ? match[1] : '';\n}\n\n// Funzione per estrarre numero da stringa\nfunction extractNumber(str) {\n  if (!str) return 0;\n  const match = str.match(/\\d+/);\n  return match ? parseInt(match[0]) : 0;\n}\n\n// Funzione per estrarre percentuale\nfunction extractPercentage(str) {\n  if (!str) return 0;\n  const match = str.match(/(\\d+(?:\\.\\d+)?)/);\n  return match ? parseFloat(match[1]) / 100 : 0;\n}\n\n// Funzione per estrarre streak\nfunction extractStreak(str) {\n  if (!str) return '-';\n  const match = str.match(/([+-]?\\d+)/);\n  return match ? match[1] : '-';\n}\n\n// Elabora i dati HTML\nconst htmlData = $input.first().data;\n\nif (!htmlData) {\n  return [{\n    standings: [],\n    teamStats: {},\n    lastUpdate: new Date().toISOString(),\n    season: '2025-2026',\n    competition: 'Serie C Maschile Toscana',\n    conference: 'Conference Nord-Ovest',\n    group: 'Girone B',\n    totalTeams: 0,\n    error: 'Nessun dato HTML ricevuto'\n  }];\n}\n\nconsole.log('HTML ricevuto, lunghezza:', htmlData.length);\n\n// Cerca tutte le tabelle nell'HTML\nconst tableRegex = /<table[^>]*>([\\s\\S]*?)<\\/table>/gi;\nconst tables = htmlData.match(tableRegex) || [];\n\nconsole.log('Trovate', tables.length, 'tabelle');\n\nlet standings = [];\nlet teamStats = {};\nlet totalTeams = 0;\n\n// Processa ogni tabella\nfor (let i = 0; i < tables.length; i++) {\n  const table = tables[i];\n  console.log('Processando tabella', i + 1);\n  \n  // Cerca righe della tabella\n  const rowRegex = /<tr[^>]*>([\\s\\S]*?)<\\/tr>/gi;\n  const rows = table.match(rowRegex) || [];\n  \n  console.log('Trovate', rows.length, 'righe nella tabella', i + 1);\n  \n  // Processa ogni riga\n  for (let j = 0; j < rows.length; j++) {\n    const row = rows[j];\n    \n    // Cerca celle della riga\n    const cellRegex = /<td[^>]*>([\\s\\S]*?)<\\/td>/gi;\n    const cells = row.match(cellRegex) || [];\n    \n    if (cells.length >= 8) {\n      // Estrai dati dalle celle\n      const position = extractNumber(extractTextFromHtml(cells[0]));\n      const teamHtml = cells[1];\n      const teamName = extractTextFromHtml(teamHtml);\n      const teamLink = extractHref(teamHtml);\n      const teamId = teamLink.match(/obj=(\\d+)/) ? teamLink.match(/obj=(\\d+)/)[1] : '';\n      \n      // Solo se abbiamo una posizione valida e un nome squadra\n      if (position > 0 && teamName && teamName.length > 2) {\n        const points = extractNumber(extractTextFromHtml(cells[2]));\n        const games = extractNumber(extractTextFromHtml(cells[3]));\n        const wins = extractNumber(extractTextFromHtml(cells[4]));\n        const losses = extractNumber(extractTextFromHtml(cells[5]));\n        const percentage = extractPercentage(extractTextFromHtml(cells[6]));\n        const streak = extractStreak(extractTextFromHtml(cells[7]));\n        \n        // Calcola statistiche aggiuntive se disponibili\n        let pointsFor = 0;\n        let pointsAgainst = 0;\n        \n        if (cells.length > 8) {\n          pointsFor = extractNumber(extractTextFromHtml(cells[8]));\n        }\n        if (cells.length > 9) {\n          pointsAgainst = extractNumber(extractTextFromHtml(cells[9]));\n        }\n        \n        const teamData = {\n          position: position,\n          team: teamName,\n          teamId: teamId,\n          teamLink: teamLink,\n          points: points,\n          pointsPerGame: games > 0 ? (points / games).toFixed(2) : 0,\n          games: games,\n          wins: wins,\n          losses: losses,\n          percentage: percentage,\n          streak: streak,\n          pointsFor: pointsFor,\n          pointsAgainst: pointsAgainst,\n          quality: 'n/a',\n          pointsForPerGame: games > 0 ? (pointsFor / games).toFixed(2) : 0,\n          pointsAgainstPerGame: games > 0 ? (pointsAgainst / games).toFixed(2) : 0\n        };\n        \n        standings.push(teamData);\n        \n        // Crea statistiche squadra\n        teamStats[teamName] = {\n          position: position,\n          points: points,\n          games: games,\n          wins: wins,\n          losses: losses,\n          winPercentage: percentage,\n          pointsFor: pointsFor,\n          pointsAgainst: pointsAgainst,\n          pointDifference: pointsFor - pointsAgainst,\n          averagePointsFor: games > 0 ? (pointsFor / games).toFixed(2) : 0,\n          averagePointsAgainst: games > 0 ? (pointsAgainst / games).toFixed(2) : 0\n        };\n        \n        totalTeams++;\n        \n        console.log('Aggiunta squadra:', teamName, 'posizione:', position);\n      }\n    }\n  }\n}\n\n// Ordina per posizione\nstandings.sort((a, b) => a.position - b.position);\n\nconsole.log('Totale squadre trovate:', totalTeams);\n\n// Restituisci i dati elaborati\nreturn [{\n  standings: standings,\n  teamStats: teamStats,\n  lastUpdate: new Date().toISOString(),\n  season: '2025-2026',\n  competition: 'Serie C Maschile Toscana',\n  conference: 'Conference Nord-Ovest',\n  group: 'Girone B',\n  totalTeams: totalTeams\n}];"
+      },
+      "name": "⚙️ Process Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300],
+      "id": "node3"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition1",
+              "leftValue": "={{ $json.totalTeams }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "✅ Check Data Quality",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [900, 300],
+      "id": "node4"
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats-database.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github.v3+json"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "📥 Get Current Stats",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1120, 200],
+      "id": "node5"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Prepara i dati per l'aggiornamento GitHub\nconst newData = $input.first().json;\nconst currentStats = $input.last().json;\n\n// Crea il contenuto aggiornato\nconst updatedStats = {\n  serieC: newData,\n  under17: currentStats.under17 || { standings: [], teamStats: {}, lastUpdate: new Date().toISOString() },\n  under13: currentStats.under13 || { standings: [], teamStats: {}, lastUpdate: new Date().toISOString() }\n};\n\n// Converte in JSON\nconst jsonContent = JSON.stringify(updatedStats, null, 2);\n\n// Codifica in base64 per GitHub API\nconst base64Content = Buffer.from(jsonContent).toString('base64');\n\nreturn [{\n  json: {\n    message: `Aggiornamento statistiche Serie C - ${new Date().toLocaleString('it-IT')}`,\n    content: base64Content,\n    sha: currentStats.sha || null\n  }\n}];"
+      },
+      "name": "🔄 Prepare Update",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1340, 200],
+      "id": "node6"
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats-database.json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "githubApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Accept",
+              "value": "application/vnd.github.v3+json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "={{ $json.message }}"
+            },
+            {
+              "name": "content",
+              "value": "={{ $json.content }}"
+            },
+            {
+              "name": "sha",
+              "value": "={{ $json.sha }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "💾 Update GitHub",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1560, 200],
+      "id": "node7"
+    },
+    {
+      "parameters": {
+        "url": "https://api.netlify.com/build_hooks/65f8a9b8-1234-5678-9abc-def012345678",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "trigger_title",
+              "value": "Aggiornamento statistiche Serie C"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "🚀 Trigger Netlify",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1780, 200],
+      "id": "node8"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Log di errore per dati insufficienti\nconst data = $input.first().json;\n\nreturn [{\n  json: {\n    error: 'Dati insufficienti',\n    message: 'Non sono state trovate squadre nella classifica',\n    totalTeams: data.totalTeams || 0,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "name": "❌ Log Error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 400],
+      "id": "node9"
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "🌐 Fetch PlayBasket Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🌐 Fetch PlayBasket Data": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Process Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Process Data": {
+      "main": [
+        [
+          {
+            "node": "✅ Check Data Quality",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Check Data Quality": {
+      "main": [
+        [
+          {
+            "node": "📥 Get Current Stats",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "❌ Log Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📥 Get Current Stats": {
+      "main": [
+        [
+          {
+            "node": "🔄 Prepare Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔄 Prepare Update": {
+      "main": [
+        [
+          {
+            "node": "💾 Update GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "💾 Update GitHub": {
+      "main": [
+        [
+          {
+            "node": "🚀 Trigger Netlify",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-01-28T10:00:00.000Z",
+  "versionId": "1"
+}

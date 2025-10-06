@@ -1,0 +1,81 @@
+{
+  "name": "🏀 Basket Stats Scraper - WORKING",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "responseFormat": "string"
+      },
+      "id": "node1",
+      "name": "🌐 Fetch PlayBasket Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parser HTML corretto per PlayBasket.it\nconsole.log('🏀 INIZIO PARSING PLAYBASKET');\n\nif (!items || items.length === 0) {\n  console.error('❌ Nessun dato ricevuto');\n  return [{ json: { success: false, error: 'No input data' } }];\n}\n\n// Accesso corretto ai dati HTML\nlet html = null;\nif (items[0].data) {\n  html = items[0].data;\n} else if (items[0].json && typeof items[0].json === 'string') {\n  html = items[0].json;\n} else if (items[0].json && items[0].json.data) {\n  html = items[0].json.data;\n}\n\nif (!html) {\n  console.error('❌ HTML non trovato');\n  return [{ json: { success: false, error: 'HTML not found' } }];\n}\n\nconsole.log('📊 Lunghezza HTML:', html.length);\n\n// Estrazione delle righe della classifica\nconst standings = [];\nconst rowRegex = /<tr class='row_standings'>([\\s\\S]*?)<\\/tr>/g;\nlet rowMatch;\nlet position = 1;\n\nwhile ((rowMatch = rowRegex.exec(html)) !== null) {\n  const rowContent = rowMatch[1];\n  console.log(`🔍 Processando riga ${position}`);\n  \n  try {\n    // Estrazione posizione\n    const posMatch = /<td[^>]*class='colfrozen'>(\\d+)<\\/td>/.exec(rowContent);\n    const pos = posMatch ? parseInt(posMatch[1]) : position;\n    \n    // Estrazione squadra e ID\n    const teamMatch = /<td class=\"sq colfrozen\"><a href=\"club\\.php\\?obj=(\\d+)&action=view&eid=\\d+\">([^<]+)<\\/a>/.exec(rowContent);\n    if (!teamMatch) {\n      console.log(`⚠️ Squadra non trovata nella riga ${position}`);\n      continue;\n    }\n    \n    const teamId = teamMatch[1];\n    const teamName = teamMatch[2].trim();\n    const teamLink = `https://www.playbasket.it/toscana/club.php?obj=${teamId}&action=view&eid=4`;\n    \n    // Estrazione dati statistici - usando regex più flessibili\n    const tdRegex = /<td[^>]*title='[^']*'[^>]*>([^<]+)<\\/td>/g;\n    const values = [];\n    let tdMatch;\n    \n    while ((tdMatch = tdRegex.exec(rowContent)) !== null) {\n      values.push(tdMatch[1].trim());\n    }\n    \n    console.log(`📊 Valori estratti per ${teamName}:`, values);\n    \n    // Mapping dei valori (saltando posizione e squadra che abbiamo già)\n    const points = values[0] ? parseInt(values[0]) : 0;\n    const pointsPerGame = values[1] ? parseFloat(values[1]) : 0;\n    const games = values[2] ? parseInt(values[2]) : 0;\n    const wins = values[3] ? parseInt(values[3]) : 0;\n    const losses = values[4] ? parseInt(values[4]) : 0;\n    const percentage = values[5] ? parseFloat(values[5]) : 0;\n    const streak = values[6] || '-';\n    const pointsFor = values[7] ? parseInt(values[7]) : 0;\n    const pointsAgainst = values[8] ? parseInt(values[8]) : 0;\n    const quality = values[9] ? parseFloat(values[9]) : 0;\n    const pointsForPerGame = values[10] ? parseFloat(values[10]) : 0;\n    const pointsAgainstPerGame = values[11] ? parseFloat(values[11]) : 0;\n    \n    const teamData = {\n      position: pos,\n      team: teamName,\n      teamId: teamId,\n      teamLink: teamLink,\n      points: points,\n      pointsPerGame: pointsPerGame,\n      games: games,\n      wins: wins,\n      losses: losses,\n      percentage: percentage,\n      streak: streak,\n      pointsFor: pointsFor,\n      pointsAgainst: pointsAgainst,\n      quality: quality.toFixed(2),\n      pointsForPerGame: pointsForPerGame,\n      pointsAgainstPerGame: pointsAgainstPerGame\n    };\n    \n    standings.push(teamData);\n    console.log(`✅ Squadra ${teamName} aggiunta:`, teamData);\n    \n  } catch (error) {\n    console.error(`❌ Errore processando riga ${position}:`, error);\n  }\n  \n  position++;\n}\n\n// Creazione statistiche per squadra\nconst teamStats = {};\nstandings.forEach(team => {\n  teamStats[team.team] = {\n    position: team.position,\n    points: team.points,\n    games: team.games,\n    wins: team.wins,\n    losses: team.losses,\n    winPercentage: team.percentage,\n    pointsFor: team.pointsFor,\n    pointsAgainst: team.pointsAgainst,\n    pointDifference: team.pointsFor - team.pointsAgainst,\n    averagePointsFor: team.pointsForPerGame,\n    averagePointsAgainst: team.pointsAgainstPerGame\n  };\n});\n\nconst result = {\n  standings: standings,\n  teamStats: teamStats,\n  lastUpdate: new Date().toISOString(),\n  season: '2025-2026',\n  competition: 'Serie C Maschile Toscana',\n  conference: 'Conference Nord-Ovest',\n  group: 'Girone B',\n  totalTeams: standings.length,\n  source: 'playbasket.it',\n  status: 'active'\n};\n\nconsole.log(`🎉 Parsing completato: ${standings.length} squadre processate`);\nreturn [{ json: result }];"
+      },
+      "id": "node2",
+      "name": "⚙️ Parse Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.standings.length}}",
+              "operation": "largerEqual",
+              "value2": 10
+            }
+          ]
+        }
+      },
+      "id": "node3",
+      "name": "✅ Check Quality",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "🌐 Fetch PlayBasket Data": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Parse Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Parse Data": {
+      "main": [
+        [
+          {
+            "node": "✅ Check Quality",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    "basketball",
+    "scraping",
+    "working"
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-09-28T19:00:00.000Z",
+  "versionId": "working-v1"
+}

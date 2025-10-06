@@ -1,0 +1,170 @@
+{
+  "name": "Basket Scraping Ultra Simple",
+  "active": false,
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "start-node",
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st"
+      },
+      "id": "http-node",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Elaborazione dati classifiche\nconst html = $input.all()[0].json.data || '';\nconst standings = [];\n\n// Estrai righe tabella\nconst rows = html.match(/<tr[^>]*>.*?<\\/tr>/gi) || [];\n\nrows.forEach((row, index) => {\n  try {\n    const cells = row.match(/<td[^>]*>.*?<\\/td>/gi) || [];\n    if (cells.length < 10) return;\n    \n    const position = parseInt(cells[0].replace(/<[^>]*>/g, '').trim()) || 0;\n    if (position === 0) return;\n    \n    const teamName = cells[1].replace(/<[^>]*>/g, '').trim();\n    if (!teamName || teamName === 'Squadra') return;\n    \n    const points = parseInt(cells[2].replace(/<[^>]*>/g, '').trim()) || 0;\n    const games = parseInt(cells[4].replace(/<[^>]*>/g, '').trim()) || 0;\n    \n    standings.push({\n      position,\n      team: teamName,\n      points,\n      games\n    });\n  } catch (error) {\n    console.error('Errore riga', index, error.message);\n  }\n});\n\nconst result = {\n  standings: standings.sort((a, b) => a.position - b.position),\n  totalTeams: standings.length,\n  lastUpdate: new Date().toISOString(),\n  season: '2025-2026',\n  competition: 'Serie C Maschile Toscana'\n};\n\nconsole.log('Squadre processate:', result.totalTeams);\nreturn { json: result };"
+      },
+      "id": "code-node",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.totalTeams }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "if-node",
+      "name": "IF",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/public/stats/serie-c-stats.json",
+        "authentication": "httpHeaderAuth",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "id": "get-sha-node",
+      "name": "Get File SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/public/stats/serie-c-stats.json",
+        "authentication": "httpHeaderAuth",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "bodyParameters": {
+          "message": "📊 Aggiornamento classifiche Serie C",
+          "content": "={{ Buffer.from(JSON.stringify($('Code').item.json, null, 2)).toString('base64') }}",
+          "sha": "={{ $json.sha }}"
+        }
+      },
+      "id": "update-node",
+      "name": "Update File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1340, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.netlify.com/build_hooks/65f8a1b2-1234-5678-9abc-def012345678"
+      },
+      "id": "deploy-node",
+      "name": "Netlify Deploy",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1560, 200]
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "IF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF": {
+      "main": [
+        [
+          {
+            "node": "Get File SHA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get File SHA": {
+      "main": [
+        [
+          {
+            "node": "Update File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update File": {
+      "main": [
+        [
+          {
+            "node": "Netlify Deploy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-01-28T10:00:00.000Z",
+  "versionId": "1"
+}

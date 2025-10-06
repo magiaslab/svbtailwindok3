@@ -1,0 +1,52 @@
+{
+  "name": "🏀 Basket Stats Scraper - DEBUG",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "responseFormat": "string"
+      },
+      "id": "node1",
+      "name": "🌐 Fetch PlayBasket Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Debug del parsing HTML\nconsole.log('🔍 INIZIO DEBUG PARSING');\n\nif (!items || items.length === 0) {\n  console.error('❌ Nessun dato ricevuto');\n  return [{ json: { success: false, error: 'No input data' } }];\n}\n\nlet html = items[0].json;\nif (!html || html.length === 0) {\n  console.error('❌ HTML vuoto');\n  return [{ json: { success: false, error: 'Empty HTML' } }];\n}\n\nconsole.log('📊 Lunghezza HTML ricevuto:', html.length);\n\n// Test 1: Verifica presenza tabella\nconst tableTest = html.includes('league_standings_ranking stats');\nconsole.log('🔍 Test tabella presente:', tableTest);\n\n// Test 2: Verifica presenza righe\nconst rowTest = html.includes('row_standings');\nconsole.log('🔍 Test righe presenti:', rowTest);\n\n// Test 3: Conta le righe\nconst rowMatches = html.match(/row_standings/g);\nconsole.log('🔍 Numero righe trovate:', rowMatches ? rowMatches.length : 0);\n\n// Test 4: Estrai prima riga per debug\nconst firstRowRegex = /<tr[^>]*class=[\"']row_standings[\"'][^>]*>([\\s\\S]*?)<\\/tr>/;\nconst firstRowMatch = firstRowRegex.exec(html);\nif (firstRowMatch) {\n  console.log('🔍 Prima riga trovata, lunghezza contenuto:', firstRowMatch[1].length);\n  console.log('🔍 Primi 200 caratteri della prima riga:', firstRowMatch[1].substring(0, 200));\n} else {\n  console.log('❌ Prima riga NON trovata');\n}\n\n// Test 5: Prova regex più semplice\nconst simpleRowRegex = /<tr class='row_standings'>([\\s\\S]*?)<\\/tr>/g;\nlet simpleRowMatch;\nlet simpleRowCount = 0;\nwhile ((simpleRowMatch = simpleRowRegex.exec(html)) !== null && simpleRowCount < 3) {\n  simpleRowCount++;\n  console.log(`🔍 Riga semplice ${simpleRowCount} trovata, lunghezza:`, simpleRowMatch[1].length);\n  \n  // Test estrazione posizione\n  const posMatch = /<td[^>]*class=[\"']colfrozen[\"']>(\\d+)<\\/td>/.exec(simpleRowMatch[1]);\n  console.log(`🔍 Posizione riga ${simpleRowCount}:`, posMatch ? posMatch[1] : 'NON TROVATA');\n  \n  // Test estrazione squadra\n  const teamMatch = /<td[^>]*class=\"sq colfrozen\"><a[^>]*href=\"club\\.php\\?obj=(\\d+)&action=view&eid=\\d+\">([^<]+)<\\/a>/.exec(simpleRowMatch[1]);\n  console.log(`🔍 Squadra riga ${simpleRowCount}:`, teamMatch ? teamMatch[2] : 'NON TROVATA');\n  \n  // Test estrazione punti\n  const pointsMatch = /<td[^>]*class=[\"']highlighted_data[\"']>(\\d+)<\\/td>/.exec(simpleRowMatch[1]);\n  console.log(`🔍 Punti riga ${simpleRowCount}:`, pointsMatch ? pointsMatch[1] : 'NON TROVATI');\n}\n\n// Risultato debug\nconst debugResult = {\n  success: simpleRowCount > 0,\n  message: `Debug completato: ${simpleRowCount} righe processate`,\n  debug: {\n    htmlLength: html.length,\n    tablePresent: tableTest,\n    rowsPresent: rowTest,\n    rowCount: rowMatches ? rowMatches.length : 0,\n    processedRows: simpleRowCount,\n    firstRowFound: !!firstRowMatch\n  }\n};\n\nconsole.log('🎉 Debug completato:', JSON.stringify(debugResult, null, 2));\nreturn [{ json: debugResult }];"
+      },
+      "id": "node2",
+      "name": "🔍 Debug Parser",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    }
+  ],
+  "connections": {
+    "🌐 Fetch PlayBasket Data": {
+      "main": [
+        [
+          {
+            "node": "🔍 Debug Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    "basketball",
+    "scraping",
+    "debug"
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-09-28T19:00:00.000Z",
+  "versionId": "debug-v1"
+}

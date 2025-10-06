@@ -1,0 +1,125 @@
+{
+  "name": "🏀 Update TypeScript File - FIXED",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://raw.githubusercontent.com/magiaslab/svbtailwindok3/master/src/data/stats/serie-c-stats.json",
+        "responseFormat": "json"
+      },
+      "id": "node1",
+      "name": "📥 Get Updated JSON Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats-data.ts",
+        "authentication": "headerAuth",
+        "responseFormat": "json",
+        "options": {}
+      },
+      "id": "node2",
+      "name": "📥 Get Current TS SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Preparazione dati TypeScript - VERSIONE CORRETTA\nconsole.log('🔧 INIZIO PREPARAZIONE DATI TS');\n\nif (!items || items.length === 0) {\n  console.error('❌ Nessun dato ricevuto');\n  return [{ json: { success: false, error: 'No input data' } }];\n}\n\n// Il nodo riceve i dati dal nodo precedente (Get Current TS SHA)\n// che a sua volta ha ricevuto i dati da Get Updated JSON Data\nconst tsFileInfo = items[0].json;\n\n// I dati delle statistiche dovrebbero essere nel contesto del workflow\n// Proviamo ad accedere ai dati in modi diversi\nlet statsData = null;\n\n// Metodo 1: Cercare nei dati del workflow\nif (items[0].json && items[0].json.standings) {\n  statsData = items[0].json;\n  console.log('✅ Dati trovati in items[0].json');\n} else {\n  // Metodo 2: Fare una nuova richiesta per i dati JSON\n  console.log('⚠️ Dati non trovati, devo fare una richiesta separata');\n  // In questo caso, restituiamo un errore e useremo un approccio diverso\n  return [{ json: { success: false, error: 'Stats data not found in workflow context' } }];\n}\n\nif (!statsData || !statsData.standings) {\n  console.error('❌ Dati statistiche non validi');\n  return [{ json: { success: false, error: 'Invalid stats data' } }];\n}\n\n// Creazione contenuto TypeScript\nconst tsContent = `// Dati delle statistiche Serie C\n// Questo file viene importato direttamente dai componenti\n// Aggiornato automaticamente: ${new Date().toISOString()}\n\nexport const serieCStatsData = ${JSON.stringify(statsData, null, 2)};`;\n\nconst base64Content = Buffer.from(tsContent).toString('base64');\n\nconst result = {\n  message: `Aggiornamento automatico stats-data.ts - ${new Date().toISOString()}`,\n  content: base64Content,\n  sha: tsFileInfo.sha\n};\n\nconsole.log('🔧 Dati TS preparati:', {\n  messageLength: result.message.length,\n  contentLength: result.content.length,\n  sha: result.sha,\n  teamsCount: statsData.standings.length\n});\n\nreturn [{ json: result }];"
+      },
+      "id": "node3",
+      "name": "🔧 Prepare TS Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats-data.ts",
+        "authentication": "headerAuth",
+        "requestMethod": "PUT",
+        "responseFormat": "json",
+        "jsonParameters": true,
+        "bodyParametersJson": "={{ $json }}",
+        "options": {}
+      },
+      "id": "node4",
+      "name": "📤 Update TS File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Messaggio di successo per TS\nconst githubResponse = items[0].json;\n\nconst message = `🎉 File TypeScript aggiornato!\n\n📊 File aggiornato: ${githubResponse.content ? '✅ Successo' : '❌ Errore'}\n📝 Commit SHA: ${githubResponse.commit ? githubResponse.commit.sha : 'N/A'}\n⏰ Timestamp: ${new Date().toISOString()}`;\n\nconsole.log(message);\n\nreturn [{\n  json: {\n    success: true,\n    message: message,\n    githubResponse: githubResponse,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "node5",
+      "name": "🎉 TS Success Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 300]
+    }
+  ],
+  "connections": {
+    "📥 Get Updated JSON Data": {
+      "main": [
+        [
+          {
+            "node": "📥 Get Current TS SHA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📥 Get Current TS SHA": {
+      "main": [
+        [
+          {
+            "node": "🔧 Prepare TS Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔧 Prepare TS Data": {
+      "main": [
+        [
+          {
+            "node": "📤 Update TS File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📤 Update TS File": {
+      "main": [
+        [
+          {
+            "node": "🎉 TS Success Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    "basketball",
+    "typescript",
+    "update",
+    "fixed"
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-09-28T20:00:00.000Z",
+  "versionId": "update-ts-fixed-v1"
+}

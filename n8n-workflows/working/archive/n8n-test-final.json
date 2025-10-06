@@ -1,0 +1,49 @@
+{
+  "name": "🧪 Test Final Workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "responseFormat": "string"
+      },
+      "id": "http-test",
+      "name": "🌐 Test PlayBasket Connection",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Test semplice per verificare l'accesso ai dati\nconsole.log('🧪 === TEST ACCESSO DATI ===');\n\nlet htmlData = '';\nlet accessMethod = 'none';\n\nif (items && items.length > 0) {\n  const item = items[0];\n  console.log('📥 Item ricevuto:', typeof item, Object.keys(item || {}));\n  \n  // Test accesso dati (responseFormat: string)\n  if (item.json && typeof item.json === 'string' && item.json.length > 1000) {\n    htmlData = item.json;\n    accessMethod = 'item.json (string)';\n  } else if (item.data && typeof item.data === 'string' && item.data.length > 1000) {\n    htmlData = item.data;\n    accessMethod = 'item.data';\n  } else if (item.json && item.json.data && typeof item.json.data === 'string' && item.json.data.length > 1000) {\n    htmlData = item.json.data;\n    accessMethod = 'item.json.data';\n  }\n}\n\n// Test parsing tabella\nlet tableFound = false;\nlet teamsFound = 0;\n\nif (htmlData && htmlData.length > 1000) {\n  const tableRegex = /<table[^>]*class=[\"']league_standings_ranking stats[\"'][^>]*>([\\s\\S]*?)<\\/table>/i;\n  const tableMatch = htmlData.match(tableRegex);\n  \n  if (tableMatch) {\n    tableFound = true;\n    const rowRegex = /<tr[^>]*>([\\s\\S]*?)<\\/tr>/gi;\n    const rows = [];\n    let match;\n    \n    while ((match = rowRegex.exec(tableMatch[1])) !== null) {\n      rows.push(match[1]);\n    }\n    \n    // Conta squadre (esclude header)\n    teamsFound = Math.max(0, rows.length - 1);\n  }\n}\n\nconst testResult = {\n  timestamp: new Date().toISOString(),\n  connection: {\n    success: htmlData.length > 0,\n    htmlLength: htmlData.length,\n    accessMethod: accessMethod\n  },\n  parsing: {\n    tableFound: tableFound,\n    teamsFound: teamsFound,\n    success: tableFound && teamsFound > 5\n  },\n  overall: {\n    success: htmlData.length > 1000 && tableFound && teamsFound > 5,\n    message: htmlData.length > 1000 && tableFound && teamsFound > 5 ? \n      `✅ Test superato: ${teamsFound} squadre trovate` : \n      '❌ Test fallito'\n  }\n};\n\nconsole.log('🎯 Risultato test:', testResult);\n\nreturn [{ json: testResult }];"
+      },
+      "id": "test-parsing",
+      "name": "🧪 Test Parsing",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [480, 300]
+    }
+  ],
+  "connections": {
+    "🌐 Test PlayBasket Connection": {
+      "main": [
+        [
+          {
+            "node": "🧪 Test Parsing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "timezone": "Europe/Rome"
+  },
+  "versionId": "test-final-v1",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "test-final-workflow",
+  "tags": []
+}

@@ -1,0 +1,51 @@
+{
+  "name": "🔍 Debug Parsing Detailed",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "options": {
+          "responseFormat": "string"
+        }
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "🌐 Get PlayBasket HTML",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Debug dettagliato del processo di parsing\nconsole.log('🔍 === DEBUG PARSING DETAILED ===');\nconsole.log('- Items ricevuti:', items ? items.length : 'undefined');\nconsole.log('- Tipo items:', typeof items);\n\nif (items && items.length > 0) {\n  const item = items[0];\n  console.log('- Item[0] keys:', Object.keys(item || {}));\n  console.log('- Item[0] type:', typeof item);\n  \n  // Analisi dettagliata di ogni proprietà\n  Object.keys(item || {}).forEach(key => {\n    const value = item[key];\n    console.log(`- ${key}:`, typeof value, value && value.length ? `(length: ${value.length})` : '');\n    \n    if (key === 'json' && typeof value === 'object') {\n      console.log(`  - json keys:`, Object.keys(value || {}));\n    }\n  });\n}\n\n// Prova tutti i metodi di accesso ai dati HTML\nlet htmlData = '';\nlet accessMethod = 'none';\nlet debugInfo = {};\n\nif (items && items.length > 0) {\n  const item = items[0];\n  \n  // Metodo 1: item.data\n  if (item.data && typeof item.data === 'string' && item.data.length > 100) {\n    htmlData = item.data;\n    accessMethod = 'item.data';\n    debugInfo.method1 = { found: true, type: typeof item.data, length: item.data.length };\n  } else {\n    debugInfo.method1 = { found: false, type: typeof item.data, length: item.data ? item.data.length : 0 };\n  }\n  \n  // Metodo 2: item.json (se è stringa)\n  if (!htmlData && item.json && typeof item.json === 'string' && item.json.length > 100) {\n    htmlData = item.json;\n    accessMethod = 'item.json';\n    debugInfo.method2 = { found: true, type: typeof item.json, length: item.json.length };\n  } else {\n    debugInfo.method2 = { found: false, type: typeof item.json, length: item.json && item.json.length ? item.json.length : 0 };\n  }\n  \n  // Metodo 3: item.json.data (se json è oggetto)\n  if (!htmlData && item.json && typeof item.json === 'object' && item.json.data && typeof item.json.data === 'string' && item.json.data.length > 100) {\n    htmlData = item.json.data;\n    accessMethod = 'item.json.data';\n    debugInfo.method3 = { found: true, type: typeof item.json.data, length: item.json.data.length };\n  } else {\n    debugInfo.method3 = { found: false, type: item.json && typeof item.json === 'object' && item.json.data ? typeof item.json.data : 'undefined' };\n  }\n  \n  // Metodo 4: item direttamente\n  if (!htmlData && typeof item === 'string' && item.length > 100) {\n    htmlData = item;\n    accessMethod = 'item';\n    debugInfo.method4 = { found: true, type: typeof item, length: item.length };\n  } else {\n    debugInfo.method4 = { found: false, type: typeof item, length: typeof item === 'string' ? item.length : 0 };\n  }\n}\n\nconsole.log('📊 Risultati accesso HTML:');\nconsole.log('- Access method:', accessMethod);\nconsole.log('- HTML length:', htmlData.length);\nconsole.log('- HTML type:', typeof htmlData);\nconsole.log('- Debug info:', JSON.stringify(debugInfo, null, 2));\n\n// Se abbiamo HTML, testiamo il parsing\nlet parsingResults = {\n  hasHtml: htmlData.length > 0,\n  htmlLength: htmlData.length,\n  tableFound: false,\n  tableContent: '',\n  rowsFound: 0,\n  cellsInFirstRow: 0,\n  sampleData: {}\n};\n\nif (htmlData && htmlData.length > 0) {\n  console.log('🔍 Inizio test parsing...');\n  \n  // Test 1: Cerca la tabella specifica\n  const tableRegex = /<table[^>]*class=[\"']league_standings_ranking stats[\"'][^>]*>([\\s\\S]*?)<\\/table>/g;\n  const tableMatch = tableRegex.exec(htmlData);\n  \n  if (tableMatch) {\n    parsingResults.tableFound = true;\n    parsingResults.tableContent = tableMatch[1].substring(0, 500);\n    console.log('✅ Tabella trovata!');\n    \n    // Test 2: Conta le righe\n    const tableContent = tableMatch[1];\n    const rowRegex = /<tr[^>]*>([\\s\\S]*?)<\\/tr>/g;\n    let rowMatch;\n    let rowCount = 0;\n    \n    while ((rowMatch = rowRegex.exec(tableContent)) !== null) {\n      rowCount++;\n      \n      // Analizza la prima riga di dati (non header)\n      if (rowCount === 2) { // Prima riga dopo header\n        const rowContent = rowMatch[1];\n        const cellRegex = /<td[^>]*>([\\s\\S]*?)<\\/td>/g;\n        const cells = [];\n        let cellMatch;\n        \n        while ((cellMatch = cellRegex.exec(rowContent)) !== null) {\n          cells.push(cellMatch[1]);\n        }\n        \n        parsingResults.cellsInFirstRow = cells.length;\n        parsingResults.sampleData = {\n          totalCells: cells.length,\n          cell0: cells[0] ? cells[0].substring(0, 50) : 'empty',\n          cell1: cells[1] ? cells[1].substring(0, 50) : 'empty',\n          cell2: cells[2] ? cells[2].substring(0, 50) : 'empty'\n        };\n      }\n    }\n    \n    parsingResults.rowsFound = rowCount;\n    console.log(`📊 Trovate ${rowCount} righe nella tabella`);\n    \n  } else {\n    console.log('❌ Tabella NON trovata');\n    \n    // Test pattern alternativi\n    const altPatterns = [\n      { name: 'league_standings_ranking', regex: /league_standings_ranking/g },\n      { name: 'stats class', regex: /class=[\"'][^\"']*stats[^\"']*[\"']/g },\n      { name: 'table tags', regex: /<table[^>]*>/g },\n      { name: 'any table', regex: /<table/g }\n    ];\n    \n    altPatterns.forEach(pattern => {\n      const matches = htmlData.match(pattern.regex);\n      console.log(`- ${pattern.name}:`, matches ? matches.length : 0);\n      if (matches && matches.length > 0) {\n        console.log(`  First match: ${matches[0].substring(0, 100)}`);\n      }\n    });\n  }\n}\n\nreturn [{\n  json: {\n    debug: {\n      inputAnalysis: {\n        itemsLength: items ? items.length : 0,\n        accessMethod: accessMethod,\n        debugInfo: debugInfo\n      },\n      htmlAnalysis: {\n        hasHtml: parsingResults.hasHtml,\n        htmlLength: parsingResults.htmlLength,\n        htmlPreview: htmlData.substring(0, 200)\n      },\n      parsingResults: parsingResults\n    },\n    success: parsingResults.tableFound && parsingResults.rowsFound > 1,\n    message: parsingResults.tableFound ? \n      `Tabella trovata con ${parsingResults.rowsFound} righe` : \n      'Tabella non trovata',\n    accessMethod: accessMethod,\n    htmlLength: htmlData.length\n  }\n}];"
+      },
+      "id": "h3i4j5k6-l7m8-9012-3456-789abcdef012",
+      "name": "🔍 Debug Parsing Detailed",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [480, 300]
+    }
+  ],
+  "connections": {
+    "🌐 Get PlayBasket HTML": {
+      "main": [
+        [
+          {
+            "node": "🔍 Debug Parsing Detailed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "timezone": "Europe/Rome"
+  },
+  "versionId": "12345678-90ab-cdef-1234-567890abcdef",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "87654321-abcd-ef12-3456-7890abcdef12",
+  "tags": []
+}

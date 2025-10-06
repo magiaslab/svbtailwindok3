@@ -1,0 +1,260 @@
+{
+  "name": "🏀 Scraping Classifiche Basket San Vincenzo",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "triggerAtHour": 6
+            },
+            {
+              "field": "hours", 
+              "triggerAtHour": 12
+            },
+            {
+              "field": "hours",
+              "triggerAtHour": 18
+            },
+            {
+              "field": "hours",
+              "triggerAtHour": 0
+            }
+          ]
+        }
+      },
+      "name": "Schedule - Ogni 6 ore",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "options": {
+          "headers": {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+          },
+          "timeout": 30000,
+          "followRedirect": true
+        }
+      },
+      "name": "Fetch PlayBasket Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "dataPropertyName": "data",
+        "extractionValues": {
+          "tableRows": {
+            "cssSelector": "table tr",
+            "returnArray": true,
+            "returnValue": "html"
+          },
+          "pageTitle": {
+            "cssSelector": "title",
+            "returnValue": "text"
+          }
+        }
+      },
+      "name": "Extract HTML Table",
+      "type": "n8n-nodes-base.htmlExtract",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Inserisci qui il codice JavaScript dal file n8n-scraping-workflow.js"
+      },
+      "name": "Process Standings Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/{{ $env.GITHUB_REPO }}/contents/public/stats/serie-c-stats.json",
+        "options": {
+          "headers": {
+            "Authorization": "Bearer {{ $env.GITHUB_TOKEN }}",
+            "Accept": "application/vnd.github.v3+json"
+          }
+        }
+      },
+      "name": "Get Current File SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://api.github.com/repos/{{ $env.GITHUB_REPO }}/contents/public/stats/serie-c-stats.json",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "📊 Aggiornamento automatico classifiche Serie C - {{ new Date().toISOString() }}"
+            },
+            {
+              "name": "content",
+              "value": "={{ Buffer.from(JSON.stringify($('Process Standings Data').item.json.serieCStats, null, 2)).toString('base64') }}"
+            },
+            {
+              "name": "sha",
+              "value": "={{ $('Get Current File SHA').item.json.sha }}"
+            }
+          ]
+        },
+        "options": {
+          "headers": {
+            "Authorization": "Bearer {{ $env.GITHUB_TOKEN }}",
+            "Accept": "application/vnd.github.v3+json",
+            "Content-Type": "application/json"
+          }
+        }
+      },
+      "name": "Update GitHub File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "method": "PUT", 
+        "url": "https://api.github.com/repos/{{ $env.GITHUB_REPO }}/contents/public/stats/stats-database.json",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "message",
+              "value": "📊 Aggiornamento database completo statistiche - {{ new Date().toISOString() }}"
+            },
+            {
+              "name": "content",
+              "value": "={{ Buffer.from(JSON.stringify($('Process Standings Data').item.json.fullStats, null, 2)).toString('base64') }}"
+            }
+          ]
+        },
+        "options": {
+          "headers": {
+            "Authorization": "Bearer {{ $env.GITHUB_TOKEN }}",
+            "Accept": "application/vnd.github.v3+json",
+            "Content-Type": "application/json"
+          }
+        }
+      },
+      "name": "Update Full Database",
+      "type": "n8n-nodes-base.httpRequest", 
+      "typeVersion": 4.1,
+      "position": [1340, 420]
+    },
+    {
+      "parameters": {
+        "url": "{{ $env.NETLIFY_BUILD_HOOK }}",
+        "method": "POST"
+      },
+      "name": "Trigger Netlify Deploy",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1560, 300]
+    },
+    {
+      "parameters": {
+        "message": "🏀 Classifiche aggiornate!\n\n📊 **Basket San Vincenzo**: {{ $('Process Standings Data').item.json.basketSanVincenzoPosition }}° posto\n🕐 **Ultimo aggiornamento**: {{ new Date().toLocaleString('it-IT') }}\n🔗 **Totale squadre**: {{ $('Process Standings Data').item.json.totalTeams }}\n\n✅ Sito aggiornato automaticamente su Netlify"
+      },
+      "name": "Notifica Telegram (Opzionale)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1,
+      "position": [1780, 300]
+    }
+  ],
+  "connections": {
+    "Schedule - Ogni 6 ore": {
+      "main": [
+        [
+          {
+            "node": "Fetch PlayBasket Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch PlayBasket Page": {
+      "main": [
+        [
+          {
+            "node": "Extract HTML Table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract HTML Table": {
+      "main": [
+        [
+          {
+            "node": "Process Standings Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Standings Data": {
+      "main": [
+        [
+          {
+            "node": "Get Current File SHA",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Current File SHA": {
+      "main": [
+        [
+          {
+            "node": "Update GitHub File",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Full Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update GitHub File": {
+      "main": [
+        [
+          {
+            "node": "Trigger Netlify Deploy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Netlify Deploy": {
+      "main": [
+        [
+          {
+            "node": "Notifica Telegram (Opzionale)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

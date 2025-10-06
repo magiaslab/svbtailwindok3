@@ -1,0 +1,79 @@
+{
+  "name": "🏀 Update TypeScript File - WORKING",
+  "nodes": [
+    {
+      "parameters": {
+        "jsCode": "// Workflow semplificato per aggiornare il file TypeScript\n// Ottiene i dati JSON e prepara il contenuto TS in un solo nodo\n\nconst https = require('https');\n\n// URL del file JSON aggiornato\nconst jsonUrl = 'https://raw.githubusercontent.com/magiaslab/svbtailwindok3/master/src/data/stats/serie-c-stats.json';\n\n// URL per ottenere info sul file TS corrente\nconst tsInfoUrl = 'https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats-data.ts';\n\nconsole.log('🔄 Inizio aggiornamento file TypeScript');\n\n// Funzione per fare richieste HTTPS\nfunction httpsGet(url, headers = {}) {\n  return new Promise((resolve, reject) => {\n    const options = {\n      headers: {\n        'User-Agent': 'N8N-Workflow',\n        ...headers\n      }\n    };\n    \n    https.get(url, options, (res) => {\n      let data = '';\n      res.on('data', (chunk) => data += chunk);\n      res.on('end', () => {\n        try {\n          if (res.headers['content-type']?.includes('application/json')) {\n            resolve(JSON.parse(data));\n          } else {\n            resolve(data);\n          }\n        } catch (error) {\n          reject(error);\n        }\n      });\n    }).on('error', reject);\n  });\n}\n\ntry {\n  // 1. Ottieni i dati delle statistiche\n  console.log('📥 Scaricamento dati JSON...');\n  const statsData = await httpsGet(jsonUrl);\n  \n  if (!statsData || !statsData.standings) {\n    throw new Error('Dati statistiche non validi');\n  }\n  \n  console.log(`✅ Dati ottenuti: ${statsData.standings.length} squadre`);\n  \n  // 2. Ottieni info sul file TS corrente (per SHA)\n  console.log('📥 Ottenimento SHA file TS...');\n  const tsFileInfo = await httpsGet(tsInfoUrl, {\n    'Authorization': 'token YOUR_GITHUB_TOKEN_HERE' // Sostituire con token reale\n  });\n  \n  if (!tsFileInfo || !tsFileInfo.sha) {\n    throw new Error('Impossibile ottenere SHA del file TS');\n  }\n  \n  console.log(`✅ SHA ottenuto: ${tsFileInfo.sha}`);\n  \n  // 3. Crea contenuto TypeScript\n  const tsContent = `// Dati delle statistiche Serie C\n// Questo file viene importato direttamente dai componenti\n// Aggiornato automaticamente: ${new Date().toISOString()}\n\nexport const serieCStatsData = ${JSON.stringify(statsData, null, 2)};`;\n  \n  // 4. Codifica in Base64\n  const base64Content = Buffer.from(tsContent).toString('base64');\n  \n  // 5. Prepara dati per GitHub API\n  const githubData = {\n    message: `Aggiornamento automatico stats-data.ts - ${new Date().toISOString()}`,\n    content: base64Content,\n    sha: tsFileInfo.sha\n  };\n  \n  console.log('🔧 Dati preparati per GitHub:', {\n    messageLength: githubData.message.length,\n    contentLength: githubData.content.length,\n    sha: githubData.sha,\n    teamsCount: statsData.standings.length\n  });\n  \n  return [{ json: githubData }];\n  \n} catch (error) {\n  console.error('❌ Errore:', error);\n  return [{ json: { success: false, error: error.message } }];\n}"
+      },
+      "id": "node1",
+      "name": "🔧 Prepare All Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats-data.ts",
+        "authentication": "headerAuth",
+        "requestMethod": "PUT",
+        "responseFormat": "json",
+        "jsonParameters": true,
+        "bodyParametersJson": "={{ $json }}",
+        "options": {}
+      },
+      "id": "node2",
+      "name": "📤 Update TS File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Messaggio di successo finale\nconst githubResponse = items[0].json;\n\nif (githubResponse.content) {\n  const message = `🎉 File TypeScript aggiornato con successo!\n\n📊 File aggiornato: ✅ Successo\n📝 Commit SHA: ${githubResponse.commit ? githubResponse.commit.sha : 'N/A'}\n📁 File size: ${githubResponse.content.size || 'N/A'} bytes\n⏰ Timestamp: ${new Date().toISOString()}`;\n  \n  console.log(message);\n  \n  return [{\n    json: {\n      success: true,\n      message: message,\n      commitSha: githubResponse.commit?.sha,\n      fileSize: githubResponse.content?.size,\n      timestamp: new Date().toISOString()\n    }\n  }];\n} else {\n  const errorMessage = `❌ Errore aggiornamento file TypeScript\n\n📊 Risposta GitHub: ${JSON.stringify(githubResponse, null, 2)}\n⏰ Timestamp: ${new Date().toISOString()}`;\n  \n  console.error(errorMessage);\n  \n  return [{\n    json: {\n      success: false,\n      error: errorMessage,\n      githubResponse: githubResponse,\n      timestamp: new Date().toISOString()\n    }\n  }];\n}"
+      },
+      "id": "node3",
+      "name": "🎉 Final Result",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [680, 300]
+    }
+  ],
+  "connections": {
+    "🔧 Prepare All Data": {
+      "main": [
+        [
+          {
+            "node": "📤 Update TS File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📤 Update TS File": {
+      "main": [
+        [
+          {
+            "node": "🎉 Final Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    "basketball",
+    "typescript",
+    "update",
+    "working"
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-09-28T20:30:00.000Z",
+  "versionId": "update-ts-working-v1"
+}

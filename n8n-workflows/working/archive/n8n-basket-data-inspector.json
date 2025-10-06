@@ -1,0 +1,51 @@
+{
+  "name": "🔍 Data Structure Inspector",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "responseFormat": "string"
+      },
+      "id": "node1",
+      "name": "🌐 Fetch Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Ispettore struttura dati N8N\nconsole.log('🔍 ISPETTORE STRUTTURA DATI');\n\nif (!items || items.length === 0) {\n  return [{ json: { error: 'No items received' } }];\n}\n\nconst item = items[0];\nconsole.log('📊 Tipo item:', typeof item);\nconsole.log('📊 Chiavi item:', Object.keys(item));\n\n// Analizza ogni proprietà\nconst analysis = {};\n\nfor (const key of Object.keys(item)) {\n  const value = item[key];\n  analysis[key] = {\n    type: typeof value,\n    isArray: Array.isArray(value),\n    length: value?.length || 'N/A',\n    keys: typeof value === 'object' && value !== null ? Object.keys(value) : 'N/A',\n    preview: typeof value === 'string' ? value.substring(0, 100) + '...' : \n             typeof value === 'object' ? JSON.stringify(value).substring(0, 100) + '...' : \n             String(value)\n  };\n  \n  console.log(`📊 ${key}:`, analysis[key]);\n}\n\n// Cerca specificamente i dati HTML\nlet htmlFound = false;\nlet htmlLocation = null;\nlet htmlPreview = null;\n\nif (typeof item.json === 'string' && item.json.includes('<html')) {\n  htmlFound = true;\n  htmlLocation = 'item.json';\n  htmlPreview = item.json.substring(0, 200);\n} else if (typeof item.data === 'string' && item.data.includes('<html')) {\n  htmlFound = true;\n  htmlLocation = 'item.data';\n  htmlPreview = item.data.substring(0, 200);\n} else if (item.json && typeof item.json.data === 'string' && item.json.data.includes('<html')) {\n  htmlFound = true;\n  htmlLocation = 'item.json.data';\n  htmlPreview = item.json.data.substring(0, 200);\n}\n\nconst result = {\n  success: true,\n  itemType: typeof item,\n  itemKeys: Object.keys(item),\n  analysis: analysis,\n  htmlFound: htmlFound,\n  htmlLocation: htmlLocation,\n  htmlPreview: htmlPreview\n};\n\nconsole.log('🎉 Analisi completata:', JSON.stringify(result, null, 2));\nreturn [{ json: result }];"
+      },
+      "id": "node2",
+      "name": "🔍 Data Inspector",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 300]
+    }
+  ],
+  "connections": {
+    "🌐 Fetch Data": {
+      "main": [
+        [
+          {
+            "node": "🔍 Data Inspector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    "debug",
+    "inspector"
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-09-28T19:00:00.000Z",
+  "versionId": "inspector-v1"
+}

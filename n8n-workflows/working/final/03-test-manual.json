@@ -1,0 +1,50 @@
+{
+  "name": "03 - Test Manuale (Senza Schedule)",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "responseFormat": "string"
+      },
+      "id": "http-request",
+      "name": "Get HTML",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// === TEST MANUALE COMPLETO ===\nconsole.log('🧪 Test manuale completo...');\n\n// Accesso ai dati HTML (stesso codice del workflow principale)\nlet htmlData = '';\nif (items && items.length > 0) {\n  const item = items[0];\n  console.log('📥 Item ricevuto:', typeof item, Object.keys(item || {}));\n  \n  if (item.json && item.json.data && typeof item.json.data === 'string' && item.json.data.length > 1000) {\n    htmlData = item.json.data;\n    console.log('✅ HTML trovato in item.json.data');\n  } else if (item.json && typeof item.json === 'string' && item.json.length > 1000) {\n    htmlData = item.json;\n    console.log('✅ HTML trovato in item.json (string)');\n  } else if (item.data && typeof item.data === 'string' && item.data.length > 1000) {\n    htmlData = item.data;\n    console.log('✅ HTML trovato in item.data');\n  }\n}\n\nif (!htmlData || htmlData.length < 1000) {\n  return [{\n    json: {\n      error: 'HTML_NOT_FOUND',\n      message: 'Impossibile accedere ai dati HTML',\n      success: false\n    }\n  }];\n}\n\n// Test parsing completo (stesso codice del workflow principale)\nconst tableRegex = /<table[^>]*class=[\"']league_standings_ranking stats[\"'][^>]*>([\\s\\S]*?)<\\/table>/i;\nconst tableMatch = htmlData.match(tableRegex);\n\nif (!tableMatch) {\n  return [{\n    json: {\n      error: 'TABLE_NOT_FOUND',\n      message: 'Tabella non trovata',\n      success: false\n    }\n  }];\n}\n\n// Parsing rapido per test\nconst rowRegex = /<tr[^>]*>([\\s\\S]*?)<\\/tr>/gi;\nconst rows = [];\nlet match;\n\nwhile ((match = rowRegex.exec(tableMatch[1])) !== null) {\n  rows.push(match[1]);\n}\n\nconst teamsFound = Math.max(0, rows.length - 1); // Esclude header\n\n// Simula il quality check\nconst qualityCheck = teamsFound > 5;\n\nconst testResult = {\n  timestamp: new Date().toISOString(),\n  success: qualityCheck,\n  connection: {\n    success: true,\n    htmlLength: htmlData.length\n  },\n  parsing: {\n    tableFound: true,\n    teamsFound: teamsFound,\n    success: teamsFound > 5\n  },\n  qualityCheck: {\n    passed: qualityCheck,\n    message: qualityCheck ? \n      `✅ Quality check OK: ${teamsFound} squadre` :\n      `❌ Quality check fallito: solo ${teamsFound} squadre`\n  },\n  nextSteps: qualityCheck ? \n    '✅ Il workflow principale dovrebbe funzionare' :\n    '❌ NON attivare il workflow principale',\n  message: qualityCheck ? \n    `✅ Test completo superato: ${teamsFound} squadre trovate` :\n    `❌ Test fallito: solo ${teamsFound} squadre`\n};\n\nconsole.log('🎯 Risultato test completo:', testResult);\nreturn [{ json: testResult }];"
+      },
+      "id": "test-complete",
+      "name": "Test Complete Logic",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [480, 300]
+    }
+  ],
+  "connections": {
+    "Get HTML": {
+      "main": [
+        [
+          {
+            "node": "Test Complete Logic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "timezone": "Europe/Rome"
+  },
+  "versionId": "test-manual-v1",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "test-manual-workflow",
+  "tags": []
+}
+

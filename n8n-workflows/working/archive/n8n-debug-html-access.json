@@ -1,0 +1,51 @@
+{
+  "name": "🔍 Debug HTML Access",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "options": {
+          "responseFormat": "string"
+        }
+      },
+      "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+      "name": "🌐 Get PlayBasket HTML",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Debug: Analizza la struttura dei dati in arrivo\nconsole.log('🔍 Debug - Analisi input data:');\nconsole.log('- Items length:', items ? items.length : 'undefined');\nconsole.log('- Items type:', typeof items);\n\nif (items && items.length > 0) {\n  const item = items[0];\n  console.log('- Item[0] keys:', Object.keys(item));\n  console.log('- Item[0] type:', typeof item);\n  \n  // Controlla tutte le possibili proprietà\n  const possibleProps = ['data', 'json', 'binary', 'body', 'response'];\n  possibleProps.forEach(prop => {\n    if (item[prop]) {\n      console.log(`- Found property '${prop}':`, typeof item[prop]);\n      if (typeof item[prop] === 'string') {\n        console.log(`- ${prop} length:`, item[prop].length);\n        console.log(`- ${prop} preview:`, item[prop].substring(0, 200));\n      }\n    }\n  });\n}\n\n// Prova ad accedere ai dati HTML\nlet htmlData = '';\nlet accessMethod = 'none';\n\nif (items && items.length > 0) {\n  const item = items[0];\n  \n  // Metodo 1: item.data\n  if (item.data && typeof item.data === 'string') {\n    htmlData = item.data;\n    accessMethod = 'item.data';\n  }\n  // Metodo 2: item.json (se è stringa)\n  else if (item.json && typeof item.json === 'string') {\n    htmlData = item.json;\n    accessMethod = 'item.json';\n  }\n  // Metodo 3: item direttamente\n  else if (typeof item === 'string') {\n    htmlData = item;\n    accessMethod = 'item';\n  }\n  // Metodo 4: item.body\n  else if (item.body && typeof item.body === 'string') {\n    htmlData = item.body;\n    accessMethod = 'item.body';\n  }\n}\n\nconsole.log('🎯 Risultati accesso HTML:');\nconsole.log('- Access method:', accessMethod);\nconsole.log('- HTML length:', htmlData.length);\nconsole.log('- HTML type:', typeof htmlData);\n\n// Test parsing della tabella\nlet tableFound = false;\nlet tableContent = '';\n\nif (htmlData && htmlData.length > 0) {\n  // Cerca la tabella con regex\n  const tableRegex = /<table[^>]*class=[\"']league_standings_ranking stats[\"'][^>]*>([\\s\\S]*?)<\\/table>/g;\n  const tableMatch = tableRegex.exec(htmlData);\n  \n  if (tableMatch) {\n    tableFound = true;\n    tableContent = tableMatch[1].substring(0, 500); // Prime 500 caratteri\n    console.log('✅ Tabella trovata!');\n  } else {\n    console.log('❌ Tabella NON trovata');\n    // Cerca pattern alternativi\n    const altPatterns = [\n      /league_standings_ranking/g,\n      /stats/g,\n      /<table/g\n    ];\n    \n    altPatterns.forEach((pattern, index) => {\n      const matches = htmlData.match(pattern);\n      console.log(`- Pattern ${index + 1} matches:`, matches ? matches.length : 0);\n    });\n  }\n}\n\nreturn [{\n  json: {\n    debug: {\n      itemsLength: items ? items.length : 0,\n      accessMethod: accessMethod,\n      htmlLength: htmlData.length,\n      htmlType: typeof htmlData,\n      tableFound: tableFound,\n      htmlPreview: htmlData.substring(0, 300),\n      tablePreview: tableContent\n    },\n    success: htmlData.length > 0,\n    message: htmlData.length > 0 ? 'HTML data accessed successfully' : 'Failed to access HTML data'\n  }\n}];"
+      },
+      "id": "h3i4j5k6-l7m8-9012-3456-789abcdef012",
+      "name": "🔍 Debug HTML Access",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [480, 300]
+    }
+  ],
+  "connections": {
+    "🌐 Get PlayBasket HTML": {
+      "main": [
+        [
+          {
+            "node": "🔍 Debug HTML Access",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "timezone": "Europe/Rome"
+  },
+  "versionId": "12345678-90ab-cdef-1234-567890abcdef",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "87654321-abcd-ef12-3456-7890abcdef12",
+  "tags": []
+}

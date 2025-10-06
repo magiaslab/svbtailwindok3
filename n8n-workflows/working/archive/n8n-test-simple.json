@@ -1,0 +1,58 @@
+{
+  "name": "🏀 Test Simple",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "manual-trigger-001",
+      "name": "Start",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st"
+      },
+      "id": "http-test-001",
+      "name": "Get HTML",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Test semplice parsing\nconst html = items[0].data;\n\nif (!html) {\n  return [{ json: { error: 'No HTML' } }];\n}\n\nconst hasTable = html.includes('league_standings_ranking');\nconst hasStats = html.includes('stats');\n\nreturn [{\n  json: {\n    htmlLength: html.length,\n    hasTable: hasTable,\n    hasStats: hasStats,\n    preview: html.substring(0, 500)\n  }\n}];"
+      },
+      "id": "code-test-001",
+      "name": "Test Parse",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [700, 300]
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Get HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get HTML": {
+      "main": [
+        [
+          {
+            "node": "Test Parse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false
+}

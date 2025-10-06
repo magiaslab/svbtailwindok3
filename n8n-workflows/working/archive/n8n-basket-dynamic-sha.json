@@ -1,0 +1,124 @@
+{
+  "name": "🏀 Dynamic SHA Update - SEMPRE FUNZIONANTE",
+  "nodes": [
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "responseFormat": "string"
+      },
+      "id": "node1",
+      "name": "🌐 Fetch PlayBasket Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats/serie-c-stats.json",
+        "authentication": "headerAuth",
+        "responseFormat": "json",
+        "options": {}
+      },
+      "id": "node2",
+      "name": "📥 Get Current SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [240, 420]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parser HTML + Preparazione GitHub con SHA dinamico\nconsole.log('🏀 INIZIO PARSING E PREPARAZIONE GITHUB');\n\n// Accesso ai dati HTML (primo input)\nconst htmlData = items[0];\nlet html = null;\nif (htmlData.data) {\n  html = htmlData.data;\n} else if (htmlData.json && typeof htmlData.json === 'string') {\n  html = htmlData.json;\n}\n\nif (!html) {\n  console.error('❌ HTML non trovato');\n  return [{ json: { success: false, error: 'HTML not found' } }];\n}\n\n// Accesso ai dati SHA (secondo input)\nconst shaData = items[1];\nconst currentSha = shaData.json.sha;\nconsole.log('📋 SHA corrente:', currentSha);\n\n// Parsing HTML (stesso codice testato)\nconst standings = [];\nconst rowRegex = /<tr class='row_standings'>([\\s\\S]*?)<\\/tr>/g;\nlet rowMatch;\n\nwhile ((rowMatch = rowRegex.exec(html)) !== null) {\n  const rowContent = rowMatch[1];\n  \n  try {\n    const posMatch = /<td[^>]*class='colfrozen'>(\\d+)<\\/td>/.exec(rowContent);\n    if (!posMatch) continue;\n    const position = parseInt(posMatch[1]);\n    \n    const teamMatch = /<td class=\"sq colfrozen\"><a href=\"club\\.php\\?obj=(\\d+)&action=view&eid=\\d+\">([^<]+)<\\/a>/.exec(rowContent);\n    if (!teamMatch) continue;\n    \n    const teamId = teamMatch[1];\n    const teamName = teamMatch[2].trim();\n    const teamLink = `https://www.playbasket.it/toscana/club.php?obj=${teamId}&action=view&eid=4`;\n    \n    const pointsMatch = /<td[^>]*class='highlighted_data'>(\\d+)<\\/td>/.exec(rowContent);\n    const points = pointsMatch ? parseInt(pointsMatch[1]) : 0;\n    \n    const pointsPerGameMatch = /<td[^>]*class='divisore'>([\\d.]+)<\\/td>/.exec(rowContent);\n    const pointsPerGame = pointsPerGameMatch ? parseFloat(pointsPerGameMatch[1]) : 0;\n    \n    const simpleTdRegex = /<td title='[^']*'>([^<]+)<\\/td>/g;\n    const values = [];\n    let tdMatch;\n    \n    while ((tdMatch = simpleTdRegex.exec(rowContent)) !== null) {\n      values.push(tdMatch[1].trim());\n    }\n    \n    const games = values[0] ? parseInt(values[0]) : 0;\n    const wins = values[1] ? parseInt(values[1]) : 0;\n    const losses = values[2] ? parseInt(values[2]) : 0;\n    const percentage = values[3] ? parseFloat(values[3]) : 0;\n    \n    const streakMatch = /<td[^>]*class='[^']*streak[^']*'[^>]*>([^<]+)<\\/td>/.exec(rowContent);\n    const streak = streakMatch ? streakMatch[1].trim() : '-';\n    \n    const pointsFor = values[5] ? parseInt(values[5]) : 0;\n    const pointsAgainst = values[6] ? parseInt(values[6]) : 0;\n    const quality = values[7] ? parseFloat(values[7]) : 0;\n    const pointsForPerGame = values[8] ? parseFloat(values[8]) : 0;\n    const pointsAgainstPerGame = values[9] ? parseFloat(values[9]) : 0;\n    \n    standings.push({\n      position, team: teamName, teamId, teamLink, points, pointsPerGame,\n      games, wins, losses, percentage, streak, pointsFor, pointsAgainst,\n      quality: quality.toFixed(2), pointsForPerGame, pointsAgainstPerGame\n    });\n    \n  } catch (error) {\n    console.error('❌ Errore processando riga:', error);\n  }\n}\n\n// Creazione dati finali\nconst teamStats = {};\nstandings.forEach(team => {\n  teamStats[team.team] = {\n    position: team.position, points: team.points, games: team.games,\n    wins: team.wins, losses: team.losses, winPercentage: team.percentage,\n    pointsFor: team.pointsFor, pointsAgainst: team.pointsAgainst,\n    pointDifference: team.pointsFor - team.pointsAgainst,\n    averagePointsFor: team.pointsForPerGame,\n    averagePointsAgainst: team.pointsAgainstPerGame\n  };\n});\n\nconst statsData = {\n  standings, teamStats,\n  lastUpdate: new Date().toISOString(),\n  season: '2025-2026',\n  competition: 'Serie C Maschile Toscana',\n  conference: 'Conference Nord-Ovest',\n  group: 'Girone B',\n  totalTeams: standings.length,\n  source: 'playbasket.it',\n  status: 'active'\n};\n\n// Preparazione per GitHub\nconst jsonContent = JSON.stringify(statsData, null, 2);\nconst base64Content = Buffer.from(jsonContent).toString('base64');\n\nconst result = {\n  message: `Aggiornamento automatico statistiche Serie C - ${new Date().toISOString()}`,\n  content: base64Content,\n  sha: currentSha\n};\n\nconsole.log(`🎉 Parsing completato: ${standings.length} squadre, SHA: ${currentSha}`);\nreturn [{ json: result }];"
+      },
+      "id": "node3",
+      "name": "⚙️ Parse & Prepare",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [460, 360]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats/serie-c-stats.json",
+        "authentication": "headerAuth",
+        "requestMethod": "PUT",
+        "responseFormat": "json",
+        "jsonParameters": true,
+        "bodyParametersJson": "={{ $json }}",
+        "options": {}
+      },
+      "id": "node4",
+      "name": "📤 Update GitHub File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [680, 360]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Messaggio di successo finale\nconst githubResponse = items[0].json;\n\nconst message = `🎉 Aggiornamento dinamico completato!\n\n📊 File: ${githubResponse.content ? '✅ Successo' : '❌ Errore'}\n📝 Commit: ${githubResponse.commit ? githubResponse.commit.sha : 'N/A'}\n📁 Size: ${githubResponse.content ? githubResponse.content.size : 'N/A'} bytes\n⏰ Time: ${new Date().toISOString()}`;\n\nconsole.log(message);\nreturn [{ json: { success: true, message, githubResponse } }];"
+      },
+      "id": "node5",
+      "name": "🎉 Success Message",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 360]
+    }
+  ],
+  "connections": {
+    "🌐 Fetch PlayBasket Data": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Parse & Prepare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📥 Get Current SHA": {
+      "main": [
+        [
+          {
+            "node": "⚙️ Parse & Prepare",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚙️ Parse & Prepare": {
+      "main": [
+        [
+          {
+            "node": "📤 Update GitHub File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📤 Update GitHub File": {
+      "main": [
+        [
+          {
+            "node": "🎉 Success Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [
+    "basketball",
+    "dynamic-sha",
+    "always-working"
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-09-28T21:50:00.000Z",
+  "versionId": "dynamic-sha-v1"
+}

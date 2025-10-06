@@ -14,15 +14,35 @@ const {
   maxTeams = 8 
 } = Astro.props;
 
-// Carica le statistiche aggiornate
+// Carica le statistiche aggiornate dall'API
 let serieCStats = null;
 let statsError = null;
 
 try {
-  // Importa direttamente le statistiche dal file di dati
-  const { serieCStatsData } = await import('../../data/stats-data.ts');
-  serieCStats = serieCStatsData;
-  console.log('📊 Statistiche caricate:', serieCStats.standings.length, 'squadre');
+  // Usa l'API per caricare le statistiche (stesso sistema di StatisticsTable)
+  const response = await fetch(`${Astro.url.origin}/api/stats`);
+  if (response.ok) {
+    const data = await response.json();
+    
+    // Controlla se i dati sono validi
+    if (data.standings && data.standings.length > 0 && !data.error) {
+      serieCStats = data;
+      console.log('📊 Statistiche caricate dall\'API:', serieCStats.standings.length, 'squadre');
+    } else {
+      // Se i dati sono vuoti, usa il fallback
+      console.log('⚠️ Dati API vuoti, uso fallback');
+      const fallbackResponse = await fetch(`${Astro.url.origin}/stats/serie-c-stats-example.json`);
+      if (fallbackResponse.ok) {
+        const fallbackData = await fallbackResponse.json();
+        serieCStats = fallbackData;
+        console.log('🔄 Usando dati di fallback:', serieCStats.standings.length, 'squadre');
+      } else {
+        throw new Error('Impossibile caricare le statistiche');
+      }
+    }
+  } else {
+    throw new Error(`API response error: ${response.status}`);
+  }
 } catch (error) {
   console.error('❌ Errore caricamento statistiche:', error);
   statsError = "Statistiche non disponibili";
