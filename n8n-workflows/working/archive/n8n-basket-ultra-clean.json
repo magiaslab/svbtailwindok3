@@ -34,7 +34,7 @@
         "options": {
           "headers": {
             "Accept": "application/vnd.github.v3+json",
-            "Authorization": "token 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"
+            "Authorization": "token YOUR_GITHUB_TOKEN_HERE"
           }
         }
       },
@@ -50,7 +50,7 @@
         "options": {
           "headers": {
             "Accept": "application/vnd.github.v3+json",
-            "Authorization": "token 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"
+            "Authorization": "token YOUR_GITHUB_TOKEN_HERE"
           }
         }
       },
@@ -94,7 +94,7 @@
         "jsonParameters": true,
         "options": {
           "headers": {
-            "Authorization": "token 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",
+            "Authorization": "token YOUR_GITHUB_TOKEN_HERE",
             "Content-Type": "application/json"
           }
         },
@@ -113,7 +113,7 @@
         "jsonParameters": true,
         "options": {
           "headers": {
-            "Authorization": "token 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",
+            "Authorization": "token YOUR_GITHUB_TOKEN_HERE",
             "Content-Type": "application/json"
           }
         },

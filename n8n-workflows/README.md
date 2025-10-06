@@ -75,7 +75,7 @@ Contiene tutte le versioni precedenti e i file non utilizzati:
 ### **Credenziali GitHub**
 - **Tipo**: HTTP Header Auth
 - **Nome**: `GitHub Token`
-- **Header**: `Authorization: Bearer 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`
+- **Header**: `Authorization: Bearer YOUR_GITHUB_TOKEN_HERE`
 
 ### **Netlify Build Hook**
 - **URL**: `https://api.netlify.com/build_hooks/65f8a1b2-1234-5678-9abc-def012345678`

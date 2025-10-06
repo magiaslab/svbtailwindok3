@@ -15,7 +15,7 @@ Il workflow n8n aveva un **bug critico** nella gestione degli errori:
 
 ## ✅ **SOLUZIONE IMPLEMENTATA**
 
-### **Workflow Corretto: `09-basket-stats-FIXED-NO-DEPLOY.json`**
+### **Workflow Corretto: `11-basket-stats-WORKING.json`**
 
 #### **Miglioramenti:**
 
@@ -39,24 +39,26 @@ Il workflow n8n aveva un **bug critico** nella gestione degli errori:
    ```
    Schedule → Get HTML → Parse Data → Quality Check
                                         ↓
-   Se OK: Get SHA → Prepare GitHub → Update GitHub → Success
+   Se OK: Prepare GitHub Data → Get SHA → Update SHA → Update GitHub → Success
    Se FAIL: Quality Failed - No Update (STOP)
    ```
    
    **Nota:** Il nodo "Trigger Deploy" è stato rimosso perché Netlify si attiva automaticamente quando viene modificato il file su GitHub, evitando deploy doppi.
+   
+   **Miglioramento:** Separato il processo di preparazione dati e aggiornamento SHA per evitare problemi di sincronizzazione.
 
 ## 🚀 **COME IMPLEMENTARE LA CORREZIONE**
 
 ### **Passo 1: Importa il Workflow Corretto**
 1. Vai su n8n
-2. Importa il file `09-basket-stats-FIXED-NO-DEPLOY.json`
+2. Importa il file `11-basket-stats-WORKING.json`
 3. Configura le credenziali GitHub:
    - Sostituisci `YOUR_GITHUB_TOKEN_HERE` con il tuo token GitHub personale
    - Il token deve avere permessi per scrivere nel repository
 
 ### **Passo 2: Disattiva il Workflow Vecchio**
 1. Disattiva il workflow `07-basket-stats-FINAL.json`
-2. Attiva il nuovo workflow `09-basket-stats-FIXED-NO-DEPLOY.json`
+2. Attiva il nuovo workflow `11-basket-stats-WORKING.json`
 
 ### **Passo 3: Test Manuale**
 1. Esegui il workflow manualmente

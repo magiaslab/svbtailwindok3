@@ -1,5 +1,5 @@
 {
-  "name": "07 - Basket Stats FINAL",
+  "name": "07 - Basket Stats FINAL-FIXED",
   "nodes": [
     {
       "parameters": {
@@ -21,7 +21,14 @@
     {
       "parameters": {
         "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
-        "responseFormat": "string"
+        "responseFormat": "string",
+        "options": {
+          "timeout": 30000,
+          "retry": {
+            "enabled": true,
+            "maxRetries": 3
+          }
+        }
       },
       "id": "http-request",
       "name": "Get HTML",
@@ -84,7 +91,7 @@
     },
     {
       "parameters": {
-        "jsCode": "// Preparazione dati per GitHub\nconsole.log('📦 Inizio preparazione dati GitHub...');\nconsole.log('📥 Input items:', $input.all().length);\n\n// Debug degli input\n$input.all().forEach((item, index) => {\n  console.log(`Input ${index}:`, Object.keys(item.json || {}));\n});\n\n// Prendi i dati dal primo input (Parse Data)\nconst parseData = $input.first().json;\nconsole.log('📊 Parse Data:', {\n  success: parseData.success,\n  totalTeams: parseData.totalTeams,\n  hasData: !!parseData.data\n});\n\n// Prendi i dati dal secondo input (Get SHA)\nlet shaData = null;\nif ($input.all().length > 1) {\n  shaData = $input.all()[1].json;\n  console.log('🔑 SHA Data:', {\n    sha: shaData.sha,\n    hasSha: !!shaData.sha\n  });\n} else {\n  console.log('⚠️ Solo un input ricevuto, SHA non disponibile');\n}\n\n// Validazione dati\nif (!parseData.success || !parseData.data) {\n  throw new Error('Dati di parsing non validi');\n}\n\nif (!shaData || !shaData.sha) {\n  throw new Error('SHA non trovato - verifica che il nodo Get SHA sia eseguito correttamente');\n}\n\n// Prepara il contenuto JSON\nconst jsonContent = JSON.stringify(parseData.data, null, 2);\nconst base64Content = Buffer.from(jsonContent, 'utf8').toString('base64');\n\n// Prepara il messaggio con data corretta\nconst now = new Date();\nconst dateStr = now.toLocaleDateString('it-IT', {\n  day: '2-digit',\n  month: '2-digit', \n  year: 'numeric'\n});\nconst timeStr = now.toLocaleTimeString('it-IT', {\n  hour: '2-digit',\n  minute: '2-digit'\n});\n\nconst commitMessage = `🤖 Aggiornamento automatico statistiche Serie C - ${dateStr} ${timeStr}`;\n\nconst githubData = {\n  message: commitMessage,\n  content: base64Content,\n  sha: shaData.sha,\n  branch: 'master'\n};\n\nconsole.log('✅ Dati GitHub preparati:');\nconsole.log('- Message:', commitMessage);\nconsole.log('- Content length:', base64Content.length);\nconsole.log('- SHA:', shaData.sha);\n\nreturn [{ json: githubData }];"
+        "jsCode": "// Preparazione dati per GitHub - FIXED VERSION\nconsole.log('📦 Inizio preparazione dati GitHub...');\nconsole.log('📥 Input items:', $input.all().length);\n\n// Debug degli input con identificazione corretta\n$input.all().forEach((item, index) => {\n  console.log(`Input ${index}:`, Object.keys(item.json || {}));\n  console.log(`Input ${index} type:`, item.json?.success !== undefined ? 'Parse Data' : 'SHA Data');\n});\n\n// IDENTIFICAZIONE CORRETTA DEGLI INPUT\nlet parseData = null;\nlet shaData = null;\n\n// Cerca i dati Parse Data (ha success, totalTeams, data)\nfor (let i = 0; i < $input.all().length; i++) {\n  const item = $input.all()[i].json;\n  if (item.success !== undefined && item.totalTeams !== undefined && item.data) {\n    parseData = item;\n    console.log(`✅ Parse Data trovato all'input ${i}`);\n    break;\n  }\n}\n\n// Cerca i dati SHA (ha sha)\nfor (let i = 0; i < $input.all().length; i++) {\n  const item = $input.all()[i].json;\n  if (item.sha && !item.success) {\n    shaData = item;\n    console.log(`✅ SHA Data trovato all'input ${i}`);\n    break;\n  }\n}\n\nconsole.log('📊 Parse Data:', {\n  success: parseData?.success,\n  totalTeams: parseData?.totalTeams,\n  hasData: !!parseData?.data\n});\n\nconsole.log('🔑 SHA Data:', {\n  sha: shaData?.sha,\n  hasSha: !!shaData?.sha\n});\n\n// Validazione dati\nif (!parseData || !parseData.success || !parseData.data) {\n  throw new Error('Dati di parsing non validi - Non aggiornare il file');\n}\n\nif (!shaData || !shaData.sha) {\n  throw new Error('SHA non trovato - verifica che il nodo Get SHA sia eseguito correttamente');\n}\n\n// Prepara il contenuto JSON\nconst jsonContent = JSON.stringify(parseData.data, null, 2);\nconst base64Content = Buffer.from(jsonContent, 'utf8').toString('base64');\n\n// Prepara il messaggio con data corretta\nconst now = new Date();\nconst dateStr = now.toLocaleDateString('it-IT', {\n  day: '2-digit',\n  month: '2-digit', \n  year: 'numeric'\n});\nconst timeStr = now.toLocaleTimeString('it-IT', {\n  hour: '2-digit',\n  minute: '2-digit'\n});\n\nconst commitMessage = `🤖 Aggiornamento automatico statistiche Serie C - ${dateStr} ${timeStr}`;\n\nconst githubData = {\n  message: commitMessage,\n  content: base64Content,\n  sha: shaData.sha,\n  branch: 'master'\n};\n\nconsole.log('✅ Dati GitHub preparati:');\nconsole.log('- Message:', commitMessage);\nconsole.log('- Content length:', base64Content.length);\nconsole.log('- SHA:', shaData.sha);\nconsole.log('- Teams:', parseData.data.totalTeams);\n\nreturn [{ json: githubData }];"
       },
       "id": "prepare-github",
       "name": "Prepare GitHub Data",
@@ -114,25 +121,13 @@
     },
     {
       "parameters": {
-        "url": "https://api.netlify.com/build_hooks/68d8f925792a5800aecc4fa4",
-        "requestMethod": "POST",
-        "options": {}
-      },
-      "id": "trigger-deploy",
-      "name": "Trigger Deploy",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 1,
-      "position": [1800, 240]
-    },
-    {
-      "parameters": {
-        "jsCode": "// Risultato finale\nconst summary = {\n  timestamp: new Date().toISOString(),\n  success: true,\n  message: '✅ Workflow completato con successo - DATI CORRETTI',\n  details: {\n    parsing: 'OK - Mapping celle corretto',\n    github: 'OK - File aggiornato',\n    deploy: 'OK - Netlify triggerato'\n  }\n};\n\nconsole.log('🎉 WORKFLOW COMPLETATO CON DATI CORRETTI:', summary);\nreturn [{ json: summary }];"
+        "jsCode": "// Risultato finale\nconst summary = {\n  timestamp: new Date().toISOString(),\n  success: true,\n  message: '✅ Workflow completato con successo - DATI CORRETTI',\n  details: {\n    parsing: 'OK - Mapping celle corretto',\n    github: 'OK - File aggiornato',\n    deploy: 'OK - Netlify si attiverà automaticamente'\n  }\n};\n\nconsole.log('🎉 WORKFLOW COMPLETATO CON DATI CORRETTI:', summary);\nreturn [{ json: summary }];"
       },
       "id": "success",
       "name": "Success",
       "type": "n8n-nodes-base.code",
       "typeVersion": 1,
-      "position": [2020, 240]
+      "position": [1800, 240]
     },
     {
       "parameters": {
@@ -234,17 +229,6 @@
       "main": [
         [
           {
-            "node": "Trigger Deploy",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Trigger Deploy": {
-      "main": [
-        [
-          {
             "node": "Success",
             "type": "main",
             "index": 0
@@ -253,14 +237,14 @@
       ]
     }
   },
-  "active": false,
+  "pinData": {},
   "settings": {
-    "timezone": "Europe/Rome"
+    "executionOrder": "v1"
   },
-  "versionId": "basket-final-v1",
-  "meta": {
-    "templateCredsSetupCompleted": true
-  },
-  "id": "basket-final-workflow",
-  "tags": []
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-10-06T18:00:00.000Z",
+  "versionId": "1"
 }
+

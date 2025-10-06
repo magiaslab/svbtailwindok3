@@ -67,7 +67,7 @@ Questa cartella contiene i **3 workflow definitivi** per il sistema di scraping 
 ### GitHub Token
 Il token è già incluso nei workflow:
 ```
-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
+YOUR_GITHUB_TOKEN_HERE
 ```
 
 ### Netlify Build Hook
