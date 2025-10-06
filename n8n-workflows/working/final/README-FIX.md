@@ -50,7 +50,9 @@ Il workflow n8n aveva un **bug critico** nella gestione degli errori:
 ### **Passo 1: Importa il Workflow Corretto**
 1. Vai su n8n
 2. Importa il file `09-basket-stats-FIXED-NO-DEPLOY.json`
-3. Configura le credenziali GitHub
+3. Configura le credenziali GitHub:
+   - Sostituisci `YOUR_GITHUB_TOKEN_HERE` con il tuo token GitHub personale
+   - Il token deve avere permessi per scrivere nel repository
 
 ### **Passo 2: Disattiva il Workflow Vecchio**
 1. Disattiva il workflow `07-basket-stats-FINAL.json`
