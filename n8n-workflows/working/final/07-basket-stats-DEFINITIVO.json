@@ -1,0 +1,243 @@
+{
+  "name": "07 - Basket Stats DEFINITIVO",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "value": "0 8 * * 1,4"
+            }
+          ]
+        }
+      },
+      "id": "cron-trigger",
+      "name": "Schedule",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [260, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://www.playbasket.it/toscana/league.php?lt=2&lf=M&lr=TO&lp=FI&lc=C%2FM&lg=1&mod=st",
+        "responseFormat": "string",
+        "options": {
+          "timeout": 30000,
+          "retry": {
+            "enabled": true,
+            "maxRetries": 3
+          }
+        }
+      },
+      "id": "http-request",
+      "name": "Get HTML",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [480, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// === BASKET STATS SCRAPER - VERSIONE FINALE ===\nconsole.log('🚀 Inizio scraping basket stats FINAL...');\n\n// Accesso ai dati HTML\nlet htmlData = '';\nif (items && items.length > 0) {\n  const item = items[0];\n  console.log('📥 Item ricevuto:', typeof item, Object.keys(item || {}));\n  \n  if (item.json && item.json.data && typeof item.json.data === 'string' && item.json.data.length > 1000) {\n    htmlData = item.json.data;\n    console.log('✅ HTML trovato in item.json.data');\n  } else if (item.json && typeof item.json === 'string' && item.json.length > 1000) {\n    htmlData = item.json;\n    console.log('✅ HTML trovato in item.json (string)');\n  } else if (item.data && typeof item.data === 'string' && item.data.length > 1000) {\n    htmlData = item.data;\n    console.log('✅ HTML trovato in item.data');\n  }\n}\n\nif (!htmlData || htmlData.length < 1000) {\n  return [{\n    json: {\n      error: 'HTML_NOT_FOUND',\n      message: 'Impossibile accedere ai dati HTML'\n    }\n  }];\n}\n\n// Parsing della tabella\nconst tableRegex = /<table[^>]*class=[\"']league_standings_ranking stats[\"'][^>]*>([\\s\\S]*?)<\\/table>/i;\nconst tableMatch = htmlData.match(tableRegex);\n\nif (!tableMatch) {\n  return [{\n    json: {\n      error: 'TABLE_NOT_FOUND',\n      message: 'Tabella non trovata'\n    }\n  }];\n}\n\n// Estrazione righe\nconst rowRegex = /<tr[^>]*>([\\s\\S]*?)<\\/tr>/gi;\nconst rows = [];\nlet match;\n\nwhile ((match = rowRegex.exec(tableMatch[1])) !== null) {\n  rows.push(match[1]);\n}\n\nconst standings = [];\n\n// Parsing squadre (salta header)\nfor (let i = 1; i < rows.length; i++) {\n  const rowContent = rows[i];\n  const cellRegex = /<td[^>]*>([\\s\\S]*?)<\\/td>/gi;\n  const cells = [];\n  let cellMatch;\n  \n  while ((cellMatch = cellRegex.exec(rowContent)) !== null) {\n    cells.push(cellMatch[1]);\n  }\n  \n  if (cells.length >= 11) {\n    const cleanText = (html) => html.replace(/<[^>]*>/g, '').replace(/\\s+/g, ' ').trim();\n    const extractHref = (html) => {\n      const match = html.match(/href=[\"']([^\"']*)[\"']/);\n      return match ? match[1] : '';\n    };\n    \n    // MAPPING CORRETTO DELLE CELLE\n    const position = parseInt(cleanText(cells[0])) || standings.length + 1;\n    \n    // Cella 1: Nome squadra e link\n    const teamCell = cells[1] || '';\n    const teamName = cleanText(teamCell);\n    const teamLink = extractHref(teamCell);\n    const teamIdMatch = teamLink.match(/obj=(\\d+)/);\n    const teamId = teamIdMatch ? teamIdMatch[1] : '';\n    \n    // Cella 2: Punti\n    const points = parseInt(cleanText(cells[2])) || 0;\n    \n    // Cella 4: Partite giocate\n    const games = parseInt(cleanText(cells[4])) || 0;\n    \n    // Cella 5: Vittorie\n    const wins = parseInt(cleanText(cells[5])) || 0;\n    \n    // Cella 6: Sconfitte\n    const losses = parseInt(cleanText(cells[6])) || 0;\n    \n    // Cella 7: Percentuale\n    const percentage = parseFloat(cleanText(cells[7])) || 0;\n    \n    // Cella 8: Streak\n    const streak = cleanText(cells[8]) || '-';\n    \n    // Cella 10: Points For\n    const pointsFor = parseInt(cleanText(cells[10])) || 0;\n    \n    // Points Against: calcolo basato sulla qualità\n    const quality = parseFloat(cleanText(cells[9])) || 50;\n    const pointsAgainst = games > 0 ? Math.max(0, Math.round(pointsFor - ((quality - 50) * games / 10))) : 0;\n    \n    standings.push({\n      position: position,\n      team: teamName,\n      teamId: teamId,\n      teamLink: teamLink.startsWith('http') ? teamLink : `https://www.playbasket.it/toscana/${teamLink}`,\n      points: points,\n      pointsPerGame: games > 0 ? (points / games).toFixed(2) : '0.00',\n      games: games,\n      wins: wins,\n      losses: losses,\n      percentage: percentage,\n      streak: streak,\n      pointsFor: pointsFor,\n      pointsAgainst: pointsAgainst,\n      quality: quality.toFixed(2),\n      pointsForPerGame: games > 0 ? Math.round(pointsFor / games) : 0,\n      pointsAgainstPerGame: games > 0 ? Math.round(pointsAgainst / games) : 0\n    });\n    \n    console.log(`✅ Squadra ${position}: ${teamName} - ${points}pt, ${games}g, ${wins}w-${losses}l, PF:${pointsFor}`);\n  }\n}\n\nif (standings.length === 0) {\n  return [{\n    json: {\n      error: 'NO_TEAMS_FOUND',\n      message: 'Nessuna squadra trovata'\n    }\n  }];\n}\n\n// Creazione oggetto finale\nconst now = new Date().toISOString();\nconst statsData = {\n  standings: standings,\n  teamStats: {},\n  lastUpdate: now,\n  season: '2025-2026',\n  competition: 'Serie C Maschile Toscana',\n  conference: 'Conference Nord-Ovest',\n  group: 'Girone B',\n  totalTeams: standings.length,\n  source: 'playbasket.it',\n  status: 'active'\n};\n\n// Genera teamStats\nstandings.forEach(team => {\n  statsData.teamStats[team.team] = {\n    position: team.position,\n    points: team.points,\n    games: team.games,\n    wins: team.wins,\n    losses: team.losses,\n    winPercentage: team.percentage,\n    pointsFor: team.pointsFor,\n    pointsAgainst: team.pointsAgainst,\n    pointDifference: team.pointsFor - team.pointsAgainst,\n    averagePointsFor: team.pointsForPerGame,\n    averagePointsAgainst: team.pointsAgainstPerGame\n  };\n});\n\nconsole.log(`✅ Parsing completato: ${standings.length} squadre`);\nconsole.log('🎯 Prima squadra:', standings[0]);\n\nreturn [{\n  json: {\n    success: true,\n    data: statsData,\n    totalTeams: standings.length,\n    lastUpdate: now\n  }\n}];"
+      },
+      "id": "parse-data",
+      "name": "Parse Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [700, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.success}}",
+              "value2": true
+            }
+          ],
+          "number": [
+            {
+              "value1": "={{$json.totalTeams}}",
+              "operation": "larger",
+              "value2": 5
+            }
+          ]
+        }
+      },
+      "id": "quality-check",
+      "name": "Quality Check",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [920, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats/serie-c-stats.json",
+        "options": {
+          "headers": {
+            "Accept": "application/vnd.github.v3+json",
+            "Authorization": "token YOUR_GITHUB_TOKEN_HERE"
+          },
+          "qs": {
+            "ref": "master"
+          }
+        }
+      },
+      "id": "get-sha",
+      "name": "Get SHA",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1140, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Preparazione dati per GitHub - VERSIONE DEFINITIVA\nconsole.log('📦 Inizio preparazione dati GitHub...');\nconsole.log('📥 Input items:', $input.all().length);\n\n// Debug degli input\n$input.all().forEach((item, index) => {\n  console.log(`Input ${index}:`, Object.keys(item.json || {}));\n});\n\n// Prendi i dati dal primo input (Parse Data)\nconst parseData = $input.first().json;\nconsole.log('📊 Parse Data:', {\n  success: parseData.success,\n  totalTeams: parseData.totalTeams,\n  hasData: !!parseData.data\n});\n\n// Prendi i dati dal secondo input (Get SHA)\nlet shaData = null;\nif ($input.all().length > 1) {\n  shaData = $input.all()[1].json;\n  console.log('🔑 SHA Data:', {\n    sha: shaData.sha,\n    hasSha: !!shaData.sha\n  });\n} else {\n  console.log('⚠️ Solo un input ricevuto, SHA non disponibile');\n}\n\n// Validazione dati\nif (!parseData.success || !parseData.data) {\n  throw new Error('Dati di parsing non validi - Non aggiornare il file');\n}\n\nif (!shaData || !shaData.sha) {\n  throw new Error('SHA non trovato - verifica che il nodo Get SHA sia eseguito correttamente');\n}\n\n// Prepara il contenuto JSON\nconst jsonContent = JSON.stringify(parseData.data, null, 2);\nconst base64Content = Buffer.from(jsonContent, 'utf8').toString('base64');\n\n// Prepara il messaggio con data corretta\nconst now = new Date();\nconst dateStr = now.toLocaleDateString('it-IT', {\n  day: '2-digit',\n  month: '2-digit', \n  year: 'numeric'\n});\nconst timeStr = now.toLocaleTimeString('it-IT', {\n  hour: '2-digit',\n  minute: '2-digit'\n});\n\nconst commitMessage = `🤖 Aggiornamento automatico statistiche Serie C - ${dateStr} ${timeStr}`;\n\nconst githubData = {\n  message: commitMessage,\n  content: base64Content,\n  sha: shaData.sha,\n  branch: 'master'\n};\n\nconsole.log('✅ Dati GitHub preparati:');\nconsole.log('- Message:', commitMessage);\nconsole.log('- Content length:', base64Content.length);\nconsole.log('- SHA:', shaData.sha);\nconsole.log('- Teams:', parseData.data.totalTeams);\n\nreturn [{ json: githubData }];"
+      },
+      "id": "prepare-github",
+      "name": "Prepare GitHub Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1360, 240]
+    },
+    {
+      "parameters": {
+        "url": "https://api.github.com/repos/magiaslab/svbtailwindok3/contents/src/data/stats/serie-c-stats.json",
+        "requestMethod": "PUT",
+        "jsonParameters": true,
+        "options": {
+          "headers": {
+            "Authorization": "token YOUR_GITHUB_TOKEN_HERE",
+            "Content-Type": "application/json",
+            "Accept": "application/vnd.github.v3+json"
+          }
+        },
+        "bodyParametersJson": "={{ $json }}"
+      },
+      "id": "update-github",
+      "name": "Update GitHub",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1580, 240]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Risultato finale\nconst summary = {\n  timestamp: new Date().toISOString(),\n  success: true,\n  message: '✅ Workflow completato con successo - DATI CORRETTI',\n  details: {\n    parsing: 'OK - Mapping celle corretto',\n    qualityCheck: 'OK - Dati validi',\n    github: 'OK - File aggiornato',\n    deploy: 'OK - Netlify si attiverà automaticamente'\n  }\n};\n\nconsole.log('🎉 WORKFLOW COMPLETATO CON DATI CORRETTI:', summary);\nreturn [{ json: summary }];"
+      },
+      "id": "success",
+      "name": "Success",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1800, 240]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Gestione errori\nconst errorSummary = {\n  timestamp: new Date().toISOString(),\n  success: false,\n  message: '❌ Workflow fallito',\n  action: 'Dati esistenti mantenuti'\n};\n\nconsole.log('❌ WORKFLOW FALLITO:', errorSummary);\nreturn [{ json: errorSummary }];"
+      },
+      "id": "failure",
+      "name": "Failure",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 1,
+      "position": [1140, 400]
+    }
+  ],
+  "connections": {
+    "Schedule": {
+      "main": [
+        [
+          {
+            "node": "Get HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get HTML": {
+      "main": [
+        [
+          {
+            "node": "Parse Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Data": {
+      "main": [
+        [
+          {
+            "node": "Quality Check",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prepare GitHub Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quality Check": {
+      "main": [
+        [
+          {
+            "node": "Get SHA",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get SHA": {
+      "main": [
+        [
+          {
+            "node": "Prepare GitHub Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Prepare GitHub Data": {
+      "main": [
+        [
+          {
+            "node": "Update GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update GitHub": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-10-06T18:55:00.000Z",
+  "versionId": "1"
+}

@@ -2,11 +2,11 @@ name: 📊 Aggiorna Statistiche Basket
 description: Aggiorna automaticamente le statistiche delle squadre SVB
 
 on:
-  schedule:
-    # Esegue ogni 6 ore (00:00, 06:00, 12:00, 18:00 UTC)
-    - cron: '0 */6 * * *'
+  # NOTA: Schedule disabilitato - ora usiamo n8n per l'aggiornamento automatico
+  # schedule:
+  #   - cron: '0 */6 * * *'
   
-  # Esecuzione manuale dal tab Actions di GitHub
+  # Esecuzione manuale dal tab Actions di GitHub (mantenuta per test)
   workflow_dispatch:
     inputs:
       force_update:
