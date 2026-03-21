@@ -1,5 +1,5 @@
 {
-  "name": "07 - Basket Stats FINAL-WORKING",
+  "name": "07 - Basket Stats READY",
   "nodes": [
     {
       "parameters": {
@@ -159,6 +159,7 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2026-03-21T12:00:00.000Z",
+  "updatedAt": "2025-10-06T21:30:00.000Z",
   "versionId": "1"
 }
+
